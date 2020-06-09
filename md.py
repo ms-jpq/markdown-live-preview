@@ -47,13 +47,9 @@ def build_j2(src: str, filters: Dict[str, Callable] = {}) -> Environment:
   return j2
 
 
-def render_j2(dest: str, values: Dict[str, Any]) -> None:
-  full, _ = splitext(dest)
-  base = basename(full)
-  parent = dirname(full)
-  template = basename(dest)
-  j2 = build_j2(parent)
-  content = j2.get_template(template).render(**values)
+# def render_j2(source: str, values: Dict[str, Any]) -> str:
+#   rendered = j2.get_template(template).render(**values)
+#   return rendered
 
 
 def slurp(name) -> str:
@@ -72,6 +68,8 @@ def srv(name: str) -> str:
 
 def main() -> None:
   args = parse_args()
+  templates = join(dirname(__file__), "templates")
+  j2 = build_j2(templates)
   md_html(args.markdown)
 
 
@@ -79,5 +77,4 @@ try:
   main()
 except KeyboardInterrupt:
   pass
-#!/usr/bin/env python3
 
