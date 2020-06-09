@@ -2,19 +2,32 @@
 
 from argparse import ArgumentParser, Namespace
 from http.server import ThreadingHTTPServer
-from os import environ
-from os.path import basename, dirname, splitext
+from os import getcwd, environ
+from os.path import basename, dirname, isdir, join, splitext
 from typing import Any, Callable, Dict, List
+from sys import stderr
+
 
 try:
-  from jinja2 import Environment, FileSystemLoader,  StrictUndefined
-  from markdown import markdown
+  import jinja2
+  import markdown
 except ImportError:
   if environ.get("VIRTUAL_ENV") is None:
-    from venv import create
-    create()
+    venv_home = join(getcwd(), ".venv")
+    if isdir(venv_home):
+      print(f"Please Source VENV - {venv_home}", file=stderr)
+    else:
+      from venv import create
+      create(venv_home, with_pip=True)
+      print(f"Installed VENV - {venv_home}", file=stderr)
+    exit(1)
   else:
     from subprocess import run
+    run(["pip", "install", "jinja2", "markdown"])
+
+
+from jinja2 import Environment, FileSystemLoader,  StrictUndefined
+from markdown import markdown
 
 
 def parse_args() -> Namespace:
@@ -67,3 +80,4 @@ try:
 except KeyboardInterrupt:
   pass
 #!/usr/bin/env python3
+
