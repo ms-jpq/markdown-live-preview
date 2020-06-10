@@ -24,7 +24,8 @@ except ImportError:
     exit(1)
   else:
     from subprocess import run
-    run(["pip", "install", "jinja2", "markdown", "watchdog"])
+    run(["pip", "install", "jinja2", "markdown", "watchdog"], stdout=stderr)
+    print("\n\n!!\n\n", file=stderr)
 
 
 from jinja2 import Environment, FileSystemLoader, Template, StrictUndefined
