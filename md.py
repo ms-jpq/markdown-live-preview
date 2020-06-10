@@ -3,9 +3,9 @@
 from argparse import ArgumentParser, Namespace
 from http.server import ThreadingHTTPServer
 from os import getcwd, environ
-from os.path import basename, dirname, isdir, join, splitext
+from os.path import basename, dirname, isfile, isdir, join, splitext
 from sys import stderr
-from typing import Any, Callable, Dict, List
+from typing import Any, Callable, Dict, List, Tuple
 
 
 try:
@@ -30,6 +30,8 @@ except ImportError:
 
 from jinja2 import Environment, FileSystemLoader, Template, StrictUndefined
 from markdown import markdown
+from watchdog.observers import Observer
+from watchdog.events import FileModifiedEvent
 
 
 __dir__ = dirname(__file__)
@@ -62,6 +64,15 @@ def slurp(name) -> str:
     return fd.read()
 
 
+def build_engine() -> Tuple[Template, Dict[str, str]]:
+  j2 = build_j2(__templates__)
+  index_template = j2.get_template(__index_html__)
+  css = slurp(__css__)
+  js = slurp(__js__)
+  values = {"css": css, "js": js}
+  return j2, values
+
+
 def md_html(name: str, j2: Template, values: Dict[str, Any]) -> str:
   md = slurp(name)
   inner_html = markdown(md)
@@ -71,12 +82,12 @@ def md_html(name: str, j2: Template, values: Dict[str, Any]) -> str:
 
 def main() -> None:
   args = parse_args()
-  j2 = build_j2(__templates__)
-  index_template = j2.get_template(__index_html__)
-  css = slurp(__css__)
-  js = slurp(__js__)
-  values = {"css": css, "js": js}
-  md_html(args.markdown)
+  name = args.markdown
+  if not isfile(name):
+    print(f"Not a file -- {args.markdown}", file=stderr)
+    exit(1)
+  else:
+    watch = FileModifiedEvent(name)
 
 
 try:
