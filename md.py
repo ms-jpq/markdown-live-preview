@@ -11,6 +11,7 @@ from typing import Any, Callable, Dict, List
 try:
   import jinja2
   import markdown
+  import watchdog
 except ImportError:
   if environ.get("VIRTUAL_ENV") is None:
     venv_home = join(getcwd(), ".venv")
@@ -23,7 +24,7 @@ except ImportError:
     exit(1)
   else:
     from subprocess import run
-    run(["pip", "install", "jinja2", "markdown"])
+    run(["pip", "install", "jinja2", "markdown", "watchdog"])
 
 
 from jinja2 import Environment, FileSystemLoader, Template, StrictUndefined
@@ -31,7 +32,10 @@ from markdown import markdown
 
 
 __dir__ = dirname(__file__)
+__site__ = join(__dir__, "site")
 __templates__ = join(__dir__, "templates")
+__css__ = join(__site__, "site.css")
+__js__ = join(__site__, "site.js")
 __index_html__ = "index.html.j2"
 
 
@@ -57,24 +61,20 @@ def slurp(name) -> str:
     return fd.read()
 
 
-def md_html(name: str) -> str:
+def md_html(name: str, j2: Template, values: Dict[str, Any]) -> str:
   md = slurp(name)
-  return markdown.markdown(md)
-
-
-def render(template: Template, values: Dict[str, Any]) -> str:
-  rendered: str = template.render(**values)
+  inner_html = markdown(md)
+  rendered: str = j2.render({**values, "md": inner_html})
   return rendered
-
-
-def srv(name: str) -> str:
-  return 2
 
 
 def main() -> None:
   args = parse_args()
   j2 = build_j2(__templates__)
   index_template = j2.get_template(__index_html__)
+  css = slurp(__css__)
+  js = slurp(__js__)
+  values = {"css": css, "js": js}
   md_html(args.markdown)
 
 
