@@ -9,6 +9,7 @@
     "@types/highlight.js": "^9.12.4",
     "@types/jsdom": "^16.2.3",
     "@types/markdown-it": "^10.0.1",
+    "@types/ws": "^7.2.5",
     "bootstrap": "^4.5.0",
     "chokidar": "^3.4.0",
     "commander": "^5.1.0",
@@ -18,7 +19,8 @@
     "jsdom": "^16.2.2",
     "markdown-it": "^11.0.0",
     "nda": "git+https://github.com/ms-jpq/nda.git",
-    "sass": "^1.26.8"
+    "sass": "^1.26.8",
+    "ws": "^7.3.0"
   },
   "description": "Markdown Preview",
   "devDependencies": {
@@ -47,4 +49,3 @@
   },
   "version": "0.0.1"
 }
-

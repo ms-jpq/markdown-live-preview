@@ -24,7 +24,7 @@ export const watch = async function* ({ file, delay, interval }: WatchOpts) {
     if (event === "unlink") {
       break
     }
-    yield
+    yield event
   }
 }
 
