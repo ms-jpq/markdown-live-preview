@@ -9,6 +9,7 @@
     "@types/highlight.js": "^9.12.4",
     "@types/jsdom": "^16.2.3",
     "@types/markdown-it": "^10.0.1",
+    "bootstrap": "^4.5.0",
     "chokidar": "^3.4.0",
     "commander": "^5.1.0",
     "cors": "^2.8.5",
@@ -16,7 +17,8 @@
     "highlight.js": "^10.1.1",
     "jsdom": "^16.2.2",
     "markdown-it": "^11.0.0",
-    "nda": "git+https://github.com/ms-jpq/nda.git"
+    "nda": "git+https://github.com/ms-jpq/nda.git",
+    "sass": "^1.26.8"
   },
   "description": "Markdown Preview",
   "devDependencies": {
@@ -39,7 +41,8 @@
     "url": "git+https://github.com/ms-jpq/markdown-preview.git"
   },
   "scripts": {
-    "build": "npm run tsc -- -p src",
+    "build": "npm run tsc -- -p src && npm run sass -- src/client/site.scss dist/client/site.css",
+    "sass": "sass",
     "tsc": "tsc"
   },
   "version": "0.0.1"
