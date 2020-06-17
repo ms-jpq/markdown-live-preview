@@ -39,11 +39,13 @@ export const serve = async ({ port, root, wheel }: ServerOpts) => {
   const server = createServer(expr)
   const wss = new Server({ server })
 
-  heartbeat(wss)
-  expr.use(srv_statis(root))
-  server.listen(port)
-
   let page = ""
+
+  expr.get("/markdown", (_, resp) => {
+    resp.type("text/html")
+    resp.send(page)
+  })
+
   const comm = (ws: WebSocket) => {
     if (ws.readyState !== WebSocket.OPEN) {
       return
@@ -51,11 +53,15 @@ export const serve = async ({ port, root, wheel }: ServerOpts) => {
     const sha = createHash("sha1")
     sha.update(page)
     const hash = sha.digest("hex")
-    const msg = { hash, page }
+    const msg = { hash }
     ws.send(JSON.stringify(msg))
   }
+  wss.on("connection", (ws) => comm(ws))
 
-  wss.on("connection", (ws) => ws.on("message", () => comm(ws)))
+  heartbeat(wss)
+  expr.use(srv_statis(root))
+  server.listen(port)
+
   for await (const html of wheel()) {
     page = html
     wss.clients.forEach(comm)

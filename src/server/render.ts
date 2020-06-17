@@ -11,7 +11,5 @@ const highlight = (str: string, lang: string) => {
 
 const md = markdown({ highlight })
 
-export const render = (markdown: string) => {
-  return md.render(markdown)
-}
+export const render = (markdown: string) => md.render(markdown)
 
