@@ -39,7 +39,8 @@
     "url": "git+https://github.com/ms-jpq/markdown-preview.git"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "npm run tsc -- -p src",
+    "tsc": "tsc"
   },
   "version": "0.0.1"
 }
