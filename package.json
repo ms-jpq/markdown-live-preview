@@ -1,0 +1,19 @@
+{
+  "name": "markdown-preview",
+  "version": "0.0.1",
+  "description": "Markdown Preview",
+  "main": "entry.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ms-jpq/markdown-preview.git"
+  },
+  "author": "Fly me to the moon",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ms-jpq/markdown-preview/issues"
+  },
+  "homepage": "https://github.com/ms-jpq/markdown-preview#readme"
+}
