@@ -1,15 +1,18 @@
 #!/usr/bin/env ts-node
 
 import { hostname } from "os"
-import { join } from "path"
+import { dirname } from "path"
 import { slurp } from "nda/dist/node/fs"
 import { argparse } from "./argparse"
 import { watch } from "./watch"
 import { render } from "./render"
 import { serve } from "./server"
-import { _base_ } from "./consts"
+
+const _base_ = dirname(dirname(__dirname))
 
 const main = async () => {
+  process.chdir(_base_)
+
   const args = await argparse()
   const mon = watch({
     file: args.markdown,
@@ -30,7 +33,7 @@ const main = async () => {
   console.log(`Serving -- http://${hostname()}:${args.port}`)
   await serve({
     port: args.port,
-    root: "",
+    root: "dist",
     wheel,
   })
 }

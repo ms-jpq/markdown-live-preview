@@ -19,6 +19,7 @@
     "jsdom": "^16.2.2",
     "markdown-it": "^11.0.0",
     "nda": "git+https://github.com/ms-jpq/nda.git",
+    "parcel": "^1.12.4",
     "sass": "^1.26.8",
     "ws": "^7.3.0"
   },
@@ -43,9 +44,7 @@
     "url": "git+https://github.com/ms-jpq/markdown-preview.git"
   },
   "scripts": {
-    "build": "npm run tsc -- -p src && npm run sass -- src/client/site.scss dist/client/site.css",
-    "sass": "sass",
-    "tsc": "tsc"
+    "build": "./build.ts"
   },
   "version": "0.0.1"
 }
