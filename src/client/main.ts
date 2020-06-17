@@ -38,7 +38,7 @@ const main = async () => {
   let sha: string | undefined = undefined
   for await (const { hash, page } of connect<MSG>()) {
     if (sha === hash) {
-      return
+      continue
     }
     sha = hash
     update(page)
