@@ -30,9 +30,18 @@ const connect = async function* () {
   }
 }
 
+const update = (page: string) => {
+  document.body.innerHTML = page
+}
+
 const main = async () => {
-  for await (const msg of connect()) {
-    console.log(msg)
+  let sha: string | undefined = undefined
+  for await (const { hash, page } of connect()) {
+    if (sha === hash) {
+      return
+    }
+    sha = hash
+    update(page)
   }
 }
 
