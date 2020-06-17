@@ -5,6 +5,7 @@ import { dirname, join } from "path"
 export type Arguments = {
   markdown: string
   port: number
+  delay: number
 }
 
 export const argparse = async (): Promise<Arguments> => {
@@ -18,6 +19,7 @@ export const argparse = async (): Promise<Arguments> => {
 
   prog.arguments("<markdown>")
   prog.option("-p, --port <port>", "PORT", Number, 8080)
+  prog.option("-d, --delay <delay>", "DELAY", Number, 500)
 
   await prog.parseAsync(process.argv)
   if (prog.args.length != 1) {

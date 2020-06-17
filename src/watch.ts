@@ -1,21 +1,22 @@
-import { watch as fs_watch } from "fs"
+import nodemon from "nodemon"
 
-export const watch = async function* (file: string) {
-  let watcher = fs_watch(file)
+export type WatchOpts = {
+  file: string
+  delay: number
+}
+
+export const watch = async function* ({ file, delay }: WatchOpts) {
+  const mon = nodemon({
+    exec: "sh -c exit",
+    watch: [file],
+    delay,
+  })
+
+  await new Promise<void>((resolve) => mon.once("start", resolve))
+  yield
   while (true) {
-    const { event, filename } = await new Promise<{
-      event: string
-      filename: string | Buffer
-    }>((resolve) =>
-      watcher.once("change", (event, filename) => resolve({ event, filename })),
-    )
-    if (event === "change") {
-      yield
-    } else if (event === "rename") {
-      watcher = fs_watch(filename)
-    } else {
-      throw new Error(`Unanticipated Watch Event -- ${event}`)
-    }
+    await new Promise<void>((resolve) => mon.once("restart", resolve))
+    yield
   }
 }
 
