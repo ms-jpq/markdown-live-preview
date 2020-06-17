@@ -23,7 +23,6 @@ const main = async () => {
       const markdown = await slurp(args.markdown)
       const html = render(markdown)
       page = html
-      console.log(`Updated -- ${new Date()}`)
     }
     console.error(`File Moved -- ${args.markdown}`)
     process.exit(1)
