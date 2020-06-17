@@ -1,7 +1,9 @@
 #!/usr/bin/env ts-node
 
+import { slurp } from "nda/dist/node/fs"
 import { argparse } from "./argparse"
 import { watch } from "./watch"
+import { render } from "./render"
 
 const main = async () => {
   const args = await argparse()
@@ -10,9 +12,15 @@ const main = async () => {
     delay: args.delay,
     interval: args.interval,
   })
-  for await (const _ of mon) {
-    console.log(new Date())
-  }
+
+  const run = (async () => {
+    for await (const _ of mon) {
+      const markdown = await slurp(args.markdown)
+      const html = render(markdown)
+    }
+  })()
+
+  await run
 }
 
 main()

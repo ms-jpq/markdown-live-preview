@@ -9,8 +9,6 @@
     "@types/highlight.js": "^9.12.4",
     "@types/jsdom": "^16.2.3",
     "@types/markdown-it": "^10.0.1",
-    "@types/react": "^16.9.36",
-    "@types/react-dom": "^16.9.8",
     "chokidar": "^3.4.0",
     "commander": "^5.1.0",
     "cors": "^2.8.5",
@@ -18,9 +16,7 @@
     "highlight.js": "^10.1.1",
     "jsdom": "^16.2.2",
     "markdown-it": "^11.0.0",
-    "nda": "git+https://github.com/ms-jpq/nda.git",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "nda": "git+https://github.com/ms-jpq/nda.git"
   },
   "description": "Markdown Preview",
   "devDependencies": {
