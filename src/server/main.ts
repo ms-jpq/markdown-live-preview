@@ -39,6 +39,7 @@ const main = async () => {
   await serve({
     port: args.port,
     root: "dist",
+    title: args.markdown,
     wheel,
   })
 }

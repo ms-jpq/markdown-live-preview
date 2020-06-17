@@ -35,13 +35,16 @@ const update = (page: string) => {
 }
 
 const main = async () => {
+  const title = await (await fetch("/api/title")).text()
+  document.title = title
+
   let sha: string | undefined = undefined
   for await (const { hash } of connect<MSG>()) {
     if (sha === hash) {
       continue
     }
     sha = hash
-    const page = await (await fetch("/markdown")).text()
+    const page = await (await fetch("/api/markdown")).text()
     update(page)
   }
 }

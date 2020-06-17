@@ -8,6 +8,7 @@ import { tiktok } from "nda/dist/isomorphic/prelude"
 export type ServerOpts = {
   port: number
   root: string
+  title: string
   wheel: () => AsyncGenerator<string, never>
 }
 
@@ -34,14 +35,19 @@ const heartbeat = (wss: Server) => {
   })()
 }
 
-export const serve = async ({ port, root, wheel }: ServerOpts) => {
+export const serve = async ({ port, root, title, wheel }: ServerOpts) => {
   const expr = express().use(cors())
   const server = createServer(expr)
   const wss = new Server({ server })
 
   let page = ""
 
-  expr.get("/markdown", (_, resp) => {
+  expr.get("/api/title", (_, resp) => {
+    resp.type("text")
+    resp.send(title)
+  })
+
+  expr.get("/api/markdown", (_, resp) => {
     resp.type("text/html")
     resp.send(page)
   })
