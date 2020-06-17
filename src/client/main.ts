@@ -31,11 +31,7 @@ const connect = async function* <T>() {
 const update = (page: string) => {
   $("#main")!.innerHTML = page
   const focus = $("#FOCUS")
-  if (focus) {
-    focus.scrollTo()
-  } else {
-    console.error("MISSING -- focus el")
-  }
+  focus?.scrollTo()
 }
 
 const main = async () => {

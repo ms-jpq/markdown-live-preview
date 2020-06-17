@@ -14,7 +14,9 @@ const diff_pair = (prev: HTMLElement, next: HTMLElement) => {
 
 // const reconciliate = (prev: HTMLElement, next: HTMLElement) => {}
 
-export const reconciliate = (prev: JSDOM, next: string) => {
-  return next
+export const reconciliate = (prev: JSDOM | undefined, next: string) => {
+  const dom = new JSDOM(next)
+  const html = dom.window.document.body.innerHTML
+  return { dom, html }
 }
 

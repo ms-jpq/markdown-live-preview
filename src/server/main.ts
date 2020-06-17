@@ -3,9 +3,11 @@
 import { hostname } from "os"
 import { dirname } from "path"
 import { slurp } from "nda/dist/node/fs"
+import { JSDOM } from "jsdom"
 import { argparse } from "./argparse"
 import { watch } from "./watch"
 import { render } from "./render"
+import { reconciliate } from "./reconciliate"
 import { serve } from "./server"
 
 const _base_ = dirname(dirname(__dirname))
@@ -21,9 +23,12 @@ const main = async () => {
   })
 
   const wheel = async function* () {
+    let prev: JSDOM | undefined = undefined
     for await (const _ of mon) {
       const markdown = await slurp(args.markdown)
-      const html = render(markdown)
+      const rendered = render(markdown)
+      const { dom, html } = reconciliate(prev, rendered)
+      prev = dom
       yield html
     }
     console.error(`File Moved -- ${args.markdown}`)
