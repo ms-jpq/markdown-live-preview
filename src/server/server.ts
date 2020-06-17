@@ -1,4 +1,5 @@
 import { createServer } from "http"
+import { createHash } from "crypto"
 import cors from "cors"
 import express, { static as srv_statis } from "express"
 import WebSocket, { Server } from "ws"
@@ -44,8 +45,17 @@ export const serve = async ({ port, root, wheel }: ServerOpts) => {
 
   let page = ""
   const comm = (ws: WebSocket) => {
-    ws.send(page)
+    if (ws.readyState !== WebSocket.OPEN) {
+      return
+    }
+    const sha = createHash("sha1")
+    sha.update(page)
+    const hash = sha.digest("hex")
+    const msg = { hash, page }
+    ws.send(JSON.stringify(msg))
   }
+
+  wss.on("connection", (ws) => ws.on("message", () => comm(ws)))
   for await (const html of wheel()) {
     page = html
     wss.clients.forEach(comm)
