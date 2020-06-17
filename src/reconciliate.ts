@@ -10,9 +10,9 @@ const diff_pair = (prev: HTMLElement, next: HTMLElement) => {
   }
 }
 
-const reconciliate = (prev: HTMLElement, next: HTMLElement) => {}
+// const reconciliate = (prev: HTMLElement, next: HTMLElement) => {}
 
-export const mark = (prev: JSDOM, next: JSDOM) => {
-  return { prev, next }
+export const reconciliate = (prev: JSDOM, next: string) => {
+  return next
 }
 

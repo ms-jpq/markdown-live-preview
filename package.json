@@ -32,7 +32,7 @@
   },
   "homepage": "https://github.com/ms-jpq/markdown-preview#readme",
   "license": "MIT",
-  "main": "main.ts",
+  "main": "dist/main.js",
   "name": "markdown-preview",
   "repository": {
     "type": "git",

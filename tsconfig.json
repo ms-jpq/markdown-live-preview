@@ -14,7 +14,7 @@
     "newLine": "LF",
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
-    "outDir": "tsc",
+    "outDir": "dist",
     "removeComments": true,
     "resolveJsonModule": true,
     "sourceMap": true,
@@ -23,7 +23,7 @@
     "target": "ESNext",
     "useDefineForClassFields": true
   },
-  "exclude": ["**/node_modules/**", "tsc"],
+  "exclude": ["**/node_modules/**", "dist"],
   "include": ["*.ts", "*.tsx", "*/**/*.ts", "*/**/*.tsx"]
 }
 
