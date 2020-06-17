@@ -1,4 +1,4 @@
-import nodemon from "nodemon"
+import { watch as fs_watch } from "chokidar"
 
 export type WatchOpts = {
   file: string
@@ -6,16 +6,11 @@ export type WatchOpts = {
 }
 
 export const watch = async function* ({ file, delay }: WatchOpts) {
-  const mon = nodemon({
-    exec: "sh -c exit",
-    watch: [file],
-    delay,
-  })
-
-  await new Promise<void>((resolve) => mon.once("start", resolve))
-  yield
+  let cb = () => {}
+  const mon = fs_watch(file, { interval: delay })
+  mon.on("all", cb)
   while (true) {
-    await new Promise<void>((resolve) => mon.once("restart", resolve))
+    await new Promise<void>((resolve) => (cb = resolve))
     yield
   }
 }

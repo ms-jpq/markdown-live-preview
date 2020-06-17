@@ -12,6 +12,7 @@
     "@types/nodemon": "^1.19.0",
     "@types/react": "^16.9.36",
     "@types/react-dom": "^16.9.8",
+    "chokidar": "^3.4.0",
     "commander": "^5.1.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
