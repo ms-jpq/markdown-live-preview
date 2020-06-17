@@ -1,12 +1,13 @@
 #!/usr/bin/env ts-node
 
 import { hostname } from "os"
+import { join } from "path"
 import { slurp } from "nda/dist/node/fs"
 import { argparse } from "./argparse"
 import { watch } from "./watch"
 import { render } from "./render"
 import { serve } from "./server"
-
+import { _base_ } from "./consts"
 
 const main = async () => {
   const args = await argparse()
@@ -30,11 +31,16 @@ const main = async () => {
 
   await (async () => {
     console.log(`Serving -- http://${hostname()}:${args.port}`)
+    const client_home = join(_base_, "dist", "client")
+    const [js, css] = await Promise.all([
+      slurp(join(client_home, "main.js")),
+      slurp(join(client_home, "main.js")),
+    ])
     await serve({
       port: args.port,
       html: () => page,
-      js: "js-stub",
-      css: "css-stub",
+      js,
+      css,
     })
   })()
 }
