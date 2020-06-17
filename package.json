@@ -26,11 +26,14 @@
   "description": "Markdown Preview",
   "devDependencies": {
     "@types/node": "*",
+    "@types/nodemon": "*",
     "@typescript-eslint/eslint-plugin": "*",
     "@typescript-eslint/parser": "*",
     "eslint": "*",
     "eslint-config-prettier": "*",
     "eslint-plugin-prettier": "*",
+    "nodemon": "*",
+    "parse-gitignore": "*",
     "prettier": "*",
     "ts-node": "*",
     "typescript": "*"
