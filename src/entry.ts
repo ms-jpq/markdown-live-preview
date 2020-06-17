@@ -5,8 +5,9 @@ import { watch } from "./watch"
 
 const main = async () => {
   const args = await argparse()
-  for await (const _ of watch({ file: args.markdown, delay: args.delay })) {
-    console.log("NEXT")
+  const mon = watch({ file: args.markdown, delay: args.delay })
+  for await (const _ of mon) {
+    console.log(new Date())
   }
 }
 
