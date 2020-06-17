@@ -1,15 +1,13 @@
 import { createServer } from "http"
 import cors from "cors"
-import express from "express"
+import express, { static as srv_statis } from "express"
 import WebSocket, { Server } from "ws"
 import { tiktok } from "nda/dist/isomorphic/prelude"
 
 export type ServerOpts = {
   port: number
-  html: () => string
-  js: string
-  css: string
-  wheel: () => AsyncGenerator<undefined, never>
+  root: string
+  wheel: () => AsyncGenerator<string, never>
 }
 
 const heartbeat = (wss: Server) => {
@@ -35,31 +33,22 @@ const heartbeat = (wss: Server) => {
   })()
 }
 
-export const serve = async ({ port, html, js, css, wheel }: ServerOpts) => {
+export const serve = async ({ port, root, wheel }: ServerOpts) => {
   const expr = express().use(cors())
   const server = createServer(expr)
   const wss = new Server({ server })
 
-  expr.get(/\.js/, (_, resp) => {
-    resp.type("text/javascript")
-    resp.send(js)
-  })
-
-  expr.get(/\.css$/, (_, resp) => {
-    resp.type("text/css")
-    resp.send(css)
-  })
-
-  expr.get("*", (_, resp) => {
-    resp.type("text/html")
-    resp.send(html())
-  })
-
   heartbeat(wss)
+  expr.use(srv_statis(root))
   server.listen(port)
 
-  for await (const _ of wheel()) {
-    wss.clients
+  let page = ""
+  const comm = (ws: WebSocket) => {
+    ws.send(page)
+  }
+  for await (const html of wheel()) {
+    page = html
+    wss.clients.forEach(comm)
   }
 }
 

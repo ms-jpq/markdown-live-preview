@@ -17,20 +17,11 @@ const main = async () => {
     interval: args.interval,
   })
 
-  let page = ""
-
-  const client_home = join(_base_, "dist", "client")
-  const [js, css] = await Promise.all([
-    slurp(join(client_home, "main.js")),
-    slurp(join(client_home, "main.js")),
-  ])
-
   const wheel = async function* () {
     for await (const _ of mon) {
       const markdown = await slurp(args.markdown)
       const html = render(markdown)
-      page = html
-      yield
+      yield html
     }
     console.error(`File Moved -- ${args.markdown}`)
     process.exit(1)
@@ -39,9 +30,7 @@ const main = async () => {
   console.log(`Serving -- http://${hostname()}:${args.port}`)
   await serve({
     port: args.port,
-    html: () => page,
-    js,
-    css,
+    root: "",
     wheel,
   })
 }
