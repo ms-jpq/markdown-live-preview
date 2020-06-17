@@ -9,8 +9,10 @@ export type WatchOpts = {
 
 export const watch = async function* ({ file, delay, interval }: WatchOpts) {
   let cb = (_: string) => {}
+
   const mon = fs_watch(file, { interval: delay })
   mon.on("all", (event) => cb(event))
+
   while (true) {
     const e1 = (async () => {
       await sleep(interval)
