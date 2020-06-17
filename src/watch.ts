@@ -6,11 +6,14 @@ export type WatchOpts = {
 }
 
 export const watch = async function* ({ file, delay }: WatchOpts) {
-  let cb = () => {}
+  let cb = (_: string) => {}
   const mon = fs_watch(file, { interval: delay })
-  mon.on("all", () => cb())
+  mon.on("all", (event) => cb(event))
   while (true) {
-    await new Promise<void>((resolve) => (cb = resolve))
+    const event = await new Promise<string>((resolve) => (cb = resolve))
+    if (event === "unlink") {
+      break
+    }
     yield
   }
 }
