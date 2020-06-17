@@ -19,6 +19,7 @@ export const watch = async function* ({ file, delay, interval }: WatchOpts) {
       return "poll"
     })()
     const e2 = new Promise<string>((resolve) => (cb = resolve))
+
     const event = await Promise.race([e1, e2])
     if (event === "unlink") {
       break
