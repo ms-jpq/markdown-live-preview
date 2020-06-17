@@ -1,4 +1,5 @@
 import { sleep } from "nda/dist/isomorphic/prelude"
+import { $ } from "nda/dist/browser/dom"
 
 type MSG = { hash: string; page: string }
 
@@ -25,6 +26,12 @@ const connect = async function* <T>() {
 
 const update = (page: string) => {
   document.body.innerHTML = page
+  const focus = $("#FOCUS")
+  if (focus) {
+    focus.scrollTo()
+  } else {
+    console.error("MISSING -- focus el")
+  }
 }
 
 const main = async () => {
