@@ -2,20 +2,13 @@ import { sleep } from "nda/dist/isomorphic/prelude"
 
 type MSG = { hash: string; page: string }
 
-const connect = async function* () {
+const connect = async function* <T>() {
   const remote = `ws://${location.host}`
-  let cb: (_: MSG) => void = () => {}
+  let cb: (_: T) => void = () => {}
   let ws = new WebSocket(remote)
 
   const provision = () => {
-    ws.onmessage = ({ data }) => {
-      const msg = JSON.parse(data)
-      cb(msg)
-    }
-    ws.onopen = () => {
-      ws.send(JSON.stringify({}))
-      ws.onopen = null
-    }
+    ws.onmessage = ({ data }) => cb(JSON.parse(data))
     ws.onclose = async () => {
       await sleep(1000)
       ws = new WebSocket(remote)
@@ -25,7 +18,7 @@ const connect = async function* () {
   provision()
 
   while (true) {
-    const next = new Promise<MSG>((resolve) => (cb = resolve))
+    const next = new Promise<T>((resolve) => (cb = resolve))
     yield next
   }
 }
@@ -36,7 +29,7 @@ const update = (page: string) => {
 
 const main = async () => {
   let sha: string | undefined = undefined
-  for await (const { hash, page } of connect()) {
+  for await (const { hash, page } of connect<MSG>()) {
     if (sha === hash) {
       return
     }
