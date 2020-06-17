@@ -13,6 +13,13 @@
   padding-bottom: $vert_padding;
 }
 
+@mixin md_border() {
+  border-style: solid;
+  border-width: thin;
+  border-radius: 0.2em;
+  border-color: transparent;
+}
+
 #main {
   img {
     max-width: 100%;
