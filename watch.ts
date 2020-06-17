@@ -17,10 +17,15 @@ const watch = (settings: Settings) =>
     })
 
 const main = async () => {
+  const [, , ...args] = process.argv
+
   const exts = ["ts", "scss", "html"]
   const git_ignore = await slurp(".gitignore")
   const ignore = parse(git_ignore)
-  const exec = "./build.ts && node ./dist/server/main.js"
+
+  const escaped = args.map((a) => `'${a}'`).join(" ")
+  const exec = `./build.ts && node ./dist/server/main.js ${escaped}`
+
   watch({
     ext: exts.join(),
     colours: true,
