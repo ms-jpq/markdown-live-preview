@@ -35,7 +35,7 @@ const update = async (page: string) => {
   const focus = $(`#${_focus_}`)
   focus?.scrollIntoView({
     behavior: "smooth",
-    block: "nearest",
+    block: "center",
     inline: "center",
   })
 }
