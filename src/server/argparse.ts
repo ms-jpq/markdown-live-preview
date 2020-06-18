@@ -1,6 +1,7 @@
 import { promises as fs } from "fs"
 import { Command } from "commander"
 import { isfile, slurp } from "nda/dist/node/fs"
+import { big_print } from "nda/dist/node/console"
 
 export type Arguments = {
   markdown: string
@@ -32,7 +33,7 @@ export const argparse = async (): Promise<Arguments> => {
   const args = prog.opts()
 
   if (!(await isfile(path))) {
-    console.error(`Cannot Access -- ${path}`)
+    console.error(big_print(`Cannot Access -- ${path}`))
     process.exit(1)
   }
   const markdown = await fs.realpath(path)

@@ -15,7 +15,7 @@
     "highlight.js": "^10.1.1",
     "jsdom": "^16.2.2",
     "markdown-it": "^11.0.0",
-    "nda": "git+https://github.com/ms-jpq/nda.git#24f547a87de06b196b61737d05c1fbf0a7cc1240",
+    "nda": "git+https://github.com/ms-jpq/nda.git#1126dac3f7587cabd05cc57cc8bf22f18732750b",
     "parcel": "^1.12.4",
     "sass": "^1.26.8",
     "ws": "^7.3.0"
@@ -49,4 +49,3 @@
   },
   "version": "0.0.1"
 }
-

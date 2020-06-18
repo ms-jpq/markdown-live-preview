@@ -3,6 +3,7 @@
 import { hostname } from "os"
 import { basename, dirname } from "path"
 import { slurp } from "nda/dist/node/fs"
+import { big_print } from "nda/dist/node/console"
 import { JSDOM } from "jsdom"
 import { argparse } from "./argparse"
 import { watch } from "./watch"
@@ -33,7 +34,9 @@ const main = async () => {
   }
 
   console.log(
-    `Serving -- http://${args.open ? hostname() : "localhost"}:${args.port}`,
+    big_print(
+      `Serving -- http://${args.open ? hostname() : "localhost"}:${args.port}`,
+    ),
   )
   await serve({
     local: !args.open,
@@ -43,7 +46,7 @@ const main = async () => {
     wheel,
   })
 
-  console.error("EXITED")
+  console.error(big_print("EXITED"))
   process.exit(1)
 }
 
