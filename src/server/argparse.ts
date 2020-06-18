@@ -19,8 +19,8 @@ export const argparse = async (): Promise<Arguments> => {
 
   prog.arguments("<markdown>")
   prog.option("-p, --port <port>", "PORT", Number, 8080)
-  prog.option("-d, --delay <delay>", "DELAY", Number, 500)
-  prog.option("-i, --interval, <interval>", "INTERVAL", Number, 10000)
+  prog.option("-d, --delay <delay>", "DELAY", Number, 0.2)
+  prog.option("-i, --interval, <interval>", "INTERVAL", Number, 1)
 
   await prog.parseAsync(process.argv)
   if (prog.args.length != 1) {
@@ -35,6 +35,12 @@ export const argparse = async (): Promise<Arguments> => {
     process.exit(1)
   }
 
-  return { ...args, markdown } as Arguments
+  const { delay, interval } = args
+  return {
+    ...args,
+    markdown,
+    delay: delay * 1000,
+    interval: interval * 1000,
+  } as Arguments
 }
 
