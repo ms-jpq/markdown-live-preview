@@ -1,7 +1,7 @@
 #!/usr/bin/env ts-node
 
 import { hostname } from "os"
-import { dirname } from "path"
+import { basename, dirname } from "path"
 import { slurp } from "nda/dist/node/fs"
 import { JSDOM } from "jsdom"
 import { argparse } from "./argparse"
@@ -32,11 +32,14 @@ const main = async () => {
     }
   }
 
-  console.log(`Serving -- http://${hostname()}:${args.port}`)
+  console.log(
+    `Serving -- http://${args.open ? hostname() : "localhost"}:${args.port}`,
+  )
   await serve({
+    local: !args.open,
     port: args.port,
     root: "dist",
-    title: args.markdown,
+    title: basename(args.markdown),
     wheel,
   })
 

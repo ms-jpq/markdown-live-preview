@@ -5,6 +5,7 @@ import WebSocket, { Server } from "ws"
 import { tiktok } from "nda/dist/isomorphic/prelude"
 
 export type ServerOpts = {
+  local: boolean
   port: number
   root: string
   title: string
@@ -34,7 +35,13 @@ const heartbeat = (wss: Server) => {
   })()
 }
 
-export const serve = async ({ port, root, title, wheel }: ServerOpts) => {
+export const serve = async ({
+  local,
+  port,
+  root,
+  title,
+  wheel,
+}: ServerOpts) => {
   const expr = express()
   const server = createServer(expr)
   const wss = new Server({ server })
@@ -68,9 +75,10 @@ export const serve = async ({ port, root, title, wheel }: ServerOpts) => {
   }
   wss.on("connection", (ws) => comm(ws))
 
+  const hostname = local ? "localhost" : undefined
   heartbeat(wss)
   expr.use(srv_statis(root))
-  server.listen(port)
+  server.listen(port, hostname)
 
   for await (const html of wheel()) {
     page = html
