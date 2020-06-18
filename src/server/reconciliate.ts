@@ -1,24 +1,12 @@
 import { JSDOM } from "jsdom"
-import {
-  filter,
-  longzip,
-  join,
-  map,
-  reduce,
-} from "nda/dist/isomorphic/iterator"
+import { assert } from "nda/dist/isomorphic/assertion"
+import { longzip, reduce } from "nda/dist/isomorphic/iterator"
 import { _focus_ } from "../consts"
+
+const Interrupt = "Interrupt"
 
 const p_attrs = (attrs: NamedNodeMap): Record<string, string> =>
   reduce((a, { name, value }) => Object.assign(a, { [name]: value }), {}, attrs)
-
-const p_text = (el: Element) =>
-  join(
-    "",
-    map(
-      (n) => n.nodeValue,
-      filter((n) => n.nodeType === 3, el.childNodes),
-    ),
-  )
 
 const diff_shallow = (prev: Element, next: Element) => {
   if (prev.tagName !== next.tagName) {
@@ -37,12 +25,17 @@ const diff_shallow = (prev: Element, next: Element) => {
       return true
     }
   }
-  return p_text(prev) !== p_text(next)
+
+  if (!prev.children.length && !next.children.length) {
+    return prev.textContent !== next.textContent
+  } else {
+    return false
+  }
 }
 
 const mark = (el: Element) => {
   el.id = _focus_
-  throw undefined
+  throw Interrupt
 }
 
 const mark_diff = (prev: Element, next: Element) => {
@@ -53,13 +46,15 @@ const mark_diff = (prev: Element, next: Element) => {
     let pp = next
     for (const [p, n] of zipped) {
       if (p && !n) {
+        console.log("P and not N")
         mark(pp)
       } else if (!p && n) {
+        console.log("not P and N")
         mark(n)
       } else {
-        mark_diff(p, n)
+        mark_diff(p!, n!)
       }
-      pp = n
+      pp = n || pp
     }
   }
 }
@@ -69,7 +64,9 @@ export const reconciliate = (prev: JSDOM | undefined, next: string) => {
   if (prev !== undefined) {
     try {
       mark_diff(prev.window.document.body, dom.window.document.body)
-    } catch {}
+    } catch (e) {
+      assert(e === Interrupt)
+    }
   }
   const html = dom.window.document.body.innerHTML
   return { dom, html }
