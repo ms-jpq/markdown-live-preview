@@ -1,6 +1,5 @@
 import { createServer } from "http"
 import { createHash } from "crypto"
-import cors from "cors"
 import express, { static as srv_statis } from "express"
 import WebSocket, { Server } from "ws"
 import { tiktok } from "nda/dist/isomorphic/prelude"
@@ -36,11 +35,16 @@ const heartbeat = (wss: Server) => {
 }
 
 export const serve = async ({ port, root, title, wheel }: ServerOpts) => {
-  const expr = express().use(cors())
+  const expr = express()
   const server = createServer(expr)
   const wss = new Server({ server })
 
   let page = ""
+
+  expr.use((_, resp, next) => {
+    resp.header("Access-Control-Allow-Origin", "*")
+    next()
+  })
 
   expr.get("/api/title", (_, resp) => {
     resp.type("text")
