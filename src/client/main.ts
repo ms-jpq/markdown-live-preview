@@ -32,7 +32,11 @@ const connect = async function* <T>() {
 const update = (page: string) => {
   $("#main")!.innerHTML = page
   const focus = $(`#${_focus_}`)
-  focus?.scrollTo()
+  focus?.scrollIntoView({
+    behavior: "smooth",
+    block: "nearest",
+    inline: "center",
+  })
 }
 
 const main = async () => {

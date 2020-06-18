@@ -2,6 +2,7 @@
 @import "../../node_modules/highlight.js/styles/github.css";
 
 :root {
+  --focus-colour: #FDF5BF;
   --code-colour: rgb(242, 242, 242);
 }
 
@@ -46,5 +47,9 @@
   code {
     background-color: var(--code-colour);
   }
+}
+
+#FOCUS {
+  background-color: var(--focus-colour) !important;
 }
 
