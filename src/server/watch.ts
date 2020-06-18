@@ -7,8 +7,7 @@ export type WatchOpts = {
 }
 
 export const watch = async function*({ file, interval }: WatchOpts) {
-  const stat = await fs.stat(file)
-  let mtime = stat.mtimeMs
+  let mtime: number | undefined = undefined
   let err = 0
   for await (const _ of tiktok(interval)) {
     try {
