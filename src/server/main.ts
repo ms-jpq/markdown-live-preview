@@ -18,10 +18,9 @@ const main = async () => {
   const args = await argparse()
   const mon = watch({
     file: args.markdown,
-    interval: args.interval,
   })
 
-  const wheel = async function* () {
+  const wheel = async function*() {
     let prev: JSDOM | undefined = undefined
     for await (const _ of mon) {
       const markdown = await slurp(args.markdown)
