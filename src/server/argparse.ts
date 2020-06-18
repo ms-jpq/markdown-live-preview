@@ -4,7 +4,6 @@ import { isfile, slurp } from "nda/dist/node/fs"
 export type Arguments = {
   markdown: string
   port: number
-  interval: number
 }
 
 export const argparse = async (): Promise<Arguments> => {
@@ -36,7 +35,6 @@ export const argparse = async (): Promise<Arguments> => {
   return {
     ...args,
     markdown,
-    interval: args.interval * 1000,
   } as Arguments
 }
 

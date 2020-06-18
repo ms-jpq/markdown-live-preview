@@ -2,17 +2,15 @@ import { watch as fs_watch } from "chokidar"
 
 export type WatchOpts = {
   file: string
-  interval: number
 }
 
-export const watch = async function*({ file, interval }: WatchOpts) {
+export const watch = async function*({ file }: WatchOpts) {
   let cb = (_: string) => {}
 
   const mon = fs_watch(file, {
     disableGlobbing: true,
     followSymlinks: true,
-    usePolling: true,
-    interval,
+    atomic: true,
   })
   mon.on("all", (event) => cb(event))
 
