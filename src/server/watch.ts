@@ -16,6 +16,7 @@ export const watch = async function*({ file, interval }: WatchOpts) {
       if (mtime !== stat.mtime) {
         yield
       }
+      mtime = stat.mtime
       err = 0
     } catch {
       err += 1
