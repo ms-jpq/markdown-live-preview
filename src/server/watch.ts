@@ -8,15 +8,15 @@ export type WatchOpts = {
 
 export const watch = async function*({ file, interval }: WatchOpts) {
   const stat = await fs.stat(file)
-  let mtime = stat.mtime
+  let mtime = stat.mtimeMs
   let err = 0
   for await (const _ of tiktok(interval)) {
     try {
-      const stat = await fs.stat(file)
-      if (mtime !== stat.mtime) {
+      const curr = (await fs.stat(file)).mtimeMs
+      if (mtime !== curr) {
         yield
       }
-      mtime = stat.mtime
+      mtime = curr
       err = 0
     } catch {
       err += 1
