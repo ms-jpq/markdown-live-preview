@@ -1,9 +1,24 @@
 import { JSDOM } from "jsdom"
-import { longzip, reduce } from "nda/dist/isomorphic/iterator"
+import {
+  filter,
+  longzip,
+  join,
+  map,
+  reduce,
+} from "nda/dist/isomorphic/iterator"
 import { _focus_ } from "../consts"
 
 const p_attrs = (attrs: NamedNodeMap): Record<string, string> =>
   reduce((a, { name, value }) => Object.assign(a, { [name]: value }), {}, attrs)
+
+const p_text = (el: Element) =>
+  join(
+    "",
+    map(
+      (n) => n.nodeValue,
+      filter((n) => n.nodeType === 3, el.childNodes),
+    ),
+  )
 
 const diff_shallow = (prev: Element, next: Element) => {
   if (prev.tagName !== next.tagName) {
@@ -22,7 +37,7 @@ const diff_shallow = (prev: Element, next: Element) => {
       return true
     }
   }
-  return false
+  return p_text(prev) !== p_text(next)
 }
 
 const mark = (el: Element) => {
