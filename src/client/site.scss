@@ -1,9 +1,8 @@
-@import "../../node_modules/bootstrap/dist/css/bootstrap-reboot.css";
+@import "../../node_modules/github-markdown-css/github-markdown.css";
 @import "../../node_modules/highlight.js/styles/github.css";
 
 :root {
   --focus-colour: #fdf5bf;
-  --code-colour: rgb(242, 242, 242);
 }
 
 #main {
@@ -12,50 +11,6 @@
   $vert_padding: 10em;
   padding-top: $vert_padding / 2;
   padding-bottom: $vert_padding;
-}
-
-@mixin md_border() {
-  border-style: solid;
-  border-width: thin;
-  border-radius: 0.2em;
-  border-color: transparent;
-}
-
-#main {
-  img {
-    max-width: 100%;
-    height: auto;
-
-    @include md_border();
-  }
-
-  ul > li {
-    &::before {
-      color: var(--highlight-colour);
-    }
-  }
-
-  pre,
-  blockquote {
-    width: 100%;
-    max-width: inherit;
-    overflow-x: scroll;
-
-    background-color: var(--code-colour);
-  }
-
-  code {
-    background-color: var(--code-colour);
-  }
-
-  table {
-    thead > tr > th,
-    tbody > tr > td {
-      &:not(:last-child) {
-        padding-right: 1em;
-      }
-    }
-  }
 }
 
 #FOCUS {
