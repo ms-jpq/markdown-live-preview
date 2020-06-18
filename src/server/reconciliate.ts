@@ -1,7 +1,19 @@
 import { JSDOM } from "jsdom"
 import { assert } from "nda/dist/isomorphic/assertion"
-import { longzip, reduce } from "nda/dist/isomorphic/iterator"
+import { flat_map, longzip, reduce } from "nda/dist/isomorphic/iterator"
 import { _focus_ } from "../consts"
+
+const inline_el = new Set(
+  flat_map((t) => [t, t.toUpperCase()], [
+    "p",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+  ]),
+)
 
 const Interrupt = "Interrupt"
 
@@ -26,7 +38,9 @@ const diff_shallow = (prev: Element, next: Element) => {
     }
   }
 
-  if (!prev.children.length && !next.children.length) {
+  const no_children = !prev.children.length && !next.children.length
+  const is_inline = inline_el.has(next.tagName)
+  if (no_children || is_inline) {
     return prev.textContent !== next.textContent
   } else {
     return false
@@ -46,10 +60,8 @@ const mark_diff = (prev: Element, next: Element) => {
     let pp = next
     for (const [p, n] of zipped) {
       if (p && !n) {
-        console.log("P and not N")
         mark(pp)
       } else if (!p && n) {
-        console.log("not P and N")
         mark(n)
       } else {
         mark_diff(p!, n!)
