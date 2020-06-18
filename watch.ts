@@ -24,7 +24,7 @@ const main = async () => {
   const ignore = parse(git_ignore)
 
   const escaped = args.map((a) => `'${a}'`).join(" ")
-  const exec = `./build.ts && node ./dist/server/main.js ${escaped}`
+  const exec = `./build.ts 'watch' && node ./dist/server/main.js ${escaped}`
 
   watch({
     ext: exts.join(),

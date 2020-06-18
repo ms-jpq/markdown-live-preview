@@ -1,5 +1,5 @@
 import { sleep } from "nda/dist/isomorphic/prelude"
-import { $ } from "nda/dist/browser/dom"
+import { $, wait_frame } from "nda/dist/browser/dom"
 import { _focus_ } from "../consts"
 
 type MSG = { hash: string }
@@ -29,8 +29,9 @@ const connect = async function* <T>() {
   }
 }
 
-const update = (page: string) => {
+const update = async (page: string) => {
   $("#main")!.innerHTML = page
+  await wait_frame()
   const focus = $(`#${_focus_}`)
   focus?.scrollIntoView({
     behavior: "smooth",
@@ -50,7 +51,7 @@ const main = async () => {
     }
     sha = hash
     const page = await (await fetch("/api/markdown")).text()
-    update(page)
+    await update(page)
   }
 }
 
