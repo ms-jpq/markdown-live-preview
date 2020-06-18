@@ -4,7 +4,6 @@ import { isfile, slurp } from "nda/dist/node/fs"
 export type Arguments = {
   markdown: string
   port: number
-  delay: number
   interval: number
 }
 
@@ -19,8 +18,7 @@ export const argparse = async (): Promise<Arguments> => {
 
   prog.arguments("<markdown>")
   prog.option("-p, --port <port>", "PORT", Number, 8080)
-  prog.option("-d, --delay <delay>", "DELAY", Number, 0.2)
-  prog.option("-i, --interval, <interval>", "INTERVAL", Number, 1)
+  prog.option("-i, --interval, <interval>", "INTERVAL", Number, 0.2)
 
   await prog.parseAsync(process.argv)
   if (prog.args.length != 1) {
@@ -35,12 +33,10 @@ export const argparse = async (): Promise<Arguments> => {
     process.exit(1)
   }
 
-  const { delay, interval } = args
   return {
     ...args,
     markdown,
-    delay: delay * 1000,
-    interval: interval * 1000,
+    interval: args.interval * 1000,
   } as Arguments
 }
 

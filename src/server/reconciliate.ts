@@ -70,11 +70,6 @@ export const reconciliate = (prev: JSDOM | undefined, next: string) => {
     try {
       mark_diff(prev.window.document.body, dom.window.document.body)
     } catch {}
-  } else {
-    const child = dom.window.document.body.firstElementChild
-    if (child) {
-      child.id = _focus_
-    }
   }
   const html = dom.window.document.body.innerHTML
   return { dom, html }
