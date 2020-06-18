@@ -2,7 +2,7 @@
 @import "../../node_modules/highlight.js/styles/github.css";
 
 :root {
-  --focus-colour: #FDF5BF;
+  --focus-colour: #fdf5bf;
   --code-colour: rgb(242, 242, 242);
 }
 
@@ -46,6 +46,15 @@
 
   code {
     background-color: var(--code-colour);
+  }
+
+  table {
+    thead > tr > th,
+    tbody > tr > td {
+      &:not(:last-child) {
+        padding-right: 1em;
+      }
+    }
   }
 }
 
