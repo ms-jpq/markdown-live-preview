@@ -1,22 +1,24 @@
 import { JSDOM } from "jsdom"
 import { reduce } from "nda/dist/isomorphic/iterator"
 
-const p_attrs = (attrs: NamedNodeMap) =>
+const p_attrs = (attrs: NamedNodeMap): Record<string, string> =>
   reduce((a, { name, value }) => Object.assign(a, { [name]: value }), {}, attrs)
 
 const diff_shallow = (prev: HTMLElement, next: HTMLElement) => {
   if (prev.tagName !== next.tagName) {
     return true
   }
-  const pa = Object.entries(p_attrs(prev.attributes))
-  const na = Object.entries(p_attrs(next.attributes))
-  for (const [p, v] of pa) {
+  const pa = p_attrs(prev.attributes)
+  const na = p_attrs(next.attributes)
+  Reflect.deleteProperty(pa, "id")
+  Reflect.deleteProperty(na, "id")
+  for (const [p, v] of Object.entries(pa)) {
     if (na[p] !== v) {
       return true
     }
     Reflect.deleteProperty(na, p)
   }
-  for (const [p, v] of na) {
+  for (const [p, v] of Object.entries(na)) {
     if (pa[p] !== v) {
       return true
     }
