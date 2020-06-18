@@ -11,6 +11,7 @@ export const watch = async function*({ file }: WatchOpts) {
     disableGlobbing: true,
     followSymlinks: true,
     atomic: true,
+    usePolling: true,
   })
   mon.on("all", (event) => cb(event))
 
