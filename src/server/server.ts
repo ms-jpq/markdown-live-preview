@@ -9,7 +9,7 @@ export type ServerOpts = {
   port: number
   root: string
   title: string
-  wheel: () => AsyncGenerator<string, never>
+  wheel: () => AsyncGenerator<string>
 }
 
 const heartbeat = (wss: Server) => {

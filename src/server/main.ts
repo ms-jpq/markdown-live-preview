@@ -18,6 +18,7 @@ const main = async () => {
   const args = await argparse()
   const mon = watch({
     file: args.markdown,
+    interval: args.interval,
   })
 
   const wheel = async function*() {
@@ -29,8 +30,6 @@ const main = async () => {
       prev = dom
       yield html
     }
-    console.error(`File Moved -- ${args.markdown}`)
-    process.exit(1)
   }
 
   console.log(`Serving -- http://${hostname()}:${args.port}`)
@@ -40,6 +39,9 @@ const main = async () => {
     title: args.markdown,
     wheel,
   })
+
+  console.error("EXITED")
+  process.exit(1)
 }
 
 main()

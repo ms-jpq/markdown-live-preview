@@ -1,9 +1,11 @@
+import { promises as fs } from "fs"
 import { Command } from "commander"
 import { isfile, slurp } from "nda/dist/node/fs"
 
 export type Arguments = {
   markdown: string
   port: number
+  interval: number
 }
 
 export const argparse = async (): Promise<Arguments> => {
@@ -24,17 +26,19 @@ export const argparse = async (): Promise<Arguments> => {
     console.error(prog.helpInformation())
     process.exit(1)
   }
-  const [markdown] = prog.args
+  const [path] = prog.args
   const args = prog.opts()
 
-  if (!(await isfile(markdown))) {
-    console.error(`Not a file -- ${markdown}`)
+  if (!(await isfile(path))) {
+    console.error(`Cannot Access -- ${path}`)
     process.exit(1)
   }
+  const markdown = await fs.realpath(path)
 
   return {
     ...args,
     markdown,
+    interval: args.interval * 1000,
   } as Arguments
 }
 

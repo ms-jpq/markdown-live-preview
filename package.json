@@ -10,7 +10,6 @@
     "@types/jsdom": "^16.2.3",
     "@types/markdown-it": "^10.0.1",
     "@types/ws": "^7.2.5",
-    "chokidar": "^3.4.0",
     "commander": "^5.1.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
@@ -18,7 +17,7 @@
     "highlight.js": "^10.1.1",
     "jsdom": "^16.2.2",
     "markdown-it": "^11.0.0",
-    "nda": "git+https://github.com/ms-jpq/nda.git#777b98c146c7894cc7633b1dbe3a48d4819bbdc4",
+    "nda": "git+https://github.com/ms-jpq/nda.git#24f547a87de06b196b61737d05c1fbf0a7cc1240",
     "parcel": "^1.12.4",
     "sass": "^1.26.8",
     "ws": "^7.3.0"
@@ -52,4 +51,3 @@
   },
   "version": "0.0.1"
 }
-
