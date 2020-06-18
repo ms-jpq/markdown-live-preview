@@ -1,17 +1,16 @@
 import { JSDOM } from "jsdom"
-import { reduce } from "nda/dist/isomorphic/iterator"
+import { longzip, reduce } from "nda/dist/isomorphic/iterator"
+import { _focus_ } from "../consts"
 
 const p_attrs = (attrs: NamedNodeMap): Record<string, string> =>
   reduce((a, { name, value }) => Object.assign(a, { [name]: value }), {}, attrs)
 
-const diff_shallow = (prev: HTMLElement, next: HTMLElement) => {
+const diff_shallow = (prev: Element, next: Element) => {
   if (prev.tagName !== next.tagName) {
     return true
   }
-  const pa = p_attrs(prev.attributes)
-  const na = p_attrs(next.attributes)
-  Reflect.deleteProperty(pa, "id")
-  Reflect.deleteProperty(na, "id")
+  const pa = Object.assign(p_attrs(prev.attributes), { id: undefined })
+  const na = Object.assign(p_attrs(next.attributes), { id: undefined })
   for (const [p, v] of Object.entries(pa)) {
     if (na[p] !== v) {
       return true
@@ -23,16 +22,45 @@ const diff_shallow = (prev: HTMLElement, next: HTMLElement) => {
       return true
     }
   }
-  const pc = prev.classList.value
-  const nc = next.classList.value
-  if (pc !== nc) {
-    return true
-  }
   return false
+}
+
+const mark = (el: Element) => {
+  el.id = _focus_
+  throw undefined
+}
+
+const mark_diff = (prev: Element, next: Element) => {
+  if (diff_shallow(prev, next)) {
+    mark(next)
+  } else {
+    const zipped = longzip(prev.children, next.children)
+    let pp = next
+    for (const [p, n] of zipped) {
+      if (p && !n) {
+        mark(pp)
+      } else if (!p && n) {
+        mark(n)
+      } else {
+        mark_diff(p, n)
+      }
+      pp = n
+    }
+  }
 }
 
 export const reconciliate = (prev: JSDOM | undefined, next: string) => {
   const dom = new JSDOM(next)
+  if (prev !== undefined) {
+    try {
+      mark_diff(prev.window.document.body, dom.window.document.body)
+    } catch {}
+  } else {
+    const child = dom.window.document.body.firstElementChild
+    if (child) {
+      child.id = _focus_
+    }
+  }
   const html = dom.window.document.body.innerHTML
   return { dom, html }
 }

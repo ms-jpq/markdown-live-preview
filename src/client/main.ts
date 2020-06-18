@@ -1,5 +1,6 @@
 import { sleep } from "nda/dist/isomorphic/prelude"
 import { $ } from "nda/dist/browser/dom"
+import { _focus_ } from "../consts"
 
 type MSG = { hash: string }
 
@@ -30,7 +31,7 @@ const connect = async function* <T>() {
 
 const update = (page: string) => {
   $("#main")!.innerHTML = page
-  const focus = $("#FOCUS")
+  const focus = $(`#${_focus_}`)
   focus?.scrollTo()
 }
 
