@@ -1,4 +1,4 @@
-# Live Markdown Preview
+# Markdown Live Preview
 
 ## Usage
 
