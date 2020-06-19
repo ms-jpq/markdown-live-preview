@@ -1,5 +1,6 @@
 {
   "author": "Fly me to the moon",
+  "bin": {},
   "bugs": {
     "url": "https://github.com/ms-jpq/markdown-preview/issues"
   },
@@ -45,7 +46,8 @@
   },
   "scripts": {
     "start": "node ./dist/server/main.js",
-    "build": "./build.ts"
+    "build": "./build.ts",
+    "postinstall": "npm run build"
   },
   "version": "0.0.1"
 }
