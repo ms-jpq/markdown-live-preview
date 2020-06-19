@@ -41,7 +41,7 @@
   "homepage": "https://github.com/ms-jpq/markdown-preview#readme",
   "license": "MIT",
   "main": "dist/main.js",
-  "name": "markdown-preview",
+  "name": "markdown-live-preview",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ms-jpq/markdown-preview.git"
