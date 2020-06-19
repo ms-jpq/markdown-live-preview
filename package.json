@@ -23,7 +23,7 @@
     "sass": "^1.26.8",
     "ws": "^7.3.0"
   },
-  "description": "Markdown Preview",
+  "description": "Markdown Live Preview",
   "devDependencies": {
     "@types/node": "*",
     "@types/nodemon": "*",
