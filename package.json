@@ -47,9 +47,9 @@
     "url": "git+https://github.com/ms-jpq/markdown-preview.git"
   },
   "scripts": {
-    "start": "node ./dist/server/main.js",
     "build": "./build.ts",
-    "postinstall": "npm run build"
+    "prepare": "npm run build",
+    "start": "node ./dist/server/main.js"
   },
   "version": "0.0.1"
 }
