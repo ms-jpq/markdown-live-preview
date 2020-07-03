@@ -1,8 +1,11 @@
 from asyncio import create_subprocess_exec
 from asyncio.subprocess import PIPE
+from os.path import join
 from shutil import which
 
 from markdown import markdown
+
+from consts import __dir__
 
 
 class ParseError(Exception):
@@ -15,7 +18,7 @@ def render_py(md: str) -> str:
 
 
 async def render_node(md: str) -> str:
-    node_md = ""
+    node_md = join(__dir__, "dist", "render.js")
     proc = await create_subprocess_exec("node", node_md, stdout=PIPE, stderr=PIPE)
     stdout, stderr = await proc.communicate(md.encode())
     if proc.returncode != 0:
