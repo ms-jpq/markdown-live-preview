@@ -16,7 +16,8 @@ async def watch(path: str) -> AsyncIterable[FileSystemEvent]:
     class Handler(FileSystemEventHandler):
         def on_any_event(self, event: FileSystemEvent) -> None:
             super().on_any_event(event)
-            loop.call_soon_threadsafe(queue.put_nowait, event)
+            if event.src_path == full_path:
+                loop.call_soon_threadsafe(queue.put_nowait, event)
 
     obs = Observer()
     obs.schedule(Handler(), directory)
@@ -24,4 +25,8 @@ async def watch(path: str) -> AsyncIterable[FileSystemEvent]:
 
     while True:
         event = await queue.get()
-        yield event
+        try:
+            yield event
+        except GeneratorExit:
+            obs.stop()
+            break
