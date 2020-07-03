@@ -22,5 +22,7 @@ async def main() -> None:
     async for p in gen:
         print(p)
 
-
-run(main())
+try:
+    run(main())
+except KeyboardInterrupt:
+    exit()
