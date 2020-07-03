@@ -1,56 +1,37 @@
 {
   "author": "Fly me to the moon",
-  "bin": {
-    "mlp": "./dist/server/main.js"
-  },
   "bugs": {
     "url": "https://github.com/ms-jpq/markdown-preview/issues"
   },
   "dependencies": {
-    "@types/express": "^4.17.6",
     "@types/highlight.js": "^9.12.4",
-    "@types/jsdom": "^16.2.3",
     "@types/markdown-it": "^10.0.1",
-    "@types/ws": "^7.2.5",
-    "commander": "^5.1.0",
-    "express": "^4.17.1",
     "github-markdown-css": "^4.0.0",
     "highlight.js": "^10.1.1",
-    "jsdom": "^16.2.2",
     "markdown-it": "^11.0.0",
     "nda": "git+https://github.com/ms-jpq/nda.git#eed87d62941856d56a27d9db63e90c2db73d4b68",
     "parcel": "^1.12.4",
-    "sass": "^1.26.8",
-    "ws": "^7.3.0"
+    "sass": "^1.26.8"
   },
   "description": "Markdown Live Preview",
   "devDependencies": {
     "@types/node": "*",
-    "@types/nodemon": "*",
     "@typescript-eslint/eslint-plugin": "*",
     "@typescript-eslint/parser": "*",
     "eslint": "*",
     "eslint-config-prettier": "*",
     "eslint-plugin-prettier": "*",
-    "nodemon": "*",
-    "parse-gitignore": "*",
     "prettier": "*",
     "ts-node": "*",
     "typescript": "*"
   },
   "homepage": "https://github.com/ms-jpq/markdown-preview#readme",
   "license": "MIT",
-  "main": "dist/main.js",
   "name": "markdown-live-preview",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ms-jpq/markdown-preview.git"
   },
-  "scripts": {
-    "build": "./build.ts",
-    "prepare": "npm run build",
-    "start": "node ./dist/server/main.js"
-  },
+  "scripts": {},
   "version": "0.0.1"
 }
-

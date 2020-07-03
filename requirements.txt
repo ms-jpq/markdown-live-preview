@@ -1,0 +1,4 @@
+watchdog
+Markdown
+xmltodict
+websockets

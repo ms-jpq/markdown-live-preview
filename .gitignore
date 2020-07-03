@@ -1,9 +1,9 @@
 /.git/
 /.venv/
 /node_modules/
+__pycache__/
 /dist/
 /temp/
 /.cache/
 package-lock.json
 .DS_Store
-

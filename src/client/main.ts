@@ -1,6 +1,5 @@
 import { sleep } from "nda/dist/isomorphic/prelude"
 import { $, wait_frame } from "nda/dist/browser/dom"
-import { _focus_ } from "../consts"
 
 type MSG = { hash: string }
 
@@ -32,7 +31,7 @@ const connect = async function* <T>() {
 const update = async (page: string) => {
   $("#main")!.innerHTML = page
   await wait_frame()
-  const focus = $(`#${_focus_}`)
+  const focus = $(`#$focus`)
   focus?.scrollIntoView({
     behavior: "smooth",
     block: "center",
@@ -56,4 +55,3 @@ const main = async () => {
 }
 
 main()
-
