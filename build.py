@@ -32,6 +32,7 @@ def main() -> None:
     if args.watch:
         pass
     else:
+        call("./lint.sh")
         call("tsc", "-p", "src/server")
         call("parcel", "build", "src/client/index.html")
 

@@ -1,4 +1,3 @@
 watchdog
 Markdown
-xmltodict
 websockets

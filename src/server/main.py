@@ -2,6 +2,8 @@ from argparse import ArgumentParser, Namespace
 from asyncio import run
 from sys import stderr
 
+# from reconciliate import reconciliate
+from render import render
 from watch import watch
 
 
@@ -19,7 +21,7 @@ async def main() -> None:
     args = parse_args()
 
     async for markdown in watch(args.markdown):
-        print("")
+        xhtml = await render(markdown)
 
     print(f"ERR :: cannot read -- {args.markdown}", file=stderr)
 
