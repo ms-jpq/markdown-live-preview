@@ -17,8 +17,10 @@ def parse_args() -> Namespace:
 async def main() -> None:
     args = parse_args()
 
-    join = watch(args.markdown)
-    join()
+    gen = watch(args.markdown)
+
+    async for p in gen:
+        print(p)
 
 
 run(main())
