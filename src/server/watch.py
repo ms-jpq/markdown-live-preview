@@ -6,27 +6,36 @@ from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 
 
-async def watch(path: str) -> AsyncIterable[FileSystemEvent]:
+async def watch(path: str) -> AsyncIterable[str]:
     loop = get_running_loop()
-    queue: Queue[FileSystemEvent] = Queue()
+    queue: Queue[None] = Queue()
 
     full_path = abspath(path)
     directory = dirname(full_path)
 
+    def slurp() -> str:
+        with open(full_path) as fd:
+            return fd.read()
+
+    def send(event: FileSystemEvent) -> None:
+        if event.src_path == full_path:
+            loop.call_soon_threadsafe(queue.put_nowait, None)
+
     class Handler(FileSystemEventHandler):
-        def on_any_event(self, event: FileSystemEvent) -> None:
-            super().on_any_event(event)
-            if event.src_path == full_path:
-                loop.call_soon_threadsafe(queue.put_nowait, event)
+        def on_created(self, event: FileSystemEvent) -> None:
+            send(event)
+
+        def on_modified(self, event: FileSystemEvent) -> None:
+            send(event)
 
     obs = Observer()
     obs.schedule(Handler(), directory)
     obs.start()
 
     while True:
-        event = await queue.get()
         try:
-            yield event
-        except GeneratorExit:
+            yield slurp()
+        except (GeneratorExit, FileNotFoundError):
             obs.stop()
             break
+        await queue.get()
