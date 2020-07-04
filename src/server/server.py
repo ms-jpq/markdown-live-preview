@@ -1,5 +1,5 @@
 from asyncio import Task, create_task, gather, sleep
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from typing import AsyncIterator, Awaitable, Callable, List
 from weakref import WeakSet
 
@@ -27,11 +27,6 @@ class Payload:
     markdown: str
 
 
-@dataclass
-class Update:
-    sha: str
-
-
 normalize = normalize_path_middleware()
 
 
@@ -47,7 +42,7 @@ def build(
     port: int,
     root: str,
     payloads: AsyncIterator[Payload],
-    updates: AsyncIterator[Update],
+    updates: AsyncIterator[None],
 ) -> Callable[[], Awaitable[None]]:
     jobs: List[Task] = []
     host = "localhost" if localhost else "0.0.0.0"
@@ -78,8 +73,8 @@ def build(
         return ws
 
     async def broadcast(app: Application) -> None:
-        async for update in updates:
-            tasks = (ws.send_json(update) for ws in websockets)
+        async for _ in updates:
+            tasks = (ws.send_str("NEW -- from server") for ws in websockets)
             await gather(*tasks)
 
         await app.shutdown()

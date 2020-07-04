@@ -1,6 +1,5 @@
 from argparse import ArgumentParser, Namespace
 from asyncio import run
-from hashlib import sha1
 from os.path import basename, join
 from socket import getfqdn
 from sys import stderr
@@ -10,7 +9,7 @@ from consts import __dir__
 
 # from reconciliate import reconciliate
 from render import render
-from server import Payload, Update, build
+from server import Payload, build
 from watch import watch
 
 
@@ -33,15 +32,15 @@ async def main() -> None:
     async def gen_payload() -> AsyncIterator[Payload]:
         while True:
             payload = Payload(title=name, markdown=markdown)
+            print(payload)
             yield payload
 
-    async def gen_update() -> AsyncIterator[Update]:
-        async for markdown in watch(args.markdown):
-            xhtml = await render(markdown)
+    async def gen_update() -> AsyncIterator[None]:
+        nonlocal markdown
+        async for md in watch(args.markdown):
+            xhtml = await render(md)
             markdown = xhtml
-            sha = sha1(markdown.encode()).hexdigest()
-            update = Update(sha=str(sha))
-            yield update
+            yield
 
     serve = build(
         localhost=not args.open,

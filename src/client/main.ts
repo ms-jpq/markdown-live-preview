@@ -1,15 +1,13 @@
 import { sleep } from "nda/dist/isomorphic/prelude"
 import { $, wait_frame } from "nda/dist/browser/dom"
 
-type MSG = { hash: string }
-
 const connect = async function* <T>() {
   const remote = `ws://${location.host}/ws`
   let cb: (_: T) => void = () => {}
   let ws = new WebSocket(remote)
 
   const provision = () => {
-    ws.onmessage = ({ data }) => cb(JSON.parse(data))
+    ws.onmessage = ({ data }) => cb(data)
     ws.onopen = () => {
       ws.send("HELO -- from client")
       ws.onopen = null
@@ -31,7 +29,7 @@ const connect = async function* <T>() {
 const update = async (page: string) => {
   $("#main")!.innerHTML = page
   await wait_frame()
-  const focus = $(`#$focus`)
+  const focus = $(`#focus`)
   focus?.scrollIntoView({
     behavior: "smooth",
     block: "center",
@@ -43,12 +41,7 @@ const main = async () => {
   const title = await (await fetch("/api/title")).text()
   document.title = title
 
-  let sha: string | undefined = undefined
-  for await (const { hash } of connect<MSG>()) {
-    if (sha === hash) {
-      continue
-    }
-    sha = hash
+  for await (const _ of connect<unknown>()) {
     const page = await (await fetch("/api/markdown")).text()
     await update(page)
   }
