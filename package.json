@@ -1,5 +1,6 @@
 {
   "author": "Fly me to the moon",
+  "browserslist": ["last 5 chrome versions"],
   "bugs": {
     "url": "https://github.com/ms-jpq/markdown-preview/issues"
   },

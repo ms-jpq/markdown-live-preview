@@ -31,8 +31,9 @@ async def main() -> None:
     markdown = ""
 
     async def gen_payload() -> AsyncIterator[Payload]:
-        payload = Payload(title=name, markdown=markdown)
-        yield payload
+        while True:
+            payload = Payload(title=name, markdown=markdown)
+            yield payload
 
     async def gen_update() -> AsyncIterator[Update]:
         async for markdown in watch(args.markdown):

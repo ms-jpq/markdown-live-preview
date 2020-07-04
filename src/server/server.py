@@ -1,4 +1,4 @@
-from asyncio import Task, create_task, sleep
+from asyncio import Task, create_task, gather, sleep
 from dataclasses import dataclass
 from typing import AsyncIterator, Awaitable, Callable, List
 from weakref import WeakSet
@@ -54,14 +54,13 @@ def build(
     websockets: WeakSet[WebSocketResponse] = WeakSet()
 
     routes = RouteTableDef()
-    routes.static(prefix="/", path=root)
 
-    @routes.get("/title")
+    @routes.get("/api/title")
     async def title_resp(request: BaseRequest) -> StreamResponse:
         payload = await anext(payloads)
         return Response(text=payload.title)
 
-    @routes.get("/markdown")
+    @routes.get("/api/markdown")
     async def markdown_resp(request: BaseRequest) -> StreamResponse:
         payload = await payloads.__anext__()
         return Response(text=payload.markdown)
@@ -72,21 +71,24 @@ def build(
         await ws.prepare(request)
         websockets.add(ws)
 
+        await ws.send_str("HELO -- from server")
         async for msg in ws:
-            print(msg)
             pass
 
         return ws
 
     async def broadcast(app: Application) -> None:
         async for update in updates:
-            for ws in websockets:
-                ws.send_json(update)
+            tasks = (ws.send_json(update) for ws in websockets)
+            await gather(*tasks)
+
         await app.shutdown()
 
     async def start_jobs(app: Application) -> None:
         b_task = create_task(broadcast(app))
         jobs.append(b_task)
+
+    routes.static(prefix="/", path=root)
 
     middlewares = (normalize, cors)
     app = Application(middlewares=middlewares)

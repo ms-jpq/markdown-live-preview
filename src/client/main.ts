@@ -4,14 +4,14 @@ import { $, wait_frame } from "nda/dist/browser/dom"
 type MSG = { hash: string }
 
 const connect = async function* <T>() {
-  const remote = `ws://${location.host}`
+  const remote = `ws://${location.host}/ws`
   let cb: (_: T) => void = () => {}
   let ws = new WebSocket(remote)
 
   const provision = () => {
     ws.onmessage = ({ data }) => cb(JSON.parse(data))
     ws.onopen = () => {
-      ws.send(JSON.stringify({}))
+      ws.send("HELO -- from client")
       ws.onopen = null
     }
     ws.onclose = async () => {
