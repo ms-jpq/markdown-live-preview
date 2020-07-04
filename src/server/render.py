@@ -5,7 +5,7 @@ from shutil import which
 
 from markdown import markdown
 
-from consts import __dir__
+from .consts import __dir__
 
 
 class ParseError(Exception):

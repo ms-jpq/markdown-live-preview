@@ -1,15 +1,14 @@
 from argparse import ArgumentParser, Namespace
-from asyncio import run
 from os.path import basename, join
 from socket import getfqdn
 from sys import stderr
 from typing import AsyncIterator
 
-from consts import __dir__
-from reconciliate import reconciliate
-from render import render
-from server import Payload, build
-from watch import watch
+from .consts import __dir__
+from .reconciliate import reconciliate
+from .render import render
+from .server import Payload, build
+from .watch import watch
 
 
 def parse_args() -> Namespace:
@@ -52,9 +51,3 @@ async def main() -> None:
     print(f"SERVING -- http://{host}:{args.port}")
     await serve()
     print(f"ERR :: cannot read -- {args.markdown}", file=stderr)
-
-
-try:
-    run(main())
-except KeyboardInterrupt:
-    exit()

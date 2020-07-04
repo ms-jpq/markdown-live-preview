@@ -1,7 +1,7 @@
 from itertools import zip_longest
 from typing import Dict, Optional, Tuple, Union, cast
 
-from html_to_dict import Node, parse, unparse
+from .html_to_dict import Node, parse, unparse
 
 
 def recon(prev: Union[Node, str, None], curr: Union[Node, str]) -> Union[Node, str]:
