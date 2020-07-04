@@ -1,52 +1,45 @@
 from html.parser import HTMLParser
-from typing import Any
+from typing import Any, List, Optional, Tuple
+
+HtmlDict = Any
+Attrs = List[Tuple[str, Optional[str]]]
 
 
-class Parser(HTMLParser):
+class ParseError(Exception):
+    pass
+
+
+class __Parser(HTMLParser):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        print(dir(self))
+        self.__data: HtmlDict = {}
+        self.__stack: List[str] = []
 
-    def handle_starttag(self, tag: str, attrs) -> None:
+    def handle_starttag(self, tag: str, attrs: Attrs) -> None:
+        print(attrs)
         pass
 
     def handle_endtag(self, tag: str) -> None:
         pass
 
-    def handle_charref(self, name) -> None:
+    def handle_data(self, data: str) -> None:
         pass
 
-    def handle_entityref(self, name) -> None:
-        pass
-
-    def handle_data(self, data) -> None:
-        pass
-
-    def handle_comment(self, data) -> None:
-        pass
-
-    def handle_decl(self, decl) -> None:
-        pass
-
-    def handle_pi(self, data) -> None:
-        pass
-
-    def unknown_decl(self, data) -> None:
-        pass
-
-    def end(self) -> Any:
-        return ""
-        # return self.data
+    def consume(self) -> HtmlDict:
+        if self.__stack:
+            raise ParseError()
+        else:
+            return self.__data
 
 
-def parse(html: str) -> Any:
-    parser = Parser()
+def parse(html: str) -> HtmlDict:
+    parser = __Parser()
     parser.feed(html)
-    data = parser.end()
+    data = parser.consume()
 
     print(data)
     return data
 
 
-def unparse(data: Any) -> str:
+def unparse(data: HtmlDict) -> str:
     return ""
