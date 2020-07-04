@@ -32,7 +32,6 @@ async def main() -> None:
     async def gen_payload() -> AsyncIterator[Payload]:
         while True:
             payload = Payload(title=name, markdown=markdown)
-            print(payload)
             yield payload
 
     async def gen_update() -> AsyncIterator[None]:
