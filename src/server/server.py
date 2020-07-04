@@ -6,6 +6,7 @@ from weakref import WeakSet
 from aiohttp.web import (
     Application,
     AppRunner,
+    Response,
     RouteTableDef,
     TCPSite,
     WebSocketResponse,
@@ -14,6 +15,8 @@ from aiohttp.web import (
 from aiohttp.web_middlewares import _Handler, normalize_path_middleware
 from aiohttp.web_request import BaseRequest, Request
 from aiohttp.web_response import StreamResponse
+
+from da import anext
 
 HEARTBEAT_TIME = 1
 
@@ -55,11 +58,13 @@ def build(
 
     @routes.get("/title")
     async def title_resp(request: BaseRequest) -> StreamResponse:
-        pass
+        payload = await anext(payloads)
+        return Response(text=payload.title)
 
     @routes.get("/markdown")
     async def markdown_resp(request: BaseRequest) -> StreamResponse:
-        pass
+        payload = await payloads.__anext__()
+        return Response(text=payload.markdown)
 
     @routes.get("/ws")
     async def ws_resp(request: BaseRequest) -> WebSocketResponse:
