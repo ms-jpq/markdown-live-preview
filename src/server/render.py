@@ -31,7 +31,7 @@ async def render_node(md: str) -> str:
 
 
 async def render(markdown: str) -> str:
-    if which("node2"):
+    if which("node"):
         return await render_node(markdown)
     else:
         return render_py(markdown)
