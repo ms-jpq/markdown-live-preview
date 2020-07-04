@@ -3,14 +3,15 @@ from typing import AsyncIterator
 
 from aiohttp.web import (
     Application,
+    AppRunner,
+    TCPSite,
     WebSocketResponse,
     WSMsgType,
     get,
     middleware,
-    run_app,
 )
 from aiohttp.web_middlewares import _Handler, normalize_path_middleware
-from aiohttp.web_request import BaseRequest
+from aiohttp.web_request import BaseRequest, Request
 from aiohttp.web_response import StreamResponse
 
 HEARTBEAT_TIME = 1
@@ -22,13 +23,17 @@ class Payload:
 
 
 @middleware
-async def cors(request: BaseRequest, handler: _Handler) -> StreamResponse:
+async def cors(request: Request, handler: _Handler) -> StreamResponse:
     resp = await handler(request)
-    resp.headers()["Access-Control-Allow-Origin"] = "*"
+    resp.headers["Access-Control-Allow-Origin"] = "*"
     return resp
 
 
-async def server(port: int, root: str, gen: AsyncIterator[Payload]) -> None:
+async def serve(
+    localhost: bool, port: int, root: str, gen: AsyncIterator[Payload]
+) -> None:
+    host = "localhost" if localhost else "0.0.0.0"
+
     async def ws_resp(request: BaseRequest) -> WebSocketResponse:
         ws = WebSocketResponse(heartbeat=HEARTBEAT_TIME)
         await ws.prepare(request)
@@ -49,4 +54,7 @@ async def server(port: int, root: str, gen: AsyncIterator[Payload]) -> None:
     app.add_routes(routes)
     app.router.add_static(prefix="/", path=root)
 
-    run_app(app)
+    runner = AppRunner(app)
+    await runner.setup()
+    site = TCPSite(runner, host=host, port=port)
+    await site.start()
