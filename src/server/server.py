@@ -6,9 +6,9 @@ from weakref import WeakSet
 from aiohttp.web import (
     Application,
     AppRunner,
+    RouteTableDef,
     TCPSite,
     WebSocketResponse,
-    get,
     middleware,
 )
 from aiohttp.web_middlewares import _Handler, normalize_path_middleware
@@ -29,6 +29,9 @@ class Update:
     sha: str
 
 
+normalize = normalize_path_middleware()
+
+
 @middleware
 async def cors(request: Request, handler: _Handler) -> StreamResponse:
     resp = await handler(request)
@@ -43,10 +46,22 @@ def build(
     payloads: AsyncIterator[Payload],
     updates: AsyncIterator[Update],
 ) -> Callable[[], Awaitable[None]]:
+    jobs: List[Task] = []
     host = "localhost" if localhost else "0.0.0.0"
     websockets: WeakSet[WebSocketResponse] = WeakSet()
-    jobs: List[Task] = []
 
+    routes = RouteTableDef()
+    routes.static(prefix="/", path=root)
+
+    @routes.get("/title")
+    async def title_resp(request: BaseRequest) -> StreamResponse:
+        pass
+
+    @routes.get("/markdown")
+    async def markdown_resp(request: BaseRequest) -> StreamResponse:
+        pass
+
+    @routes.get("/ws")
     async def ws_resp(request: BaseRequest) -> WebSocketResponse:
         ws = WebSocketResponse(heartbeat=HEARTBEAT_TIME)
         await ws.prepare(request)
@@ -71,15 +86,11 @@ def build(
         for job in jobs:
             job.cancel()
 
-    normalize = normalize_path_middleware()
     middlewares = (normalize, cors)
-    routes = (get("/ws", ws_resp),)
-
     app = Application(middlewares=middlewares)
-    app.add_routes(routes)
-    app.router.add_static(prefix="/", path=root)
     app.on_startup.append(start_jobs)
     app.on_cleanup.append(stop_jobs)
+    app.add_routes(routes)
 
     async def start() -> None:
         runner = AppRunner(app)
