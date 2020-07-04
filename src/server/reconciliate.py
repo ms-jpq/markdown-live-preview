@@ -11,16 +11,18 @@ def recon(prev: Union[Node, str, None], curr: Union[Node, str]) -> Union[Node, s
         return curr
     else:
         prev, curr = cast(Node, prev), cast(Node, curr)
+        depth = curr.depth
         attrs: Dict[str, Optional[str]] = {**curr.attrs} if prev == curr else {
             **curr.attrs,
             "diff": "true",
+            "depth": str(depth),
         }
         children = [
             recon(p, c)
             for p, c in zip_longest(prev.children, curr.children)
             if c is not None
         ]
-        node = Node(tag=curr.tag, attrs=attrs, children=children)
+        node = Node(depth=depth, tag=curr.tag, attrs=attrs, children=children)
         return node
 
 

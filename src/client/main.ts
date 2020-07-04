@@ -1,5 +1,6 @@
 import { sleep } from "nda/dist/isomorphic/prelude"
-import { $, wait_frame } from "nda/dist/browser/dom"
+import { sort_by } from "nda/dist/isomorphic/iterator"
+import { $, $$, wait_frame } from "nda/dist/browser/dom"
 
 const connect = async function* <T>() {
   const remote = `ws://${location.host}/ws`
@@ -29,12 +30,20 @@ const connect = async function* <T>() {
 const update = async (page: string) => {
   $("#main")!.innerHTML = page
   await wait_frame()
-  const focus = $(`#focus`)
-  focus?.scrollIntoView({
-    behavior: "smooth",
-    block: "center",
-    inline: "center",
-  })
+  const marked = $$(`[diff="true"]`)
+  const [focus] = sort_by(
+    (m) => Number(m.attributes["depth"].value) * -1,
+    marked,
+  )
+
+  if (focus) {
+    focus.id = "focus"
+    focus.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+      inline: "center",
+    })
+  }
 }
 
 const main = async () => {

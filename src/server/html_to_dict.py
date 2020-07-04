@@ -11,6 +11,7 @@ class ParseError(Exception):
 
 @dataclass
 class Node:
+    depth: int
     tag: str
     attrs: Dict[str, Optional[str]] = field(default_factory=dict)
     children: List[Union[Node, str]] = field(default_factory=list)
@@ -19,13 +20,13 @@ class Node:
 class Parser(HTMLParser):
     def __init__(self, *args, root_el: str, **kwargs):
         super().__init__(*args, **kwargs)
-        root = Node(tag=root_el)
+        root = Node(depth=0, tag=root_el)
         self.__root = root
         self.__stack: List[Node] = [root]
 
     def handle_starttag(self, tag: str, attrs: List[Tuple[str, Optional[str]]]) -> None:
-        node = Node(tag=tag, attrs=dict(attrs))
         if stack := self.__stack:
+            node = Node(depth=len(stack), tag=tag, attrs=dict(attrs))
             parent = stack[-1]
             parent.children.append(node)
             stack.append(node)
