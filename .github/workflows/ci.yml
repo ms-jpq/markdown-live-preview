@@ -24,10 +24,12 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install Pip Packages
-        run: pip install -U -r requirements.txt
+        run: |- 
+          pip install -U -r requirements.txt
+          pip install -U mypy
 
       - name: Install NPM Packages
         run: npm install
 
       - name: Build
-        run: npm run build
+        run: ./build.py
