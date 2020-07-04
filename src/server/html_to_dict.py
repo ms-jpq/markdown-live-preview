@@ -2,9 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from html.parser import HTMLParser
-from typing import List, Optional, Tuple, Union
-
-Attribute = Tuple[str, Optional[str]]
+from typing import Dict, List, Optional, Tuple, Union, cast
 
 
 class ParseError(Exception):
@@ -14,7 +12,7 @@ class ParseError(Exception):
 @dataclass
 class Node:
     tag: str
-    attrs: List[Attribute] = field(default_factory=list)
+    attrs: Dict[str, Optional[str]] = field(default_factory=dict)
     children: List[Union[Node, str]] = field(default_factory=list)
 
 
@@ -25,8 +23,8 @@ class Parser(HTMLParser):
         self.__root = root
         self.__stack: List[Node] = [root]
 
-    def handle_starttag(self, tag: str, attrs: List[Attribute]) -> None:
-        node = Node(tag=tag, attrs=attrs)
+    def handle_starttag(self, tag: str, attrs: List[Tuple[str, Optional[str]]]) -> None:
+        node = Node(tag=tag, attrs=dict(attrs))
         if stack := self.__stack:
             parent = stack[-1]
             parent.children.append(node)
@@ -62,8 +60,11 @@ def parse(html: str) -> Node:
 
 
 def unparse(node: Node) -> str:
-    attrs = " ".join(f'{k}="{v}"' if v else k for k, v in node.attrs)
+    attrs = " ".join(f'{k}="{v}"' if v else k for k, v in node.attrs.items())
     opening = f"<{node.tag} {attrs}>"
     closing = f"</{node.tag}>"
-    middle = "".join(unparse(c) if type(c) == Node else c for c in node.children)
+    middle = "".join(
+        unparse(cast(Node, c)) if type(c) == Node else cast(str, c)
+        for c in node.children
+    )
     return f"{opening}{middle}{closing}"
