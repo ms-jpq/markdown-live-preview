@@ -1,4 +1,4 @@
-from asyncio import Task, create_task
+from asyncio import Task, create_task, sleep
 from dataclasses import dataclass
 from typing import AsyncIterator, Awaitable, Callable, List
 from weakref import WeakSet
@@ -83,7 +83,6 @@ def build(
             for ws in websockets:
                 ws.send_json(update)
         await app.shutdown()
-        await app.cleanup()
 
     async def start_jobs(app: Application) -> None:
         b_task = create_task(broadcast(app))
@@ -98,6 +97,11 @@ def build(
         runner = AppRunner(app)
         await runner.setup()
         site = TCPSite(runner, host=host, port=port)
-        await site.start()
+        try:
+            await site.start()
+            while True:
+                await sleep(420)
+        finally:
+            await runner.cleanup()
 
     return start
