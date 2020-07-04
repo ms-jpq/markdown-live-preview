@@ -13,7 +13,7 @@ class ParseError(Exception):
 
 
 def render_py(md: str) -> str:
-    xhtml = markdown(md, output_format="xhtml")
+    xhtml = markdown(md, output_format="xhtml", extensions=["extra"])
     return xhtml
 
 
@@ -31,7 +31,7 @@ async def render_node(md: str) -> str:
 
 
 async def render(markdown: str) -> str:
-    if which("node"):
+    if which("node2"):
         return await render_node(markdown)
     else:
         return render_py(markdown)

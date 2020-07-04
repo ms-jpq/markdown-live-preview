@@ -6,8 +6,7 @@ from sys import stderr
 from typing import AsyncIterator
 
 from consts import __dir__
-
-# from reconciliate import reconciliate
+from reconciliate import reconciliate
 from render import render
 from server import Payload, build
 from watch import watch
@@ -27,7 +26,7 @@ async def main() -> None:
     args = parse_args()
 
     name = basename(args.markdown)
-    markdown = ""
+    cached, markdown = None, ""
 
     async def gen_payload() -> AsyncIterator[Payload]:
         while True:
@@ -35,10 +34,10 @@ async def main() -> None:
             yield payload
 
     async def gen_update() -> AsyncIterator[None]:
-        nonlocal markdown
+        nonlocal markdown, cached
         async for md in watch(args.markdown):
             xhtml = await render(md)
-            markdown = xhtml
+            cached, markdown = reconciliate(cached, xhtml)
             yield
 
     serve = build(
