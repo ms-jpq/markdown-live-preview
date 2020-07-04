@@ -3,30 +3,25 @@ from typing import Dict, Optional, Tuple, Union, cast
 
 from html_to_dict import Node, parse, unparse
 
-ParseState = Union[Node, str, None]
 
-
-def recon(prev: ParseState, curr: ParseState) -> ParseState:
-    if curr is None:
+def recon(prev: Union[Node, str, None], curr: Union[Node, str]) -> Union[Node, str]:
+    if type(curr) == str:
         return curr
-    elif prev is None:
-        return curr
-    elif type(prev) != type(curr):
-        return curr
-    elif type(curr) == str and prev != curr:
+    elif type(prev) != Node:
         return curr
     else:
         prev, curr = cast(Node, prev), cast(Node, curr)
-        marked = prev.tag != curr.tag or prev.attrs != curr.attrs
-        attrs: Dict[str, Optional[str]] = {**curr.attrs, "id": "focus"} if marked else {
-            **curr.attrs
+        attrs: Dict[str, Optional[str]] = {**curr.attrs} if prev == curr else {
+            **curr.attrs,
+            "diff": "true",
         }
         children = [
-            n
-            for n in (recon(p, c) for p, c in zip_longest(prev.children, curr.children))
-            if n is not None
+            recon(p, c)
+            for p, c in zip_longest(prev.children, curr.children)
+            if c is not None
         ]
-        return Node(tag=curr.tag, attrs=attrs, children=children)
+        node = Node(tag=curr.tag, attrs=attrs, children=children)
+        return node
 
 
 def reconciliate(prev: Optional[Node], curr: str) -> Tuple[Node, str]:
