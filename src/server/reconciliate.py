@@ -7,19 +7,18 @@ from html_to_dict import Node, parse, unparse
 def recon(prev: Union[Node, str, None], curr: Union[Node, str]) -> Union[Node, str]:
     if type(curr) == str:
         return curr
-    elif type(prev) != Node:
-        return curr
     else:
-        prev, curr = cast(Node, prev), cast(Node, curr)
+        curr = cast(Node, curr)
         depth = curr.depth
         attrs: Dict[str, Optional[str]] = {**curr.attrs} if prev == curr else {
             **curr.attrs,
             "diff": "true",
             "depth": str(depth),
         }
+        p_children = cast(Node, prev).children if type(prev) == Node else []
         children = [
             recon(p, c)
-            for p, c in zip_longest(prev.children, curr.children)
+            for p, c in zip_longest(p_children, curr.children)
             if c is not None
         ]
         node = Node(depth=depth, tag=curr.tag, attrs=attrs, children=children)
