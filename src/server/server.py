@@ -78,23 +78,20 @@ def build(
 
         return ws
 
-    async def broadcast() -> None:
+    async def broadcast(app: Application) -> None:
         async for update in updates:
             for ws in websockets:
                 ws.send_json(update)
+        await app.shutdown()
+        await app.cleanup()
 
     async def start_jobs(app: Application) -> None:
-        b_task = create_task(broadcast())
+        b_task = create_task(broadcast(app))
         jobs.append(b_task)
-
-    async def stop_jobs(app: Application) -> None:
-        for job in jobs:
-            job.cancel()
 
     middlewares = (normalize, cors)
     app = Application(middlewares=middlewares)
     app.on_startup.append(start_jobs)
-    app.on_cleanup.append(stop_jobs)
     app.add_routes(routes)
 
     async def start() -> None:
