@@ -1,17 +1,11 @@
 #!/usr/bin/env python3
 
 from argparse import ArgumentParser, Namespace
-from os import chdir, environ
+from os import chdir
 from os.path import dirname, join
 from subprocess import run
 
 __dir__ = dirname(__file__)
-
-
-def path_mod() -> None:
-    chdir(__dir__)
-    node_bin = join(__dir__, "node_modules", ".bin")
-    environ["PATH"] = environ["PATH"] + ":" + node_bin
 
 
 def call(prog: str, *args: str) -> None:
@@ -27,14 +21,15 @@ def parse_args() -> Namespace:
 
 
 def main() -> None:
-    path_mod()
+    chdir(__dir__)
     args = parse_args()
+    node_bin = join(__dir__, "node_modules", ".bin")
     if args.watch:
         pass
     else:
         call("./lint.sh")
-        call("tsc", "-p", "src/server")
-        call("parcel", "build", "src/client/index.html")
+        call(join(node_bin, "tsc"), "-p", "src/server")
+        call(join(node_bin, "parcel"), "build", "src/client/index.html")
 
 
 main()
