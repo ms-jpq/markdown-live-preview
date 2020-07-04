@@ -2,6 +2,7 @@ from argparse import ArgumentParser, Namespace
 from asyncio import run
 from hashlib import sha1
 from os.path import basename, join
+from socket import getfqdn
 from sys import stderr
 from typing import AsyncIterator
 
@@ -48,6 +49,9 @@ async def main() -> None:
         payloads=gen_payload(),
         updates=gen_update(),
     )
+
+    host = getfqdn() if args.open else "localhost"
+    print(f"SERVING -- http://{host}:{args.port}")
     await serve()
     print(f"ERR :: cannot read -- {args.markdown}", file=stderr)
 
