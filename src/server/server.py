@@ -31,6 +31,17 @@ normalize = normalize_path_middleware()
 
 
 @middleware
+async def index_html(request: Request, handler: _Handler) -> StreamResponse:
+    key = "filename"
+    match_info = request.match_info
+    if key in match_info and match_info[key] == "":
+        match_info[key] = "index.html"
+
+    resp = await handler(request)
+    return resp
+
+
+@middleware
 async def cors(request: Request, handler: _Handler) -> StreamResponse:
     resp = await handler(request)
     resp.headers["Access-Control-Allow-Origin"] = "*"
@@ -57,7 +68,7 @@ def build(
 
     @routes.get("/api/markdown")
     async def markdown_resp(request: BaseRequest) -> StreamResponse:
-        payload = await payloads.__anext__()
+        payload = await anext(payloads)
         return Response(text=payload.markdown)
 
     @routes.get("/ws")
@@ -85,7 +96,7 @@ def build(
 
     routes.static(prefix="/", path=root)
 
-    middlewares = (normalize, cors)
+    middlewares = (normalize, index_html, cors)
     app = Application(middlewares=middlewares)
     app.on_startup.append(start_jobs)
     app.add_routes(routes)
