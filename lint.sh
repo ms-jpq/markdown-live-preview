@@ -6,4 +6,4 @@ set -o pipefail
 cd "$(dirname "$0")" || exit
 
 
-mypy src/server/*.py
+mypy --ignore-missing-imports -- src/server/*.py
