@@ -1,5 +1,5 @@
-from asyncio import Task, create_task, gather, sleep
-from dataclasses import asdict, dataclass
+from asyncio import CancelledError, Task, create_task, gather, sleep
+from dataclasses import dataclass
 from typing import AsyncIterator, Awaitable, Callable, List
 from weakref import WeakSet
 
@@ -25,6 +25,11 @@ HEARTBEAT_TIME = 1
 class Payload:
     title: str
     markdown: str
+
+
+async def run_forever() -> None:
+    while True:
+        await sleep(420)
 
 
 normalize = normalize_path_middleware()
@@ -58,6 +63,7 @@ def build(
     jobs: List[Task] = []
     host = "localhost" if localhost else "0.0.0.0"
     websockets: WeakSet[WebSocketResponse] = WeakSet()
+    forever = create_task(run_forever())
 
     routes = RouteTableDef()
 
@@ -89,6 +95,8 @@ def build(
             await gather(*tasks)
 
         await app.shutdown()
+        await app.cleanup()
+        forever.cancel()
 
     async def start_jobs(app: Application) -> None:
         b_task = create_task(broadcast(app))
@@ -107,8 +115,10 @@ def build(
         site = TCPSite(runner, host=host, port=port)
         try:
             await site.start()
-            while True:
-                await sleep(420)
+            try:
+                await forever
+            except CancelledError:
+                pass
         finally:
             await runner.cleanup()
 
