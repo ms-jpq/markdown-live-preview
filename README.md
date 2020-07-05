@@ -1,4 +1,4 @@
-# Markdown Live Preview
+# [Markdown Live Preview](https://ms-jpq.github.io/markdown-live-preview)
 
 ## Features
 
