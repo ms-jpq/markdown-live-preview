@@ -28,8 +28,10 @@ def main() -> None:
         pass
     else:
         call("./lint.sh")
-        call(join(node_bin, "tsc"), "-p", "src/server")
-        call(join(node_bin, "parcel"), "build", "src/client/index.html")
+        call(join(node_bin, "tsc"), "-p", "--", "src/server")
+        call(
+            join(node_bin, "parcel"), "build", "-d", "js", "--", "src/client/index.html"
+        )
 
 
 main()
