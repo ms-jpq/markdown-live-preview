@@ -5,6 +5,8 @@ from shutil import which
 
 from markdown import markdown
 
+node_md = join(dirname(dirname(__file__)), "js", "render.js")
+
 
 class ParseError(Exception):
     pass
@@ -16,7 +18,6 @@ def render_py(md: str) -> str:
 
 
 async def render_node(md: str) -> str:
-    node_md = join(dirname(__file__), "render.js")
     proc = await create_subprocess_exec(
         "node", node_md, stdin=PIPE, stdout=PIPE, stderr=PIPE
     )

@@ -43,7 +43,7 @@ async def main() -> None:
     serve = build(
         localhost=not args.open,
         port=args.port,
-        root=join(dirname(__dir__), "client"),
+        root=join(dirname(__dir__), "js"),
         payloads=gen_payload(),
         updates=gen_update(),
     )

@@ -3,7 +3,7 @@
 
 from asyncio import run
 
-from markdown_live_preview.server import main
+from markdown_live_preview.server.main import main
 
 if __name__ == "__main__":
     try:
