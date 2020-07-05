@@ -11,3 +11,4 @@ package-lock.json
 *.d.ts
 *.js.map
 tsconfig.tsbuildinfo
+/markdown-live-preview/js/
