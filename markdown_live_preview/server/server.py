@@ -89,8 +89,8 @@ def build(
         async for _ in updates:
             tasks = (ws.send_str("NEW -- from server") for ws in websockets)
             time = datetime.now().strftime("%H:%M:%S")
-            print(f"⏰ - {time}")
             await gather(*tasks)
+            print(f"⏰ - {time}")
 
     routes.static(prefix="/", path=root)
 
