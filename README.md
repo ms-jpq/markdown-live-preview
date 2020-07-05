@@ -14,7 +14,7 @@
 
 The animation is only choppy because it's a compressed gif.
 
-![preview.gif](https://github.com/ms-jpq/markdown-live-preview/raw/md/preview/preview.gif)
+![preview.gif](https://github.com/ms-jpq/markdown-live-preview/raw/md/preview/smol.gif)
 
 ## Usage
 
