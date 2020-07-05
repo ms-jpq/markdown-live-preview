@@ -7,5 +7,7 @@ __pycache__/
 /.cache/
 package-lock.json
 .DS_Store
-/tsc/
-/js/
+*.js
+*.d.ts
+*.js.map
+tsconfig.tsbuildinfo
