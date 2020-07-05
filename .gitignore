@@ -7,10 +7,7 @@ __pycache__/
 /.cache/
 package-lock.json
 .DS_Store
-*.js
-*.d.ts
-*.js.map
 tsconfig.tsbuildinfo
-/markdown-live-preview/js/
 build/
+markdown_live_preview/js/
 *.egg-info/

@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-from os.path import join
-
 from setuptools import setup
 
 name = "markdown_live_preview"
@@ -21,6 +19,6 @@ setup(
     author="ms-jpq",
     author_email="github@bigly.dog",
     url="https://github.com/ms-jpq/markdown-live-preview",
-    packages=[join(name, "server")],
+    packages=[name + ".server", name + ".js"],
     scripts=["mlp"],
 )
