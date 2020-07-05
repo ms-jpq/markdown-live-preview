@@ -6,4 +6,4 @@ set -o pipefail
 cd "$(dirname "$0")" || exit
 
 
-mypy --ignore-missing-imports -- markdown-live-preview/**/*.py *.py
+mypy --ignore-missing-imports -- markdown_live_preview/**/*.py *.py
