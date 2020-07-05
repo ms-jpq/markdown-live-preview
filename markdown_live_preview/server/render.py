@@ -23,7 +23,7 @@ async def render_node(md: str) -> str:
     )
     stdout, stderr = await proc.communicate(md.encode())
     if proc.returncode != 0:
-        raise ParseError(stderr)
+        raise ParseError(stderr.decode())
     else:
         xhtml = stdout.decode()
         return xhtml

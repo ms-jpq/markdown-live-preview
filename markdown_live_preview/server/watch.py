@@ -35,7 +35,7 @@ async def watch(path: str) -> AsyncIterable[str]:
     while True:
         try:
             yield slurp()
-        except (GeneratorExit, FileNotFoundError):
+        except GeneratorExit:
             obs.stop()
             break
         await queue.get()

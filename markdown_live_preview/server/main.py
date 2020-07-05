@@ -1,4 +1,5 @@
 from argparse import ArgumentParser, Namespace
+from os import R_OK, access
 from os.path import basename, dirname, join
 from socket import getfqdn
 from sys import stderr
@@ -24,6 +25,10 @@ def parse_args() -> Namespace:
 
 async def main() -> None:
     args = parse_args()
+
+    if not access(args.markdown, R_OK):
+        print(f"cannot read -- {args.markdown}", file=stderr)
+        exit(1)
 
     name = basename(args.markdown)
     cached, markdown = None, ""
@@ -51,4 +56,3 @@ async def main() -> None:
     host = getfqdn() if args.open else "localhost"
     print(f"SERVING -- http://{host}:{args.port}")
     await serve()
-    print(f"ERR :: cannot read -- {args.markdown}", file=stderr)
