@@ -2,21 +2,19 @@
 
 ## Features
 
-### Live Preview
+- **Live Preview:** Updates preview on file save
 
-Updates preview on file save
+- **Auto Follow:** Focus on edited element
 
-### Auto Follow
+- **Syntax Highlight:** Automatically use [`highlightjs`](https://github.com/highlightjs/highlight.js) if `node` is available
 
-Focus on edited element
+- **Github flavoured:** Looks familiar
 
-### Syntax Highlight
+## Preview
 
-Automatically use [`highlightjs`](https://github.com/highlightjs/highlight.js) if node is installed.
+The animation is only choppy because it's a compressed gif.
 
-### Github flavoured
-
-Looks familiar
+[preview.gif]()
 
 ## Usage
 
