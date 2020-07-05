@@ -30,7 +30,7 @@ mlp <name of markdown>
 | `-o, --open`           | No localhost restriction |
 | `-f, --follow`         | Follow edits             |
 
-## Install
+## [Install](https://pypi.org/project/markdown-live-preview)
 
 ```sh
 pip install -U markdown_live_preview
