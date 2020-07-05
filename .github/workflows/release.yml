@@ -1,6 +1,6 @@
 ---
 
-name: R
+name: Release
 
 on:
   push:
