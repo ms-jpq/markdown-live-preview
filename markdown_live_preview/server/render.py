@@ -33,11 +33,10 @@ async def render_node() -> Callable[[str], Awaitable[str]]:
         )
 
     async def render(md: str) -> str:
-        nonlocal proc
         await init()
-        proc = cast(Process, proc)
-        stdin = cast(StreamWriter, proc.stdin)
-        stdout = cast(StreamReader, proc.stdout)
+        p = cast(Process, proc)
+        stdin = cast(StreamWriter, p.stdin)
+        stdout = cast(StreamReader, p.stdout)
 
         SEP = b"\0"
         stdin.write(md.encode())
