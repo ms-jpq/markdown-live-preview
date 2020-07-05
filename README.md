@@ -6,7 +6,7 @@
 
 Updates preview on file save
 
-### Auto Focus
+### Auto Follow
 
 Focus on edited element
 
@@ -20,3 +20,4 @@ Looks familiar
 | ---------------------- | ------------------------ |
 | `-p, --port PORT=8080` | Port to use              |
 | `-o, --open`           | No localhost restriction |
+| `-f, --follow`         | Follow edits             |
