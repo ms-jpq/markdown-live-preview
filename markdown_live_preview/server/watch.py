@@ -1,4 +1,4 @@
-from asyncio import Queue, run_coroutine_threadsafe
+from asyncio import Queue, run_coroutine_threadsafe, get_running_loop
 from os.path import abspath, dirname
 from typing import AsyncIterable
 
@@ -7,6 +7,7 @@ from watchdog.observers import Observer
 
 
 async def watch(path: str) -> AsyncIterable[str]:
+    loop = get_running_loop()
     queue: Queue[None] = Queue(1)
 
     full_path = abspath(path)
@@ -18,7 +19,7 @@ async def watch(path: str) -> AsyncIterable[str]:
 
     def send(event: FileSystemEvent) -> None:
         if event.src_path == full_path:
-            fut = run_coroutine_threadsafe(queue.put(None))
+            fut = run_coroutine_threadsafe(queue.put(None), loop=loop)
             fut.result()
 
     class Handler(FileSystemEventHandler):
