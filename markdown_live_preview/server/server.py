@@ -28,11 +28,6 @@ class Payload:
     markdown: str
 
 
-async def run_forever() -> None:
-    while True:
-        await sleep(420)
-
-
 normalize = normalize_path_middleware()
 
 
@@ -61,10 +56,8 @@ def build(
     payloads: AsyncIterator[Payload],
     updates: AsyncIterator[None],
 ) -> Callable[[], Awaitable[None]]:
-    jobs: List[Task] = []
     host = "localhost" if localhost else "0.0.0.0"
     websockets: WeakSet[WebSocketResponse] = WeakSet()
-    forever = create_task(run_forever())
 
     routes = RouteTableDef()
 
@@ -90,26 +83,17 @@ def build(
 
         return ws
 
-    async def broadcast(app: Application) -> None:
+    async def broadcast() -> None:
         async for _ in updates:
             tasks = (ws.send_str("NEW -- from server") for ws in websockets)
             time = datetime.now().strftime("%H:%M:%S")
             print(f"⏰ - {time}")
             await gather(*tasks)
 
-        await app.shutdown()
-        await app.cleanup()
-        forever.cancel()
-
-    async def start_jobs(app: Application) -> None:
-        b_task = create_task(broadcast(app))
-        jobs.append(b_task)
-
     routes.static(prefix="/", path=root)
 
     middlewares = (normalize, index_html, cors)
     app = Application(middlewares=middlewares)
-    app.on_startup.append(start_jobs)
     app.add_routes(routes)
 
     async def start() -> None:
@@ -118,10 +102,7 @@ def build(
         site = TCPSite(runner, host=host, port=port)
         try:
             await site.start()
-            try:
-                await forever
-            except CancelledError:
-                pass
+            await broadcast()
         finally:
             await runner.cleanup()
 
