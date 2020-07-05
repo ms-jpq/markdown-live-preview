@@ -1,5 +1,6 @@
 from asyncio import CancelledError, Task, create_task, gather, sleep
 from dataclasses import dataclass
+from datetime import datetime
 from typing import AsyncIterator, Awaitable, Callable, List
 from weakref import WeakSet
 
@@ -92,6 +93,8 @@ def build(
     async def broadcast(app: Application) -> None:
         async for _ in updates:
             tasks = (ws.send_str("NEW -- from server") for ws in websockets)
+            time = datetime.now().strftime("%H:%M:%S")
+            print(f"⏰ - {time}")
             await gather(*tasks)
 
         await app.shutdown()
