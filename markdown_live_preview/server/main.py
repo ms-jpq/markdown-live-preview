@@ -1,4 +1,5 @@
 from argparse import ArgumentParser, Namespace
+from datetime import datetime
 from hashlib import sha1
 from os import R_OK, access
 from os.path import basename, dirname, join
@@ -32,6 +33,8 @@ async def main() -> None:
         print(f"cannot read -- {args.markdown}", file=stderr)
         exit(1)
 
+    render_f = render()
+
     name = basename(args.markdown)
     cached, markdown = None, ""
     sha = ""
@@ -46,7 +49,7 @@ async def main() -> None:
     async def gen_update() -> AsyncIterator[None]:
         nonlocal markdown, cached, sha
         async for md in watch(args.markdown):
-            xhtml = await render(md)
+            xhtml = await render_f(md)
             cached, markdown = reconciliate(cached, xhtml)
             sha = sha1(markdown.encode()).hexdigest()
             yield

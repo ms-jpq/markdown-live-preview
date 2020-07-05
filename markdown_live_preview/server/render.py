@@ -2,6 +2,7 @@ from asyncio import create_subprocess_exec
 from asyncio.subprocess import PIPE
 from os.path import dirname, join
 from shutil import which
+from typing import Awaitable, Callable
 
 from markdown import markdown
 
@@ -12,7 +13,7 @@ class ParseError(Exception):
     pass
 
 
-def render_py(md: str) -> str:
+async def render_py(md: str) -> str:
     xhtml = markdown(md, output_format="xhtml", extensions=["extra"])
     return xhtml
 
@@ -29,8 +30,8 @@ async def render_node(md: str) -> str:
         return xhtml
 
 
-async def render(markdown: str) -> str:
+def render() -> Callable[[str], Awaitable[str]]:
     if which("node"):
-        return await render_node(markdown)
+        return render_node
     else:
-        return render_py(markdown)
+        return render_py
