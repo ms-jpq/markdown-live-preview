@@ -3,14 +3,32 @@
 
 :root {
   --focus-colour: #fdf5bf;
+  --border-colour: rgb(225, 228, 232);
 }
 
-#main {
+$padding_size: 1em;
+
+body {
+  padding: 1em;
+}
+
+#container {
+  border: thin solid var(--border-colour);
+  border-radius: 0.3em;
+
   margin: auto;
   max-width: 60em;
-  $vert_padding: 5em;
-  padding-top: $vert_padding / 2;
-  padding-bottom: $vert_padding;
+
+  padding: $padding_size;
+}
+
+header {
+  > * {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  margin-bottom: $padding_size;
 }
 
 #focus {

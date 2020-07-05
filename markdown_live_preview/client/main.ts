@@ -5,6 +5,7 @@ import { $, $$, wait_frame } from "nda/dist/browser/dom"
 const CYCLE = 500
 
 const display = $("#main")!
+const title = $("#title")!
 
 type API = { title: string; sha: string; follow: boolean }
 
@@ -58,6 +59,7 @@ const update = async (follow: boolean) => {
 const main = async () => {
   const info = await api_request()
   document.title = info.title
+  title.textContent = info.title
 
   const loop1 = async () => {
     while (true) {
