@@ -33,7 +33,7 @@ async def main() -> None:
         print(f"cannot read -- {args.markdown}", file=stderr)
         exit(1)
 
-    render_f = render()
+    render_f = await render()
 
     name = basename(args.markdown)
     cached, markdown = None, ""

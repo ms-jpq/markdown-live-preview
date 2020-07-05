@@ -1,8 +1,8 @@
-from asyncio import create_subprocess_exec
+from asyncio import StreamReader, StreamWriter, create_subprocess_exec
 from asyncio.subprocess import PIPE
 from os.path import dirname, join
 from shutil import which
-from typing import Awaitable, Callable
+from typing import Awaitable, Callable, cast
 
 from markdown import markdown
 
@@ -13,25 +13,33 @@ class ParseError(Exception):
     pass
 
 
-async def render_py(md: str) -> str:
-    xhtml = markdown(md, output_format="xhtml", extensions=["extra"])
-    return xhtml
+async def render_py() -> Callable[[str], Awaitable[str]]:
+    async def render(md: str) -> str:
+        xhtml = markdown(md, output_format="xhtml", extensions=["extra"])
+        return xhtml
+
+    return render
 
 
-async def render_node(md: str) -> str:
+async def render_node() -> Callable[[str], Awaitable[str]]:
     proc = await create_subprocess_exec(
         "node", node_md, stdin=PIPE, stdout=PIPE, stderr=PIPE
     )
-    stdout, stderr = await proc.communicate(md.encode())
-    if proc.returncode != 0:
-        raise ParseError(stderr.decode())
-    else:
-        xhtml = stdout.decode()
-        return xhtml
+    stdin = cast(StreamWriter, proc.stdin)
+    stdout = cast(StreamReader, proc.stdout)
+
+    async def render(md: str) -> str:
+        SEP = b"\0"
+        stdin.write(md.encode())
+        stdin.write(SEP)
+        xhtml = await stdout.readuntil(SEP)
+        return xhtml.decode()
+
+    return render
 
 
-def render() -> Callable[[str], Awaitable[str]]:
+async def render() -> Callable[[str], Awaitable[str]]:
     if which("node"):
-        return render_node
+        return await render_node()
     else:
-        return render_py
+        return await render_py()
