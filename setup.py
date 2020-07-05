@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 
+from os.path import join
+
 from setuptools import setup
+
+name = "markdown_live_preview"
 
 
 def slurp(path: str) -> str:
@@ -17,6 +21,6 @@ setup(
     author="ms-jpq",
     author_email="github@bigly.dog",
     url="https://github.com/ms-jpq/markdown-live-preview",
-    packages=["markdown_live_preview"],
+    packages=[join(name, "server")],
     scripts=["mlp"],
 )
