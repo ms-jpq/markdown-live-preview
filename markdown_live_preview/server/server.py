@@ -76,7 +76,7 @@ def build(
     @routes.get("/api/markdown")
     async def markdown_resp(request: BaseRequest) -> StreamResponse:
         payload = await anext(payloads)
-        return Response(text=payload.markdown)
+        return Response(text=payload.markdown, content_type="text/html")
 
     @routes.get("/ws")
     async def ws_resp(request: BaseRequest) -> WebSocketResponse:
