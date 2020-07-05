@@ -10,6 +10,10 @@ Updates preview on file save
 
 Focus on edited element
 
+### Syntax Highlight
+
+Automatically use [`highlightjs`](https://github.com/highlightjs/highlight.js) if node is installed.
+
 ### Github flavoured
 
 Looks familiar
