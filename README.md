@@ -4,7 +4,7 @@
 
 ### Live Preview
 
-Updates preview on edit
+Updates preview on file save
 
 ### Auto Focus
 
