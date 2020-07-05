@@ -9,4 +9,7 @@ if __name__ == "__main__":
     try:
         run(main())
     except KeyboardInterrupt:
-        exit()
+        try:
+            exit()
+        except RuntimeError:
+            pass

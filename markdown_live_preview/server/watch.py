@@ -19,10 +19,7 @@ async def watch(path: str) -> AsyncIterable[str]:
 
     def send(event: FileSystemEvent) -> None:
         if event.src_path == full_path:
-            try:
-                loop.call_soon_threadsafe(queue.put_nowait, None)
-            except RuntimeError:
-                pass
+            loop.call_soon_threadsafe(queue.put_nowait, None)
 
     class Handler(FileSystemEventHandler):
         def on_created(self, event: FileSystemEvent) -> None:
