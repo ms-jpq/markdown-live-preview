@@ -1,14 +1,15 @@
 from argparse import ArgumentParser, Namespace
-from os.path import basename, join
+from os.path import basename, dirname, join
 from socket import getfqdn
 from sys import stderr
 from typing import AsyncIterator
 
-from .consts import __dir__
 from .reconciliate import reconciliate
 from .render import render
 from .server import Payload, build
 from .watch import watch
+
+__dir__ = dirname(__file__)
 
 
 def parse_args() -> Namespace:
@@ -42,7 +43,7 @@ async def main() -> None:
     serve = build(
         localhost=not args.open,
         port=args.port,
-        root=join(__dir__, "dist"),
+        root=join(dirname(__dir__), "client"),
         payloads=gen_payload(),
         updates=gen_update(),
     )
