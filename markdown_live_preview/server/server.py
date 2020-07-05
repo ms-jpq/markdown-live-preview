@@ -1,7 +1,7 @@
-from asyncio import CancelledError, Task, create_task, gather, sleep
+from asyncio import gather
 from dataclasses import dataclass
 from datetime import datetime
-from typing import AsyncIterator, Awaitable, Callable, List
+from typing import AsyncIterator, Awaitable, Callable
 from weakref import WeakSet
 
 from aiohttp.web import (
@@ -11,6 +11,7 @@ from aiohttp.web import (
     RouteTableDef,
     TCPSite,
     WebSocketResponse,
+    json_response,
     middleware,
 )
 from aiohttp.web_middlewares import _Handler, normalize_path_middleware
@@ -25,6 +26,7 @@ HEARTBEAT_TIME = 1
 @dataclass
 class Payload:
     title: str
+    sha: str
     markdown: str
 
 
@@ -61,10 +63,11 @@ def build(
 
     routes = RouteTableDef()
 
-    @routes.get("/api/title")
+    @routes.get("/api/info")
     async def title_resp(request: BaseRequest) -> StreamResponse:
         payload = await anext(payloads)
-        return Response(text=payload.title)
+        json = {"title": payload.title, "sha": payload.sha}
+        return json_response(json)
 
     @routes.get("/api/markdown")
     async def markdown_resp(request: BaseRequest) -> StreamResponse:
@@ -77,10 +80,8 @@ def build(
         await ws.prepare(request)
         websockets.add(ws)
 
-        await ws.send_str("HELO -- from server")
         async for msg in ws:
             pass
-
         return ws
 
     async def broadcast() -> None:

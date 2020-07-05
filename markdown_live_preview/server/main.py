@@ -1,4 +1,5 @@
 from argparse import ArgumentParser, Namespace
+from hashlib import sha1
 from os import R_OK, access
 from os.path import basename, dirname, join
 from socket import getfqdn
@@ -32,17 +33,19 @@ async def main() -> None:
 
     name = basename(args.markdown)
     cached, markdown = None, ""
+    sha = ""
 
     async def gen_payload() -> AsyncIterator[Payload]:
         while True:
-            payload = Payload(title=name, markdown=markdown)
+            payload = Payload(title=name, sha=sha, markdown=markdown)
             yield payload
 
     async def gen_update() -> AsyncIterator[None]:
-        nonlocal markdown, cached
+        nonlocal markdown, cached, sha
         async for md in watch(args.markdown):
             xhtml = await render(md)
             cached, markdown = reconciliate(cached, xhtml)
+            sha = sha1(markdown.encode()).hexdigest()
             yield
 
     serve = build(
