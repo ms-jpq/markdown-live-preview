@@ -6,7 +6,6 @@ from os.path import dirname, join
 from subprocess import run
 
 __dir__ = dirname(__file__)
-package = join(__dir__, "markdown_live_preview")
 
 
 def call(prog: str, *args: str) -> None:
@@ -28,19 +27,26 @@ def main() -> None:
     if args.watch:
         pass
     else:
+        package = join(__dir__, "markdown_live_preview")
+        js_dist = join(package, "js")
+
         call("./lint.sh")
         call(
-            join(node_bin, "tsc"),
-            "--project",
-            join(package, "server"),
-            "--outDir",
-            join(package, "js"),
+            join(node_bin, "parcel"),
+            "build",
+            "--target",
+            "node",
+            "--bundle-node-modules",
+            "--out-dir",
+            js_dist,
+            "--",
+            join(package, "server", "render.ts"),
         )
         call(
             join(node_bin, "parcel"),
             "build",
             "--out-dir",
-            join(package, "js"),
+            js_dist,
             "--",
             join(package, "client", "index.html"),
         )
