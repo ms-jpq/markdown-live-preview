@@ -25,6 +25,7 @@ HEARTBEAT_TIME = 1
 
 @dataclass
 class Payload:
+    follow: bool
     title: str
     sha: str
     markdown: str
@@ -66,7 +67,7 @@ def build(
     @routes.get("/api/info")
     async def title_resp(request: BaseRequest) -> StreamResponse:
         payload = await anext(payloads)
-        json = {"title": payload.title, "sha": payload.sha}
+        json = {"follow": payload.follow, "title": payload.title, "sha": payload.sha}
         return json_response(json)
 
     @routes.get("/api/markdown")

@@ -20,6 +20,7 @@ def parse_args() -> Namespace:
     parser.add_argument("markdown")
     parser.add_argument("-p", "--port", type=int, default=8080)
     parser.add_argument("-o", "--open", action="store_true")
+    parser.add_argument("-n", "--no-follow", dest="follow", action="store_false")
 
     return parser.parse_args()
 
@@ -37,7 +38,9 @@ async def main() -> None:
 
     async def gen_payload() -> AsyncIterator[Payload]:
         while True:
-            payload = Payload(title=name, sha=sha, markdown=markdown)
+            payload = Payload(
+                follow=args.follow, title=name, sha=sha, markdown=markdown
+            )
             yield payload
 
     async def gen_update() -> AsyncIterator[None]:

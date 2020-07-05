@@ -6,7 +6,7 @@ const CYCLE = 500
 
 const display = $("#main")!
 
-type API = { title: string; sha: string }
+type API = { title: string; sha: string; follow: boolean }
 
 const api_request = async (): Promise<API> =>
   await (await fetch("/api/info")).json()
@@ -32,9 +32,10 @@ const ws_connect = async function* <T>() {
   }
 }
 
-const update = async () => {
+const update = async (follow: boolean) => {
   const page = await (await fetch("/api/markdown")).text()
   display.innerHTML = page
+
   await wait_frame()
   const marked = $$(`[diff="true"]`)
   const [focus] = sort_by(
@@ -44,11 +45,13 @@ const update = async () => {
 
   if (focus) {
     focus.id = "focus"
-    focus.scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-      inline: "center",
-    })
+    if (follow) {
+      focus.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "center",
+      })
+    }
   }
 }
 
@@ -60,7 +63,7 @@ const main = async () => {
     while (true) {
       try {
         for await (const _ of ws_connect<unknown>()) {
-          await update()
+          await update(info.follow)
         }
       } catch (err) {
         console.error(err)
@@ -74,7 +77,7 @@ const main = async () => {
       try {
         const info = await api_request()
         if (info.sha !== sha) {
-          await update()
+          await update(info.follow)
           sha = info.sha
         }
       } catch (err) {
