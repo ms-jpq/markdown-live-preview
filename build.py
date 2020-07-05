@@ -26,6 +26,7 @@ def main() -> None:
         "--target",
         "node",
         "--bundle-node-modules",
+        "--no-source-maps",
         "--out-dir",
         js_dist,
         "--",
@@ -34,6 +35,7 @@ def main() -> None:
     call(
         join(node_bin, "parcel"),
         "build",
+        "--no-source-maps",
         "--out-dir",
         js_dist,
         "--",
