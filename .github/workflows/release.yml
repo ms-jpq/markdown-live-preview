@@ -1,6 +1,6 @@
 ---
 
-name: CI
+name: R
 
 on:
   push:
