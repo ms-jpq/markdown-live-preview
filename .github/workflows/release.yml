@@ -12,7 +12,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
 
-    steps:PYPI_TOKENPYPI_TOKEN
+    steps:
       - name: Install Python
         uses: actions/setup-python@v2
 
