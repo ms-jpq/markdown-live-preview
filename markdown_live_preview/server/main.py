@@ -1,5 +1,4 @@
 from argparse import ArgumentParser, Namespace
-from datetime import datetime
 from hashlib import sha1
 from os import R_OK, access
 from os.path import basename, dirname, join
