@@ -30,7 +30,12 @@ def main() -> None:
         call("./lint.sh")
         call(join(node_bin, "tsc"))
         call(
-            join(node_bin, "parcel"), "build", "-d", "js", "--", "src/client/index.html"
+            join(node_bin, "parcel"),
+            "build",
+            "-d",
+            "js",
+            "--",
+            "markdown-live-preview/client/index.html",
         )
 
 
