@@ -8,7 +8,7 @@ def recon(
     prev: Union[Node, str, None], curr: Union[Node, str]
 ) -> Tuple[bool, Union[Node, str]]:
     if type(curr) == str:
-        return prev == curr, curr
+        return prev != curr, curr
     else:
         p_node = type(prev) == Node
 
