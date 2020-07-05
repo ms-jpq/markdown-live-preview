@@ -12,3 +12,5 @@ package-lock.json
 *.js.map
 tsconfig.tsbuildinfo
 /markdown-live-preview/js/
+build/
+*.egg-info/
