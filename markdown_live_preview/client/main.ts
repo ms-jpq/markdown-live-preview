@@ -55,15 +55,21 @@ const update = async () => {
 const main = async () => {
   const info = await api_request()
   document.title = info.title
-  let sha = info.sha
 
   const loop1 = async () => {
-    for await (const _ of ws_connect<unknown>()) {
-      await update()
+    while (true) {
+      try {
+        for await (const _ of ws_connect<unknown>()) {
+          await update()
+        }
+      } catch (err) {
+        console.error(err)
+      }
     }
   }
 
   const loop2 = async () => {
+    let sha: string | undefined = undefined
     for await (const _ of tiktok(CYCLE)) {
       try {
         const info = await api_request()
@@ -71,7 +77,9 @@ const main = async () => {
           await update()
           sha = info.sha
         }
-      } catch {}
+      } catch (err) {
+        console.error(err)
+      }
     }
   }
 
