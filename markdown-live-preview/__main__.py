@@ -1,6 +1,6 @@
 from asyncio import run
 
-from server.main import main
+from .server.main import main
 
 if __name__ == "__main__":
     try:

@@ -17,4 +17,6 @@ setup(
     author="ms-jpq",
     author_email="github@bigly.dog",
     url="https://github.com/ms-jpq/markdown-live-preview",
+    packages=["markdown-live-preview"],
+    scripts=[],
 )
