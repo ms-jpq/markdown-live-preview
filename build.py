@@ -35,7 +35,7 @@ def main() -> None:
             join(package, "server"),
             "--outDir",
             join(package, "js"),
-        ),
+        )
         call(
             join(node_bin, "parcel"),
             "build",
