@@ -6,7 +6,7 @@ from os.path import dirname, join
 from subprocess import run
 
 __dir__ = dirname(__file__)
-package = join(__dir__, "markdown-live-preview")
+package = join(__dir__, "markdown_live_preview")
 
 
 def call(prog: str, *args: str) -> None:
