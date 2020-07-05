@@ -1,4 +1,4 @@
-# MLP - Markdown Live Preview
+# Markdown Live Preview
 
 ## Features
 

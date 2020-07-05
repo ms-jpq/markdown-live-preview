@@ -1,0 +1,9 @@
+title: Markdown Live Preview
+
+showcase: True
+
+desc: >-
+   markdown live preview | works with any editor
+
+images:
+  - https://github.com/ms-jpq/markdown-live-preview/raw/md/preview/preview.gif
