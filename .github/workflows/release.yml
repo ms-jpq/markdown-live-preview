@@ -4,16 +4,15 @@ name: CI
 
 on:
   push:
-  pull_request:
-  schedule:
-    - cron: "0 0 * * *" # daily
+    paths:
+      - "setup.py"
 
 jobs:
 
   release:
     runs-on: ubuntu-latest
 
-    steps:
+    steps:PYPI_TOKENPYPI_TOKEN
       - name: Install Python
         uses: actions/setup-python@v2
 
@@ -37,3 +36,9 @@ jobs:
 
       - name: Release
         run: ./setup.py sdist bdist_wheel
+
+      - name: Publish PyPI
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_TOKEN }}
