@@ -15,10 +15,12 @@ const md = markdown({ xhtmlOut: true, highlight })
 const render = (markdown: string) => md.render(markdown)
 
 const main = async () => {
-  const stream = process.stdin.pipe(split("\0"))
+  const SEP = "\0"
+  const stream = process.stdin.pipe(split(SEP))
   for await (const data of stream) {
     const xhtml = render(data)
     process.stdout.write(xhtml)
+    process.stdout.write(SEP)
   }
 }
 

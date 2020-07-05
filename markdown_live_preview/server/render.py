@@ -1,5 +1,5 @@
 from asyncio import StreamReader, StreamWriter, create_subprocess_exec
-from asyncio.subprocess import PIPE
+from asyncio.subprocess import PIPE, Process
 from os.path import dirname, join
 from shutil import which
 from typing import Awaitable, Callable, cast
@@ -22,13 +22,23 @@ async def render_py() -> Callable[[str], Awaitable[str]]:
 
 
 async def render_node() -> Callable[[str], Awaitable[str]]:
-    proc = await create_subprocess_exec(
-        "node", node_md, stdin=PIPE, stdout=PIPE, stderr=PIPE
-    )
-    stdin = cast(StreamWriter, proc.stdin)
-    stdout = cast(StreamReader, proc.stdout)
+    proc, stdin, stdout = None, None, None
+
+    async def init() -> None:
+        nonlocal proc, stdin, stdout
+        if proc and proc.returncode is None:
+            return
+        proc = await create_subprocess_exec(
+            "node", node_md, stdin=PIPE, stdout=PIPE, stderr=PIPE
+        )
 
     async def render(md: str) -> str:
+        nonlocal proc
+        await init()
+        proc = cast(Process, proc)
+        stdin = cast(StreamWriter, proc.stdin)
+        stdout = cast(StreamReader, proc.stdout)
+
         SEP = b"\0"
         stdin.write(md.encode())
         stdin.write(SEP)
