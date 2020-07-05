@@ -27,7 +27,10 @@ def recon(prev: Union[Node, str, None], curr: Union[Node, str]) -> Union[Node, s
 
 def reconciliate(prev: Optional[Node], curr: str) -> Tuple[Node, str]:
     nxt = parse(curr)
-    marked = recon(prev, nxt)
-    assert type(marked) == Node
-    parsed = unparse(cast(Node, marked))
+    if not prev:
+        return (nxt, curr)
+    else:
+        marked = recon(prev, nxt)
+        assert type(marked) == Node
+        parsed = unparse(cast(Node, marked))
     return (nxt, parsed)
