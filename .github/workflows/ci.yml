@@ -27,6 +27,7 @@ jobs:
         run: |-
           pip install -U -r requirements.txt
           pip install -U mypy
+          pip install -U setuptools wheel
 
       - name: Install NPM Packages
         run: npm install
