@@ -37,9 +37,9 @@ def recon(
 
         attrs: Dict[str, Optional[str]] = {
             **curr.attrs,
-            "diff": "true",
+            "diff": str(diff).lower(),
             "depth": str(depth),
-        } if diff else {**curr.attrs}
+        }
 
         node = Node(depth=depth, tag=curr.tag, attrs=attrs, children=children)
         return diff, node
