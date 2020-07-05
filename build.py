@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from argparse import ArgumentParser, Namespace
 from os import chdir
 from os.path import dirname, join
 from subprocess import run
@@ -14,42 +13,32 @@ def call(prog: str, *args: str) -> None:
         exit(proc.returncode)
 
 
-def parse_args() -> Namespace:
-    parser = ArgumentParser()
-    parser.add_argument("-w", "--watch", action="store_true")
-    return parser.parse_args()
-
-
 def main() -> None:
     chdir(__dir__)
-    args = parse_args()
-    node_bin = join(__dir__, "node_modules", ".bin")
-    if args.watch:
-        pass
-    else:
-        package = join(__dir__, "markdown_live_preview")
-        js_dist = join(package, "js")
+    node_bin = join("node_modules", ".bin")
+    package = join("markdown_live_preview")
+    js_dist = join(package, "js")
 
-        call("./lint.sh")
-        call(
-            join(node_bin, "parcel"),
-            "build",
-            "--target",
-            "node",
-            "--bundle-node-modules",
-            "--out-dir",
-            js_dist,
-            "--",
-            join(package, "server", "render.ts"),
-        )
-        call(
-            join(node_bin, "parcel"),
-            "build",
-            "--out-dir",
-            js_dist,
-            "--",
-            join(package, "client", "index.html"),
-        )
+    call("./lint.sh")
+    call(
+        join(node_bin, "parcel"),
+        "build",
+        "--target",
+        "node",
+        "--bundle-node-modules",
+        "--out-dir",
+        js_dist,
+        "--",
+        join(package, "server", "render.ts"),
+    )
+    call(
+        join(node_bin, "parcel"),
+        "build",
+        "--out-dir",
+        js_dist,
+        "--",
+        join(package, "client", "index.html"),
+    )
 
 
 main()
