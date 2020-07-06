@@ -12,7 +12,7 @@ def slurp(path: str) -> str:
 
 setup(
     name="markdown-live-preview",
-    version="0.1.17",
+    version="0.1.18",
     description="live web preview of markdown docs",
     long_description=slurp("README.md"),
     long_description_content_type="text/markdown",

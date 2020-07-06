@@ -31,6 +31,12 @@ mlp <name of markdown>
 
 ## [Install](https://pypi.org/project/markdown-live-preview)
 
+## Embedding
+
+Markdown Live Preview (MLP) can be embedded into other applications as a subprocess.
+
+The flag `--read-stdin` is designed such that MLP can read markdown chunks from nul delimited stdin, and process them accordingly.
+
 ```sh
 pip install -U markdown_live_preview
 ```

@@ -32,7 +32,7 @@ def parse_args() -> Namespace:
 
     internal = parser.add_argument_group()
     internal.add_argument(
-        "--read_stdin", action="store_true", help="INTERNAL USE ONLY"
+        "--read-stdin", action="store_true", help="INTERNAL USE ONLY"
     )
     return parser.parse_args()
 
