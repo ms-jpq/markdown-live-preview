@@ -5,6 +5,7 @@ from os.path import basename, dirname, join
 from socket import getfqdn
 from sys import stderr
 from typing import AsyncIterator
+from webbrowser import open as open_w
 
 from .reconciliate import reconciliate
 from .render import render
@@ -67,6 +68,7 @@ async def main() -> None:
     async def post() -> None:
         host = getfqdn() if args.open else "localhost"
         uri = f"http://{host}:{args.port}"
+        open_w(uri)
         print(f"SERVING -- {uri}")
 
     await serve(post)
