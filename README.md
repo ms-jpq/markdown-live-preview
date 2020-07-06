@@ -26,7 +26,8 @@ mlp <name of markdown>
 | ---------------------- | ------------------------ |
 | `-p, --port PORT=8080` | Port to use              |
 | `-o, --open`           | No localhost restriction |
-| `-n, --no-follow`      | Do not follow edits      |
+| `--nf, --no-follow`    | Do not follow edits      |
+| `--nf, --no-browser`   | Do not open browser      |
 
 ## [Install](https://pypi.org/project/markdown-live-preview)
 
