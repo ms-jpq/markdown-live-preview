@@ -8,7 +8,7 @@ from watchdog.observers import Observer
 
 async def watch(path: str) -> AsyncIterable[str]:
     loop = get_running_loop()
-    queue: Queue[None] = Queue(1)
+    chan: Queue[None] = Queue(1)
 
     full_path = abspath(path)
     directory = dirname(full_path)
@@ -19,7 +19,7 @@ async def watch(path: str) -> AsyncIterable[str]:
 
     def send(event: FileSystemEvent) -> None:
         if event.src_path == full_path:
-            fut = run_coroutine_threadsafe(queue.put(None), loop=loop)
+            fut = run_coroutine_threadsafe(chan.put(None), loop=loop)
             fut.result()
 
     class Handler(FileSystemEventHandler):
@@ -39,4 +39,4 @@ async def watch(path: str) -> AsyncIterable[str]:
         except GeneratorExit:
             obs.stop()
             break
-        await queue.get()
+        await chan.get()
