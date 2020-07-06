@@ -21,7 +21,9 @@ def parse_args() -> Namespace:
     parser = ArgumentParser()
 
     parser.add_argument("markdown")
-    parser.add_argument("--stdin", action="store_true")
+    parser.add_argument(
+        "--read_stdin", action="store_true", description="INTERNAL USE ONLY"
+    )
     parser.add_argument("-p", "--port", type=int, default=8080)
     parser.add_argument("-o", "--open", action="store_true")
     parser.add_argument("--nf", "--no-follow", dest="follow", action="store_false")
@@ -33,12 +35,12 @@ def parse_args() -> Namespace:
 async def main() -> None:
     args = parse_args()
 
-    if (not args.stdin) and (not access(args.markdown, R_OK)):
+    if (not args.read_stdin) and (not access(args.markdown, R_OK)):
         print(f"cannot read -- {args.markdown}", file=stderr)
         exit(1)
 
     render_f = await render()
-    watch_f = stream if args.stdin else watch
+    watch_f = stream if args.read_stdin else watch
 
     name = basename(args.markdown)
     cached, markdown = None, ""
