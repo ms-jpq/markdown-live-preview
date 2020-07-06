@@ -21,14 +21,19 @@ def parse_args() -> Namespace:
     parser = ArgumentParser()
 
     parser.add_argument("markdown")
-    parser.add_argument(
-        "--read_stdin", action="store_true", description="INTERNAL USE ONLY"
-    )
-    parser.add_argument("-p", "--port", type=int, default=8080)
-    parser.add_argument("-o", "--open", action="store_true")
-    parser.add_argument("--nf", "--no-follow", dest="follow", action="store_false")
-    parser.add_argument("--nb", "--no-browser", dest="browser", action="store_false")
 
+    location = parser.add_argument_group()
+    location.add_argument("-p", "--port", type=int, default=8080)
+    location.add_argument("-o", "--open", action="store_true")
+
+    behaviour = parser.add_argument_group()
+    behaviour.add_argument("--nf", "--no-follow", dest="follow", action="store_false")
+    behaviour.add_argument("--nb", "--no-browser", dest="browser", action="store_false")
+
+    internal = parser.add_argument_group()
+    internal.add_argument(
+        "--read_stdin", action="store_true", help="INTERNAL USE ONLY"
+    )
     return parser.parse_args()
 
 
