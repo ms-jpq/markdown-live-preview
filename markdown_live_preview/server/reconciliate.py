@@ -14,12 +14,15 @@ def recon(
 
         curr = cast(Node, curr)
         depth = curr.depth
+        p_tag = cast(Node, prev).tag if p_node else ""
         p_children = cast(Node, prev).children if p_node else []
         p_attrs = cast(Node, prev).attrs if p_node else []
 
         diff = False
 
-        if len(p_children) != len(curr.children):
+        if p_tag != curr.tag:
+            diff = True
+        elif len(p_children) != len(curr.children):
             diff = True
         elif p_attrs != curr.attrs:
             diff = True
