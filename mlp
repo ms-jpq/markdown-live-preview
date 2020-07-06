@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-
 from asyncio import run
+from sys import stderr
 
 from markdown_live_preview.server.main import main
 
@@ -9,4 +9,4 @@ if __name__ == "__main__":
     try:
         run(main())
     except KeyboardInterrupt:
-        pass
+        stderr.close()
