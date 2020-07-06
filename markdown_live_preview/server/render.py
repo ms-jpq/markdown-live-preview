@@ -9,10 +9,6 @@ from markdown import markdown
 node_md = join(dirname(dirname(__file__)), "js", "render.js")
 
 
-class ParseError(Exception):
-    pass
-
-
 async def render_py() -> Callable[[str], Awaitable[str]]:
     async def render(md: str) -> str:
         xhtml = markdown(md, output_format="xhtml", extensions=["extra"])
