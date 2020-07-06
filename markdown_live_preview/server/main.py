@@ -1,4 +1,5 @@
 from argparse import ArgumentParser, Namespace
+from datetime import datetime
 from hashlib import sha1
 from os import R_OK, access
 from os.path import basename, dirname, join
@@ -23,7 +24,8 @@ def parse_args() -> Namespace:
     parser.add_argument("--stdin", action="store_true")
     parser.add_argument("-p", "--port", type=int, default=8080)
     parser.add_argument("-o", "--open", action="store_true")
-    parser.add_argument("-n", "--no-follow", dest="follow", action="store_false")
+    parser.add_argument("--nf", "--no-follow", dest="follow", action="store_false")
+    parser.add_argument("--nb", "--no-browser", dest="browser", action="store_false")
 
     return parser.parse_args()
 
@@ -56,6 +58,8 @@ async def main() -> None:
             cached, markdown = reconciliate(cached, xhtml)
             sha = sha1(markdown.encode()).hexdigest()
             yield
+            time = datetime.now().strftime("%H:%M:%S")
+            print(f"🦑 -- {time}")
 
     serve = build(
         localhost=not args.open,
@@ -68,7 +72,8 @@ async def main() -> None:
     async def post() -> None:
         host = getfqdn() if args.open else "localhost"
         uri = f"http://{host}:{args.port}"
-        open_w(uri)
+        if args.browser:
+            open_w(uri)
         print(f"SERVING -- {uri}")
 
     await serve(post)
