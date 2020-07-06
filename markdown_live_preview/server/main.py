@@ -9,6 +9,7 @@ from typing import AsyncIterator
 from .reconciliate import reconciliate
 from .render import render
 from .server import Payload, build
+from .stream import stream
 from .watch import watch
 
 __dir__ = dirname(__file__)
@@ -18,6 +19,7 @@ def parse_args() -> Namespace:
     parser = ArgumentParser()
 
     parser.add_argument("markdown")
+    parser.add_argument("-", dest="read_stdin", action="store_true")
     parser.add_argument("-p", "--port", type=int, default=8080)
     parser.add_argument("-o", "--open", action="store_true")
     parser.add_argument("-n", "--no-follow", dest="follow", action="store_false")
@@ -28,11 +30,12 @@ def parse_args() -> Namespace:
 async def main() -> None:
     args = parse_args()
 
-    if not access(args.markdown, R_OK):
+    if (not args.read_stdin) and (not access(args.markdown, R_OK)):
         print(f"cannot read -- {args.markdown}", file=stderr)
         exit(1)
 
     render_f = await render()
+    watch_f = stream if args.read_stdin else watch
 
     name = basename(args.markdown)
     cached, markdown = None, ""
@@ -47,7 +50,7 @@ async def main() -> None:
 
     async def gen_update() -> AsyncIterator[None]:
         nonlocal markdown, cached, sha
-        async for md in watch(args.markdown):
+        async for md in watch_f(args.markdown):
             xhtml = await render_f(md)
             cached, markdown = reconciliate(cached, xhtml)
             sha = sha1(markdown.encode()).hexdigest()
