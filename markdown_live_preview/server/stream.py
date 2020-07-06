@@ -15,6 +15,5 @@ def readuntil(sep: bytes) -> str:
 
 async def stream(_: Any) -> AsyncIterator[str]:
     loop = get_running_loop()
-    while True:
-        chunk = await loop.run_in_executor(None, readuntil, b"0")
+    while chunk := await loop.run_in_executor(None, readuntil, b"\0"):
         yield chunk
