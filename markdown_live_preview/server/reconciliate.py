@@ -37,7 +37,7 @@ def recon(
 
         attrs: Dict[str, Optional[str]] = {
             **curr.attrs,
-            "diff": str(diff).lower(),
+            "diff": str(diff),
             "depth": str(depth),
         }
 

@@ -64,6 +64,9 @@ async def main() -> None:
         updates=gen_update(),
     )
 
-    host = getfqdn() if args.open else "localhost"
-    print(f"SERVING -- http://{host}:{args.port}")
-    await serve()
+    async def post() -> None:
+        host = getfqdn() if args.open else "localhost"
+        uri = f"http://{host}:{args.port}"
+        print(f"SERVING -- {uri}")
+
+    await serve(post)

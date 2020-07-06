@@ -38,7 +38,7 @@ const update = async (follow: boolean) => {
   display.innerHTML = page
 
   await wait_frame()
-  const marked = $$(`[diff="true"]`)
+  const marked = $$(`[diff="True"]`)
   const [focus] = sort_by(
     (m) => Number(m.attributes["depth"].value) * -1,
     marked,

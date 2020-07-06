@@ -58,7 +58,7 @@ def build(
     root: str,
     payloads: AsyncIterator[Payload],
     updates: AsyncIterator[None],
-) -> Callable[[], Awaitable[None]]:
+) -> Callable[[Callable[[], Awaitable[None]]], Awaitable[None]]:
     host = "localhost" if localhost else "0.0.0.0"
     websockets: WeakSet[WebSocketResponse] = WeakSet()
 
@@ -98,12 +98,13 @@ def build(
     app = Application(middlewares=middlewares)
     app.add_routes(routes)
 
-    async def start() -> None:
+    async def start(post: Callable[[], Awaitable[None]]) -> None:
         runner = AppRunner(app)
         await runner.setup()
         site = TCPSite(runner, host=host, port=port)
         try:
             await site.start()
+            await post()
             await broadcast()
         finally:
             await runner.cleanup()
