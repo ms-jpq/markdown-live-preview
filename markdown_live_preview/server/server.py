@@ -22,7 +22,7 @@ from .da import anext
 HEARTBEAT_TIME = 1
 
 
-@dataclass
+@dataclass(frozen=True)
 class Payload:
     follow: bool
     title: str
