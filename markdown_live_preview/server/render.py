@@ -22,11 +22,12 @@ async def render_node() -> Callable[[str], Awaitable[str]]:
 
     async def init() -> None:
         nonlocal proc, stdin, stdout
-        if proc and proc.returncode is None:
-            return
-        proc = await create_subprocess_exec(
-            "node", node_md, stdin=PIPE, stdout=PIPE, stderr=PIPE
-        )
+        if proc and proc.returncode is None:  # type: ignore
+            pass
+        else:
+            proc = await create_subprocess_exec(
+                "node", node_md, stdin=PIPE, stdout=PIPE, stderr=PIPE
+            )
 
     async def render(md: str) -> str:
         await init()
