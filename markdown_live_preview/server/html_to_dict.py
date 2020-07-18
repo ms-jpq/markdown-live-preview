@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from html.parser import HTMLParser
-from typing import Dict, List, Optional, Tuple, Union, cast
+from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
 
 class ParseError(Exception):
@@ -18,7 +18,7 @@ class Node:
 
 
 class Parser(HTMLParser):
-    def __init__(self, *args, root_el: str, **kwargs):
+    def __init__(self, *args: Any, root_el: str, **kwargs: Any):
         super().__init__(*args, **kwargs)
         root = Node(depth=0, tag=root_el)
         self.__root = root

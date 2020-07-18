@@ -12,7 +12,7 @@ node_md = join(dirname(dirname(__file__)), "js", "render.js")
 async def render_py() -> Callable[[str], Awaitable[str]]:
     async def render(md: str) -> str:
         xhtml = markdown(md, output_format="xhtml", extensions=["extra"])
-        return xhtml
+        return cast(str, xhtml)
 
     return render
 
