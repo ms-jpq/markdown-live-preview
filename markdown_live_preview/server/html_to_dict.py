@@ -9,7 +9,7 @@ class ParseError(Exception):
     pass
 
 
-@dataclass
+@dataclass(frozen=True)
 class Node:
     depth: int
     tag: str
