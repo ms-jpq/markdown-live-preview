@@ -1,4 +1,4 @@
-from asyncio import Queue, run_coroutine_threadsafe, get_running_loop
+from asyncio import Queue, get_running_loop, run_coroutine_threadsafe
 from os.path import abspath, dirname
 from typing import AsyncIterable
 
