@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.1",
-    "@types/highlight.js": "^9.12.4",
+    "@types/highlight.js": "^10.1.0",
     "@types/markdown-it": "^10.0.1",
     "@types/split2": "^2.1.6",
     "github-markdown-css": "^4.0.0",
