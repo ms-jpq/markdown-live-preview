@@ -14,7 +14,7 @@
     "github-markdown-css": "^4.0.0",
     "highlight.js": "^10.1.1",
     "markdown-it": "^12.0.0",
-    "nda": "git+https://github.com/ms-jpq/nda.git#553f83947684e725bcf7777a75feefeb34343b09",
+    "nda": "git+https://github.com/ms-jpq/nda.git#3bc97710c16db99557d67c12bf18a73156387432",
     "parcel": "^1.12.4",
     "sass": "^1.26.8",
     "split2": "^3.1.1"
