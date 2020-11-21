@@ -10,7 +10,7 @@
     "incremental": true,
     "jsx": "react",
     "module": "commonjs",
-    "moduleResolution": "node",
+    "moduleResolution": "Node",
     "newLine": "LF",
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
