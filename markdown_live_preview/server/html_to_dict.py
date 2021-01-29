@@ -51,7 +51,9 @@ class Node:
     def __iter__(self) -> Iterator[Union[Node, TextNode]]:
         def gen() -> Iterator[Union[Node, TextNode]]:
             yield self
-            yield from self.children
+            for child in self.children:
+                if isinstance(child, Node):
+                    yield from iter(child)
 
         return gen()
 
