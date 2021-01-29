@@ -30,6 +30,9 @@ class TextNode:
     def __hash__(self) -> int:
         return hash(self.text)
 
+    def __str__(self) -> str:
+        return self.text
+
 
 @dataclass
 class Node:
@@ -51,6 +54,9 @@ class Node:
             yield from self.children
 
         return gen()
+
+    def __str__(self) -> str:
+        return f"<{self.tag} />"
 
 
 class _Parser(HTMLParser):

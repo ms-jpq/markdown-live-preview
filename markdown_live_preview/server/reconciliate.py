@@ -11,6 +11,7 @@ def reconciliate() -> Callable[[str], str]:
         nonlocal prev
         node = parse(xhtml)
         curr = tuple(node)
+
         matcher = SequenceMatcher(isjunk=None, autojunk=False, a=curr, b=prev)
         for group in matcher.get_grouped_opcodes():
             for op, i, j, _, _ in group:
@@ -18,11 +19,19 @@ def reconciliate() -> Callable[[str], str]:
                     for n in curr[i:j]:
                         if isinstance(n, Node):
                             n.diff = True
+                        else:
+                            parent = n.parent()
+                            if parent:
+                                parent.diff = True
 
                 elif op == "delete":
                     for n in curr[i:j]:
                         if isinstance(n, Node):
                             n.diff = True
+                        else:
+                            parent = n.parent()
+                            if parent:
+                                parent.diff = True
 
                 elif op == "insert":
                     for n in curr[i:j]:
@@ -32,6 +41,7 @@ def reconciliate() -> Callable[[str], str]:
 
                 elif op == "equal":
                     pass
+
                 else:
                     assert False
 
