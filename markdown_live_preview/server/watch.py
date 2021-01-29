@@ -11,7 +11,7 @@ async def watch(path: Path) -> AsyncIterable[str]:
     chan: Queue[None] = Queue(1)
 
     def send(event: FileSystemEvent) -> None:
-        if event.src_path == str(path):
+        if Path(event.src_path) == path:
             fut = run_coroutine_threadsafe(chan.put(None), loop=loop)
             fut.result()
 
