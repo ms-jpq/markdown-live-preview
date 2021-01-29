@@ -23,6 +23,7 @@ class ParseError(Exception):
 class TextNode:
     parent: Optional[ref[Node]]
     text: str
+    diff: bool = False
 
     def __eq__(self, o: object) -> bool:
         return isinstance(o, TextNode) and o.text == self.text
@@ -119,7 +120,9 @@ def unparse(node: Node) -> str:
     opening = f"<{node.tag} {attrs}>"
     closing = f"</{node.tag}>"
     middle = "".join(
-        unparse(child) if isinstance(child, Node) else child.text
+        unparse(child)
+        if isinstance(child, Node)
+        else (f'<span diff="{True}">{child.text}</span>' if child.diff else child.text)
         for child in node.children
     )
     return f"{opening}{middle}{closing}"
