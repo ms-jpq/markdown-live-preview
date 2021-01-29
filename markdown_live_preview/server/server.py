@@ -35,7 +35,7 @@ normalize = normalize_path_middleware()
 
 
 @middleware
-async def index_html(request: Request, handler: _Handler) -> StreamResponse:
+async def _index_html(request: Request, handler: _Handler) -> StreamResponse:
     key = "filename"
     match_info = request.match_info
     if key in match_info and match_info[key] == "":
@@ -46,7 +46,7 @@ async def index_html(request: Request, handler: _Handler) -> StreamResponse:
 
 
 @middleware
-async def cors(request: Request, handler: _Handler) -> StreamResponse:
+async def _cors(request: Request, handler: _Handler) -> StreamResponse:
     resp = await handler(request)
     resp.headers["Access-Control-Allow-Origin"] = "*"
     return resp
@@ -92,7 +92,7 @@ def build(
 
     routes.static(prefix="/", path=root)
 
-    middlewares = (normalize, index_html, cors)
+    middlewares = (normalize, _index_html, _cors)
     app = Application(middlewares=middlewares)
     app.add_routes(routes)
 
