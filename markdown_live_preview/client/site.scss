@@ -1,6 +1,9 @@
 @import "../../node_modules/github-markdown-css/github-markdown.css";
-@import "../../node_modules/highlight.js/styles/github.css";
 @import "../../node_modules/@fortawesome/fontawesome-free/css/all.css";
+
+.codehilite {
+  @import "../../.cache/codehl.css";
+}
 
 :root {
   --focus-colour: #fdf5bf;

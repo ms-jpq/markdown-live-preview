@@ -13,7 +13,6 @@ from .render import render
 from .server import Payload, build
 from .watch import watch
 
-
 _TOP_LV = Path(__file__).parent.parent
 _JS_ROOT = _TOP_LV / "js"
 

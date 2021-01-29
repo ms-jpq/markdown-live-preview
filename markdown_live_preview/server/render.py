@@ -1,34 +1,45 @@
-from typing import Optional, cast
+from typing import Sequence, no_type_check
 
-from markdown import markdown
-from pygments import highlight
-from pygments.formatters import get_formatter_by_name
-from pygments.lexer import Lexer
-from pygments.lexers import get_lexer_for_filename, guess_lexer
-from pygments.lexers.special import TextLexer
-from pygments.styles import get_style_by_name
-from pygments.util import ClassNotFound
-
-
-def _get_lexer(file_name: Optional[str], text: str) -> Lexer:
-    try:
-        return get_lexer_for_filename(file_name)
-    except (ClassNotFound, TypeError):
-        try:
-            return guess_lexer(text)
-        except ClassNotFound:
-            return TextLexer()
+from markdown import Markdown
+from markdown.extensions import Extension
+from markdown.extensions.abbr import makeExtension as abbr
+from markdown.extensions.admonition import makeExtension as admonition
+from markdown.extensions.attr_list import makeExtension as attr_list
+from markdown.extensions.codehilite import makeExtension as codehilite
+from markdown.extensions.def_list import makeExtension as def_list
+from markdown.extensions.fenced_code import makeExtension as fenced_code
+from markdown.extensions.footnotes import makeExtension as footnotes
+from markdown.extensions.md_in_html import makeExtension as md_in_html
+from markdown.extensions.nl2br import makeExtension as nl2br
+from markdown.extensions.sane_lists import makeExtension as sane_lists
+from markdown.extensions.smarty import makeExtension as smarty
+from markdown.extensions.tables import makeExtension as tables
+from markdown.extensions.toc import makeExtension as toc
+from markdown.extensions.wikilinks import makeExtension as wikilinks
 
 
-def _pprn_html(theme: str, filename: Optional[str], text: str) -> str:
-    style = get_style_by_name(theme)
-    fmt = get_formatter_by_name("html", style=style)
+@no_type_check
+def _extensions() -> Sequence[Extension]:
+    return (
+        abbr(),
+        admonition(),
+        attr_list(),
+        codehilite(),
+        def_list(),
+        fenced_code(),
+        footnotes(),
+        md_in_html(),
+        nl2br(),
+        sane_lists(),
+        smarty(),
+        tables(),
+        toc(),
+        wikilinks(),
+    )
 
-    lexer = _get_lexer(filename, text)
-    pretty = highlight(text, lexer=lexer, formatter=fmt)
-    return cast(str, pretty)
+
+_markdown = Markdown(output_format="xhtml", extensions=_extensions())
 
 
 def render(md: str) -> str:
-    xhtml = markdown(md, output_format="xhtml", extensions=["extra"])
-    return xhtml
+    return _markdown.convert(md)
