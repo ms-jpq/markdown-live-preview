@@ -1,45 +1,26 @@
 #!/usr/bin/env python3
 
-from os import chdir
-from os.path import dirname, join
-from subprocess import run
+from pathlib import Path
+from subprocess import check_call
 
-__dir__ = dirname(__file__)
-
-
-def call(prog: str, *args: str) -> None:
-    proc = run([prog, *args])
-    if proc.returncode != 0:
-        exit(proc.returncode)
+_TOP_LV = Path(__file__).resolve().parent
 
 
 def main() -> None:
-    chdir(__dir__)
-    node_bin = join("node_modules", ".bin")
-    package = join("markdown_live_preview")
-    js_dist = join(package, "js")
+    node_bin = _TOP_LV / "node_modules" / ".bin"
+    package = _TOP_LV / "markdown_live_preview"
 
-    call("./lint.sh")
-    call(
-        join(node_bin, "parcel"),
-        "build",
-        "--target",
-        "node",
-        "--bundle-node-modules",
-        "--no-source-maps",
-        "--out-dir",
-        js_dist,
-        "--",
-        join(package, "server", "render.ts"),
-    )
-    call(
-        join(node_bin, "parcel"),
-        "build",
-        "--no-source-maps",
-        "--out-dir",
-        js_dist,
-        "--",
-        join(package, "client", "index.html"),
+    check_call((str(_TOP_LV / "lint.sh"),))
+    check_call(
+        (
+            str(node_bin / "parcel"),
+            "build",
+            "--no-source-maps",
+            "--out-dir",
+            str(package / "js"),
+            "--",
+            str(package / "client" / "index.html"),
+        )
     )
 
 

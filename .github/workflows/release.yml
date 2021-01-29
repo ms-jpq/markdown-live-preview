@@ -1,14 +1,14 @@
 ---
-
 name: Release
 
 on:
   push:
+    branches:
+      - md
     paths:
       - "setup.py"
 
 jobs:
-
   release:
     runs-on: ubuntu-latest
 

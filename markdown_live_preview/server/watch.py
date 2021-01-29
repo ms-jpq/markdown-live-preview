@@ -1,24 +1,17 @@
 from asyncio import Queue, get_running_loop, run_coroutine_threadsafe
-from os.path import abspath, dirname
+from pathlib import Path
 from typing import AsyncIterable
 
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 
 
-async def watch(path: str) -> AsyncIterable[str]:
+async def watch(path: Path) -> AsyncIterable[str]:
     loop = get_running_loop()
     chan: Queue[None] = Queue(1)
 
-    full_path = abspath(path)
-    directory = dirname(full_path)
-
-    def slurp() -> str:
-        with open(full_path) as fd:
-            return fd.read()
-
     def send(event: FileSystemEvent) -> None:
-        if event.src_path == full_path:
+        if event.src_path == path.parent:
             fut = run_coroutine_threadsafe(chan.put(None), loop=loop)
             fut.result()
 
@@ -30,12 +23,12 @@ async def watch(path: str) -> AsyncIterable[str]:
             send(event)
 
     obs = Observer()
-    obs.schedule(Handler(), directory)
+    obs.schedule(Handler(), path=path.parent)
     obs.start()
 
     while True:
         try:
-            yield slurp()
+            yield path.read_text("UTF-8")
         except GeneratorExit:
             obs.stop()
             break

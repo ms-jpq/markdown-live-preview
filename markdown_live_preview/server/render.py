@@ -1,51 +1,34 @@
-from asyncio import StreamReader, StreamWriter, create_subprocess_exec
-from asyncio.subprocess import PIPE, Process
-from os.path import dirname, join
-from shutil import which
-from typing import Awaitable, Callable, cast
+from typing import Optional, cast
 
 from markdown import markdown
-
-node_md = join(dirname(dirname(__file__)), "js", "render.js")
-
-
-async def render_py() -> Callable[[str], Awaitable[str]]:
-    async def render(md: str) -> str:
-        xhtml = markdown(md, output_format="xhtml", extensions=["extra"])
-        return xhtml
-
-    return render
+from pygments import highlight
+from pygments.formatters import get_formatter_by_name
+from pygments.lexer import Lexer
+from pygments.lexers import get_lexer_for_filename, guess_lexer
+from pygments.lexers.special import TextLexer
+from pygments.styles import get_style_by_name
+from pygments.util import ClassNotFound
 
 
-async def render_node() -> Callable[[str], Awaitable[str]]:
-    proc, stdin, stdout = None, None, None
-
-    async def init() -> None:
-        nonlocal proc, stdin, stdout
-        if proc and proc.returncode is None:  # type: ignore
-            pass
-        else:
-            proc = await create_subprocess_exec(
-                "node", node_md, stdin=PIPE, stdout=PIPE, stderr=PIPE
-            )
-
-    async def render(md: str) -> str:
-        await init()
-        p = cast(Process, proc)
-        stdin = cast(StreamWriter, p.stdin)
-        stdout = cast(StreamReader, p.stdout)
-
-        SEP = b"\0"
-        stdin.write(md.encode())
-        stdin.write(SEP)
-        xhtml = await stdout.readuntil(SEP)
-        return xhtml.decode()
-
-    return render
+def _get_lexer(file_name: Optional[str], text: str) -> Lexer:
+    try:
+        return get_lexer_for_filename(file_name)
+    except (ClassNotFound, TypeError):
+        try:
+            return guess_lexer(text)
+        except ClassNotFound:
+            return TextLexer()
 
 
-async def render() -> Callable[[str], Awaitable[str]]:
-    if which("node"):
-        return await render_node()
-    else:
-        return await render_py()
+def _pprn_html(theme: str, filename: Optional[str], text: str) -> str:
+    style = get_style_by_name(theme)
+    fmt = get_formatter_by_name("html", style=style)
+
+    lexer = _get_lexer(filename, text)
+    pretty = highlight(text, lexer=lexer, formatter=fmt)
+    return cast(str, pretty)
+
+
+def render(md: str) -> str:
+    xhtml = markdown(md, output_format="xhtml", extensions=["extra"])
+    return xhtml

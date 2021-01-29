@@ -1,18 +1,11 @@
 from asyncio import gather
 from dataclasses import dataclass
+from pathlib import Path
 from typing import AsyncIterator, Awaitable, Callable
 from weakref import WeakSet
 
-from aiohttp.web import (
-    Application,
-    AppRunner,
-    Response,
-    RouteTableDef,
-    TCPSite,
-    WebSocketResponse,
-    json_response,
-    middleware,
-)
+from aiohttp.web import (Application, AppRunner, Response, RouteTableDef,
+                         TCPSite, WebSocketResponse, json_response, middleware)
 from aiohttp.web_middlewares import _Handler, normalize_path_middleware
 from aiohttp.web_request import BaseRequest, Request
 from aiohttp.web_response import StreamResponse
@@ -54,7 +47,7 @@ async def cors(request: Request, handler: _Handler) -> StreamResponse:
 def build(
     localhost: bool,
     port: int,
-    root: str,
+    root: Path,
     payloads: AsyncIterator[Payload],
     updates: AsyncIterator[None],
 ) -> Callable[[Callable[[], Awaitable[None]]], Awaitable[None]]:

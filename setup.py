@@ -21,5 +21,5 @@ setup(
     packages=packages,
     package_data=package_data,
     install_requires=install_requires,
-    scripts=("mlp",),
+    scripts=("scripts/mlp",),
 )

@@ -2,8 +2,8 @@ from argparse import ArgumentParser, Namespace
 from datetime import datetime
 from hashlib import sha1
 from os import R_OK, access
-from os.path import basename, dirname, join
 from socket import getfqdn
+from pathlib import Path
 from sys import stderr
 from typing import AsyncIterator
 from webbrowser import open as open_w
@@ -14,7 +14,7 @@ from .server import Payload, build
 from .stream import stream
 from .watch import watch
 
-__dir__ = dirname(__file__)
+_TOP_LV = Path(__file__)
 
 
 def parse_args() -> Namespace:
@@ -30,38 +30,34 @@ def parse_args() -> Namespace:
     behaviour.add_argument("--nf", "--no-follow", dest="follow", action="store_false")
     behaviour.add_argument("--nb", "--no-browser", dest="browser", action="store_false")
 
-    internal = parser.add_argument_group()
-    internal.add_argument(
-        "--read-stdin", action="store_true", help="INTERNAL USE ONLY"
-    )
     return parser.parse_args()
 
 
 async def main() -> None:
     args = parse_args()
+    path = Path(args.markdown)
 
-    if (not args.read_stdin) and (not access(args.markdown, R_OK)):
-        print(f"cannot read -- {args.markdown}", file=stderr)
+    if not access(path, R_OK):
+        print(f"cannot read -- {path}", file=stderr)
         exit(1)
 
-    render_f = await render()
+
     watch_f = stream if args.read_stdin else watch
 
-    name = basename(args.markdown)
     cached, markdown = None, ""
     sha = ""
 
     async def gen_payload() -> AsyncIterator[Payload]:
         while True:
             payload = Payload(
-                follow=args.follow, title=name, sha=sha, markdown=markdown
+                follow=args.follow, title=path.name, sha=sha, markdown=markdown
             )
             yield payload
 
     async def gen_update() -> AsyncIterator[None]:
         nonlocal markdown, cached, sha
-        async for md in watch_f(args.markdown):
-            xhtml = await render_f(md)
+        async for md in watch_f(path):
+            xhtml = render(md)
             cached, markdown = reconciliate(cached, xhtml)
             sha = sha1(markdown.encode()).hexdigest()
             yield
@@ -71,7 +67,7 @@ async def main() -> None:
     serve = build(
         localhost=not args.open,
         port=args.port,
-        root=join(dirname(__dir__), "js"),
+        root=_TOP_LV / "js",
         payloads=gen_payload(),
         updates=gen_update(),
     )
