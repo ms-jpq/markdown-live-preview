@@ -14,10 +14,8 @@ from typing import AsyncIterable
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 
-_WAIT_TIME = 0.05
 
-
-async def watch(path: Path) -> AsyncIterable[str]:
+async def watch(path: Path, throttle: float) -> AsyncIterable[str]:
     loop = get_running_loop()
     chan: Queue[None] = Queue(1)
     ev = Event()
@@ -25,13 +23,13 @@ async def watch(path: Path) -> AsyncIterable[str]:
 
     async def notify() -> None:
         done, _ = await wait(
-            (create_task(ev.wait()), sleep(_WAIT_TIME, False)),
+            (create_task(ev.wait()), sleep(throttle, False)),
             return_when=FIRST_COMPLETED,
         )
         go = done.pop().result()
         if go and ev.is_set():
             ev.clear()
-            await gather(chan.put(None), sleep(_WAIT_TIME))
+            await gather(chan.put(None), sleep(throttle))
             ev.set()
 
     def send(event: FileSystemEvent) -> None:

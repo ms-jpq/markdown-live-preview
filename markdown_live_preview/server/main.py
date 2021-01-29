@@ -26,6 +26,9 @@ def _parse_args() -> Namespace:
     location.add_argument("-p", "--port", type=int, default=8080)
     location.add_argument("-o", "--open", action="store_true")
 
+    watcher = parser.add_argument_group()
+    watcher.add_argument("--throttle", type=float, default=0.10)
+
     behaviour = parser.add_argument_group()
     behaviour.add_argument("--nf", "--no-follow", dest="follow", action="store_false")
     behaviour.add_argument("--nb", "--no-browser", dest="browser", action="store_false")
@@ -53,7 +56,7 @@ async def main() -> None:
 
         async def gen_update() -> AsyncIterator[None]:
             nonlocal markdown, sha
-            async for md in watch(path):
+            async for md in watch(path, throttle=args.throttle):
                 xhtml = render_f(md)
                 markdown = recon_f(xhtml)
                 sha = sha1(markdown.encode()).hexdigest()
