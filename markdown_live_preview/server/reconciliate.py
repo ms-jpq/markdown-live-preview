@@ -9,33 +9,33 @@ def reconciliate() -> Callable[[str], str]:
 
     def recon(xhtml: str) -> str:
         nonlocal prev
-        node = parse(xhtml)
-        curr = tuple(node)
+        root = parse(xhtml)
+        curr = tuple(root)
 
         matcher = SequenceMatcher(isjunk=None, autojunk=False, a=curr, b=prev)
         for group in matcher.get_grouped_opcodes():
             for op, i, j, _, _ in group:
                 if op == "replace":
-                    for n in curr[i:j]:
-                        if isinstance(n, Node):
-                            n.diff = True
+                    for node in curr[i:j]:
+                        if isinstance(node, Node):
+                            node.diff = True
                         else:
-                            parent = n.parent and n.parent()
+                            parent = node.parent and node.parent()
                             if parent:
                                 parent.diff = True
 
                 elif op == "delete":
-                    for n in curr[i:j]:
-                        if isinstance(n, Node):
-                            n.diff = True
+                    for node in curr[i:j]:
+                        if isinstance(node, Node):
+                            node.diff = True
                         else:
-                            parent = n.parent and n.parent()
+                            parent = node.parent and node.parent()
                             if parent:
                                 parent.diff = True
 
                 elif op == "insert":
-                    for n in curr[i:j]:
-                        parent = n.parent and n.parent()
+                    for node in curr[i:j]:
+                        parent = node.parent and node.parent()
                         if parent:
                             parent.diff = True
 
@@ -46,6 +46,6 @@ def reconciliate() -> Callable[[str], str]:
                     assert False
 
         prev = curr
-        return unparse(node)
+        return unparse(root)
 
     return recon
