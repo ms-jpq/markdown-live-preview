@@ -1,59 +1,41 @@
-from itertools import zip_longest
-from typing import Dict, List, Optional, Tuple, Union, cast
+from difflib import SequenceMatcher
+from typing import Callable, Sequence, Union
 
-from .html_to_dict import Node, parse, unparse
-
-
-def _recon(
-    prev: Union[Node, str, None], curr: Union[Node, str]
-) -> Tuple[bool, Union[Node, str]]:
-    if type(curr) == str:
-        return prev != curr, curr
-    else:
-        p_node = type(prev) == Node
-
-        curr = cast(Node, curr)
-        depth = curr.depth
-        p_tag = cast(Node, prev).tag if p_node else ""
-        p_children = cast(Node, prev).children if p_node else []
-        p_attrs = cast(Node, prev).attrs if p_node else []
-
-        diff = False
-
-        if p_tag != curr.tag:
-            diff = True
-        elif len(p_children) != len(curr.children):
-            diff = True
-        elif p_attrs != curr.attrs:
-            diff = True
-
-        next_lv = (
-            _recon(p, c)
-            for p, c in zip_longest(p_children, curr.children)
-            if c is not None
-        )
-
-        children: List[Union[Node, str]] = []
-        for d, c in next_lv:
-            children.append(c)
-            diff = diff or d
-
-        attrs: Dict[str, Optional[str]] = {
-            **curr.attrs,
-            "diff": str(diff),
-            "depth": str(depth),
-        }
-
-        node = Node(depth=depth, tag=curr.tag, attrs=attrs, children=children)
-        return diff, node
+from .html_to_dict import Node, TextNode, parse, unparse
 
 
-def reconciliate(prev: Optional[Node], curr: str) -> Tuple[Node, str]:
-    nxt = parse(curr)
-    if prev is None:
-        return (nxt, curr)
-    else:
-        _, marked = _recon(prev, nxt)
-        assert type(marked) == Node
-        parsed = unparse(cast(Node, marked))
-        return (nxt, parsed)
+def reconciliate() -> Callable[[str], str]:
+    prev: Sequence[Union[Node, TextNode]] = ()
+
+    def recon(xhtml: str) -> str:
+        nonlocal prev
+        node = parse(xhtml)
+        curr = tuple(node)
+        matcher = SequenceMatcher(isjunk=None, autojunk=False, a=curr, b=prev)
+        for group in matcher.get_grouped_opcodes():
+            for op, i, j, _, _ in group:
+                if op == "replace":
+                    for n in curr[i:j]:
+                        if isinstance(n, Node):
+                            n.diff = True
+
+                elif op == "delete":
+                    for n in curr[i:j]:
+                        if isinstance(n, Node):
+                            n.diff = True
+
+                elif op == "insert":
+                    for n in curr[i:j]:
+                        parent = n.parent and n.parent()
+                        if parent:
+                            parent.diff = True
+
+                elif op == "equal":
+                    pass
+                else:
+                    assert False
+
+        prev = curr
+        return unparse(node)
+
+    return recon

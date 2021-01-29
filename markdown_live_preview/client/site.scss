@@ -41,6 +41,6 @@ header {
   margin-bottom: $padding_size;
 }
 
-#focus {
+[diff="True"] {
   background-color: var(--focus-colour) !important;
 }

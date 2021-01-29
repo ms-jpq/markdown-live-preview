@@ -17,7 +17,6 @@ from aiohttp.web import (
 from aiohttp.web_middlewares import _Handler, normalize_path_middleware
 from aiohttp.web_request import BaseRequest, Request
 from aiohttp.web_response import StreamResponse
-from std2.aitertools import anext
 
 
 HEARTBEAT_TIME = 1
@@ -66,13 +65,13 @@ def build(
 
     @routes.get("/api/info")
     async def title_resp(request: BaseRequest) -> StreamResponse:
-        payload = await anext(payloads)
+        payload = await payloads.__anext__()
         json = {"follow": payload.follow, "title": payload.title, "sha": payload.sha}
         return json_response(json)
 
     @routes.get("/api/markdown")
     async def markdown_resp(request: BaseRequest) -> StreamResponse:
-        payload = await anext(payloads)
+        payload = await payloads.__anext__()
         return Response(text=payload.markdown, content_type="text/html")
 
     @routes.get("/ws")

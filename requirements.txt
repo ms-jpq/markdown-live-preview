@@ -1,4 +1,3 @@
-git+https://github.com/ms-jpq/std2.git
 watchdog
 aiohttp
 Markdown

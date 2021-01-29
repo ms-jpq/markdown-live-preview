@@ -41,10 +41,8 @@ async def main() -> None:
         print(f"cannot read -- {path}", file=stderr)
         exit(1)
     else:
-        cached, markdown = None, ""
-        sha = ""
-
-        render_f = render("friendly")
+        render_f, recon_f = render("friendly"), reconciliate()
+        sha, markdown = "", ""
 
         async def gen_payload() -> AsyncIterator[Payload]:
             while True:
@@ -54,10 +52,10 @@ async def main() -> None:
                 yield payload
 
         async def gen_update() -> AsyncIterator[None]:
-            nonlocal markdown, cached, sha
+            nonlocal markdown, sha
             async for md in watch(path):
                 xhtml = render_f(md)
-                cached, markdown = reconciliate(cached, xhtml)
+                markdown = recon_f(xhtml)
                 sha = sha1(markdown.encode()).hexdigest()
                 yield
                 time = datetime.now().strftime("%H:%M:%S")

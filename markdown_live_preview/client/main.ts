@@ -1,5 +1,5 @@
 import { sleep, tiktok } from "nda/dist/isomorphic/prelude"
-import { sort_by } from "nda/dist/isomorphic/iterator"
+// import { sort_by } from "nda/dist/isomorphic/iterator"
 import { $, $$, wait_frame } from "nda/dist/browser/dom"
 
 const CYCLE = 500
@@ -14,7 +14,7 @@ const api_request = async (): Promise<API> =>
 
 const ws_connect = async function* <T>() {
   const remote = `ws://${location.host}/ws`
-  let cb: (_: T) => void = () => {}
+  let cb: (_: T) => void = () => { }
   let ws = new WebSocket(remote)
 
   const provision = () => {
@@ -39,13 +39,9 @@ const update = async (follow: boolean) => {
 
   await wait_frame()
   const marked = $$(`[diff="True"]`)
-  const [focus] = sort_by(
-    (m) => Number(m.attributes["depth"].value) * -1,
-    marked,
-  )
+  const [focus, ..._] = marked
 
   if (focus) {
-    focus.id = "focus"
     if (follow) {
       focus.scrollIntoView({
         behavior: "smooth",
