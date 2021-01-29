@@ -20,7 +20,7 @@ def reconciliate() -> Callable[[str], str]:
                         if isinstance(n, Node):
                             n.diff = True
                         else:
-                            parent = n.parent()
+                            parent = n.parent and n.parent()
                             if parent:
                                 parent.diff = True
 
@@ -29,7 +29,7 @@ def reconciliate() -> Callable[[str], str]:
                         if isinstance(n, Node):
                             n.diff = True
                         else:
-                            parent = n.parent()
+                            parent = n.parent and n.parent()
                             if parent:
                                 parent.diff = True
 
