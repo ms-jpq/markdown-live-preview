@@ -1,6 +1,7 @@
-from asyncio import Queue, get_running_loop, run_coroutine_threadsafe
+from asyncio import Queue, get_running_loop
+from asyncio.events import TimerHandle
 from pathlib import Path
-from typing import AsyncIterable
+from typing import AsyncIterable, Optional
 
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
@@ -10,10 +11,16 @@ async def watch(path: Path) -> AsyncIterable[str]:
     loop = get_running_loop()
     chan: Queue[None] = Queue(1)
 
+    notify = lambda: chan.put_nowait(None)
+    handle: Optional[TimerHandle] = None
+
     def send(event: FileSystemEvent) -> None:
+        nonlocal handle
         if Path(event.src_path) == path:
-            fut = run_coroutine_threadsafe(chan.put(None), loop=loop)
-            fut.result()
+            if handle:
+                handle.cancel()
+
+            handle = loop.call_later(0.05, notify)
 
     class Handler(FileSystemEventHandler):
         def on_created(self, event: FileSystemEvent) -> None:

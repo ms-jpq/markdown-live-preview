@@ -46,7 +46,7 @@ class Node:
         return isinstance(o, Node) and o.tag == self.tag and o.attrs == self.attrs
 
     def __hash__(self) -> int:
-        return hash((self.tag, tuple((key, val) for key, val in self.attrs.items())))
+        return hash((self.tag, *((key, val) for key, val in self.attrs.items())))
 
     def __iter__(self) -> Iterator[Union[Node, TextNode]]:
         def gen() -> Iterator[Union[Node, TextNode]]:
@@ -54,6 +54,8 @@ class Node:
             for child in self.children:
                 if isinstance(child, Node):
                     yield from iter(child)
+                else:
+                    yield child
 
         return gen()
 
