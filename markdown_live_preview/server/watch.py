@@ -1,26 +1,43 @@
 from asyncio import Queue, get_running_loop
-from asyncio.events import TimerHandle
+from asyncio.locks import Event
+from asyncio.tasks import (
+    FIRST_COMPLETED,
+    create_task,
+    gather,
+    run_coroutine_threadsafe,
+    sleep,
+    wait,
+)
 from pathlib import Path
-from typing import AsyncIterable, Optional
+from typing import AsyncIterable
 
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
+
+_WAIT_TIME = 0.05
 
 
 async def watch(path: Path) -> AsyncIterable[str]:
     loop = get_running_loop()
     chan: Queue[None] = Queue(1)
+    ev = Event()
+    ev.set()
 
-    notify = lambda: chan.put_nowait(None)
-    handle: Optional[TimerHandle] = None
+    async def notify() -> None:
+        done, _ = await wait(
+            create_task(ev.wait()),
+            sleep(_WAIT_TIME, False),
+            return_when=FIRST_COMPLETED,
+        )
+        go = done.pop().result()
+        if go and ev.is_set():
+            ev.clear()
+            await gather(chan.put(None), sleep(_WAIT_TIME))
+            ev.set()
 
     def send(event: FileSystemEvent) -> None:
-        nonlocal handle
         if Path(event.src_path) == path:
-            if handle:
-                handle.cancel()
-
-            handle = loop.call_later(0.05, notify)
+            run_coroutine_threadsafe(notify(), loop=loop)
 
     class Handler(FileSystemEventHandler):
         def on_created(self, event: FileSystemEvent) -> None:
