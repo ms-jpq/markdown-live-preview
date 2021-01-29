@@ -4,7 +4,7 @@ from typing import Dict, List, Optional, Tuple, Union, cast
 from .html_to_dict import Node, parse, unparse
 
 
-def recon(
+def _recon(
     prev: Union[Node, str, None], curr: Union[Node, str]
 ) -> Tuple[bool, Union[Node, str]]:
     if type(curr) == str:
@@ -28,7 +28,7 @@ def recon(
             diff = True
 
         next_lv = (
-            recon(p, c)
+            _recon(p, c)
             for p, c in zip_longest(p_children, curr.children)
             if c is not None
         )
@@ -53,7 +53,7 @@ def reconciliate(prev: Optional[Node], curr: str) -> Tuple[Node, str]:
     if prev is None:
         return (nxt, curr)
     else:
-        _, marked = recon(prev, nxt)
+        _, marked = _recon(prev, nxt)
         assert type(marked) == Node
         parsed = unparse(cast(Node, marked))
         return (nxt, parsed)

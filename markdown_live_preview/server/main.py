@@ -2,8 +2,8 @@ from argparse import ArgumentParser, Namespace
 from datetime import datetime
 from hashlib import sha1
 from os import R_OK, access
-from socket import getfqdn
 from pathlib import Path
+from socket import getfqdn
 from sys import stderr
 from typing import AsyncIterator
 from webbrowser import open as open_w
@@ -11,13 +11,12 @@ from webbrowser import open as open_w
 from .reconciliate import reconciliate
 from .render import render
 from .server import Payload, build
-from .stream import stream
 from .watch import watch
 
 _TOP_LV = Path(__file__)
 
 
-def parse_args() -> Namespace:
+def _parse_args() -> Namespace:
     parser = ArgumentParser()
 
     parser.add_argument("markdown")
@@ -34,49 +33,46 @@ def parse_args() -> Namespace:
 
 
 async def main() -> None:
-    args = parse_args()
-    path = Path(args.markdown)
+    args = _parse_args()
+    path = Path(args.markdown).resolve()
 
     if not access(path, R_OK):
         print(f"cannot read -- {path}", file=stderr)
         exit(1)
+    else:
+        cached, markdown = None, ""
+        sha = ""
 
+        async def gen_payload() -> AsyncIterator[Payload]:
+            while True:
+                payload = Payload(
+                    follow=args.follow, title=path.name, sha=sha, markdown=markdown
+                )
+                yield payload
 
-    watch_f = stream if args.read_stdin else watch
+        async def gen_update() -> AsyncIterator[None]:
+            nonlocal markdown, cached, sha
+            async for md in watch(path):
+                xhtml = render(md)
+                cached, markdown = reconciliate(cached, xhtml)
+                sha = sha1(markdown.encode()).hexdigest()
+                yield
+                time = datetime.now().strftime("%H:%M:%S")
+                print(f"🦑 -- {time}")
 
-    cached, markdown = None, ""
-    sha = ""
+        serve = build(
+            localhost=not args.open,
+            port=args.port,
+            root=_TOP_LV / "js",
+            payloads=gen_payload(),
+            updates=gen_update(),
+        )
 
-    async def gen_payload() -> AsyncIterator[Payload]:
-        while True:
-            payload = Payload(
-                follow=args.follow, title=path.name, sha=sha, markdown=markdown
-            )
-            yield payload
+        async def post() -> None:
+            host = getfqdn() if args.open else "localhost"
+            uri = f"http://{host}:{args.port}"
+            if args.browser:
+                open_w(uri)
+            print(f"SERVING -- {uri}")
 
-    async def gen_update() -> AsyncIterator[None]:
-        nonlocal markdown, cached, sha
-        async for md in watch_f(path):
-            xhtml = render(md)
-            cached, markdown = reconciliate(cached, xhtml)
-            sha = sha1(markdown.encode()).hexdigest()
-            yield
-            time = datetime.now().strftime("%H:%M:%S")
-            print(f"🦑 -- {time}")
-
-    serve = build(
-        localhost=not args.open,
-        port=args.port,
-        root=_TOP_LV / "js",
-        payloads=gen_payload(),
-        updates=gen_update(),
-    )
-
-    async def post() -> None:
-        host = getfqdn() if args.open else "localhost"
-        uri = f"http://{host}:{args.port}"
-        if args.browser:
-            open_w(uri)
-        print(f"SERVING -- {uri}")
-
-    await serve(post)
+        await serve(post)

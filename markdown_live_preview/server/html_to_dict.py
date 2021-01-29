@@ -17,7 +17,7 @@ class Node:
     children: List[Union[Node, str]] = field(default_factory=list)
 
 
-class Parser(HTMLParser):
+class _Parser(HTMLParser):
     def __init__(self, *args: Any, root_el: str, **kwargs: Any):
         super().__init__(*args, **kwargs)
         root = Node(depth=0, tag=root_el)
@@ -53,7 +53,7 @@ class Parser(HTMLParser):
 
 
 def parse(html: str) -> Node:
-    parser = Parser(root_el="div")
+    parser = _Parser(root_el="div")
     parser.feed(html)
     node = parser.consume()
 

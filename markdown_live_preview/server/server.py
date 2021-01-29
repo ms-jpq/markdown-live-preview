@@ -4,13 +4,21 @@ from pathlib import Path
 from typing import AsyncIterator, Awaitable, Callable
 from weakref import WeakSet
 
-from aiohttp.web import (Application, AppRunner, Response, RouteTableDef,
-                         TCPSite, WebSocketResponse, json_response, middleware)
+from aiohttp.web import (
+    Application,
+    AppRunner,
+    Response,
+    RouteTableDef,
+    TCPSite,
+    WebSocketResponse,
+    json_response,
+    middleware,
+)
 from aiohttp.web_middlewares import _Handler, normalize_path_middleware
 from aiohttp.web_request import BaseRequest, Request
 from aiohttp.web_response import StreamResponse
+from std2.aitertools import anext
 
-from .da import anext
 
 HEARTBEAT_TIME = 1
 
