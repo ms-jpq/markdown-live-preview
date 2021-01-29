@@ -10,12 +10,13 @@ from pygments.styles import get_all_styles, get_style_by_name
 
 _TOP_LV = Path(__file__).resolve().parent
 _HL_CSS = _TOP_LV / ".cache" / "codehl.css"
+_CODEHL_CLASS = "codehilite"
 
 
 def main() -> None:
     _HL_CSS.parent.mkdir(parents=True, exist_ok=True)
     lines = (
-        f".{name} {line}"
+        f".{_CODEHL_CLASS}.{name} {line}"
         for name in get_all_styles()
         for line in HtmlFormatter(style=get_style_by_name(name))
         .get_style_defs()

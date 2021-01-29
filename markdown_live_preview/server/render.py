@@ -1,4 +1,4 @@
-from typing import Sequence, no_type_check
+from typing import Callable, Sequence, no_type_check
 
 from markdown import Markdown
 from markdown.extensions import Extension
@@ -17,14 +17,16 @@ from markdown.extensions.tables import makeExtension as tables
 from markdown.extensions.toc import makeExtension as toc
 from markdown.extensions.wikilinks import makeExtension as wikilinks
 
+_CODEHL_CLASS = "codehilite"
+
 
 @no_type_check
-def _extensions() -> Sequence[Extension]:
+def _extensions(style: str) -> Sequence[Extension]:
     return (
         abbr(),
         admonition(),
         attr_list(),
-        codehilite(),
+        codehilite(css_class=f"{_CODEHL_CLASS} {style}"),
         def_list(),
         fenced_code(),
         footnotes(),
@@ -38,8 +40,9 @@ def _extensions() -> Sequence[Extension]:
     )
 
 
-_markdown = Markdown(output_format="xhtml", extensions=_extensions())
+def render(style: str) -> Callable[[str], str]:
+    def render(md: str) -> str:
+        _markdown = Markdown(output_format="xhtml", extensions=_extensions(style))
+        return _markdown.convert(md)
 
-
-def render(md: str) -> str:
-    return _markdown.convert(md)
+    return render

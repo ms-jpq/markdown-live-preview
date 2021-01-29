@@ -44,6 +44,8 @@ async def main() -> None:
         cached, markdown = None, ""
         sha = ""
 
+        render_f = render("friendly")
+
         async def gen_payload() -> AsyncIterator[Payload]:
             while True:
                 payload = Payload(
@@ -54,7 +56,7 @@ async def main() -> None:
         async def gen_update() -> AsyncIterator[None]:
             nonlocal markdown, cached, sha
             async for md in watch(path):
-                xhtml = render(md)
+                xhtml = render_f(md)
                 cached, markdown = reconciliate(cached, xhtml)
                 sha = sha1(markdown.encode()).hexdigest()
                 yield
