@@ -8,12 +8,8 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.1",
-    "@types/highlight.js": "^10.1.0",
-    "@types/markdown-it": "^12.0.0",
     "@types/split2": "^2.1.6",
     "github-markdown-css": "^4.0.0",
-    "highlight.js": "^10.1.1",
-    "markdown-it": "^12.0.0",
     "nda": "git+https://github.com/ms-jpq/nda.git#0bf4b67d6358feabdb26f85741e7b20be2921da9",
     "parcel": "^1.12.4",
     "sass": "^1.26.8",

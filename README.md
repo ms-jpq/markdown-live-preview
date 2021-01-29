@@ -6,7 +6,7 @@
 
 - **Auto Follow:** Focus on edited element
 
-- **Syntax Highlight:** Automatically use [`highlightjs`](https://github.com/highlightjs/highlight.js) if `node` is available
+- **Syntax Highlight:** Highlighted using [Pygments](https://github.com/pygments/pygments)
 
 - **Github flavoured:** Looks familiar
 
