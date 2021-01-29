@@ -1,4 +1,4 @@
-watchdog
-aiohttp
-Markdown
-Pygments
+watchdog==1.0.2
+Markdown==3.3.3
+Pygments==2.7.4
+aiohttp==3.7.3
