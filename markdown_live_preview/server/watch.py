@@ -25,8 +25,7 @@ async def watch(path: Path) -> AsyncIterable[str]:
 
     async def notify() -> None:
         done, _ = await wait(
-            create_task(ev.wait()),
-            sleep(_WAIT_TIME, False),
+            (create_task(ev.wait()), sleep(_WAIT_TIME, False)),
             return_when=FIRST_COMPLETED,
         )
         go = done.pop().result()
