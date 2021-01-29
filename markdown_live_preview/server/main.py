@@ -13,9 +13,6 @@ from .render import render
 from .server import Payload, build
 from .watch import watch
 
-_TOP_LV = Path(__file__).parent.parent
-_JS_ROOT = _TOP_LV / "js"
-
 
 def _parse_args() -> Namespace:
     parser = ArgumentParser()
@@ -67,7 +64,7 @@ async def main() -> None:
         serve = build(
             localhost=not args.open,
             port=args.port,
-            root=_JS_ROOT,
+            root=path.parent,
             payloads=gen_payload(),
             updates=gen_update(),
         )

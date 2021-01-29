@@ -18,7 +18,7 @@ from aiohttp.web_middlewares import _Handler, normalize_path_middleware
 from aiohttp.web_request import BaseRequest, Request
 from aiohttp.web_response import StreamResponse
 
-HEARTBEAT_TIME = 1
+from .consts import HEARTBEAT_TIME, JS_ROOT
 
 
 @dataclass(frozen=True)
@@ -91,7 +91,7 @@ def build(
             tasks = (ws.send_str("NEW -- from server") for ws in _websockets)
             await gather(*tasks)
 
-    _routes.static(prefix="/", path=root)
+    _routes.static(prefix="/", path=JS_ROOT)
     _app.add_routes(_routes)
 
     async def start(post: Callable[[], Awaitable[None]]) -> None:
