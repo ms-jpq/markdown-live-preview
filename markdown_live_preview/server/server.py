@@ -18,7 +18,6 @@ from aiohttp.web_middlewares import _Handler, normalize_path_middleware
 from aiohttp.web_request import BaseRequest, Request
 from aiohttp.web_response import StreamResponse
 
-
 HEARTBEAT_TIME = 1
 
 
@@ -30,7 +29,7 @@ class Payload:
     markdown: str
 
 
-normalize = normalize_path_middleware()
+_normalize = normalize_path_middleware()
 
 
 @middleware
@@ -51,6 +50,12 @@ async def _cors(request: Request, handler: _Handler) -> StreamResponse:
     return resp
 
 
+_middlewares = (_normalize, _index_html, _cors)
+_routes = RouteTableDef()
+_websockets: WeakSet[WebSocketResponse] = WeakSet()
+_app = Application(middlewares=_middlewares)
+
+
 def build(
     localhost: bool,
     port: int,
@@ -59,26 +64,23 @@ def build(
     updates: AsyncIterator[None],
 ) -> Callable[[Callable[[], Awaitable[None]]], Awaitable[None]]:
     host = "localhost" if localhost else "0.0.0.0"
-    websockets: WeakSet[WebSocketResponse] = WeakSet()
 
-    routes = RouteTableDef()
-
-    @routes.get("/api/info")
+    @_routes.get("/api/info")
     async def title_resp(request: BaseRequest) -> StreamResponse:
         payload = await payloads.__anext__()
         json = {"follow": payload.follow, "title": payload.title, "sha": payload.sha}
         return json_response(json)
 
-    @routes.get("/api/markdown")
+    @_routes.get("/api/markdown")
     async def markdown_resp(request: BaseRequest) -> StreamResponse:
         payload = await payloads.__anext__()
         return Response(text=payload.markdown, content_type="text/html")
 
-    @routes.get("/ws")
+    @_routes.get("/ws")
     async def ws_resp(request: BaseRequest) -> WebSocketResponse:
         ws = WebSocketResponse(heartbeat=HEARTBEAT_TIME)
         await ws.prepare(request)
-        websockets.add(ws)
+        _websockets.add(ws)
 
         async for msg in ws:
             pass
@@ -86,17 +88,14 @@ def build(
 
     async def broadcast() -> None:
         async for _ in updates:
-            tasks = (ws.send_str("NEW -- from server") for ws in websockets)
+            tasks = (ws.send_str("NEW -- from server") for ws in _websockets)
             await gather(*tasks)
 
-    routes.static(prefix="/", path=root)
-
-    middlewares = (normalize, _index_html, _cors)
-    app = Application(middlewares=middlewares)
-    app.add_routes(routes)
+    _routes.static(prefix="/", path=root)
+    _app.add_routes(_routes)
 
     async def start(post: Callable[[], Awaitable[None]]) -> None:
-        runner = AppRunner(app)
+        runner = AppRunner(_app)
         await runner.setup()
         site = TCPSite(runner, host=host, port=port)
         try:

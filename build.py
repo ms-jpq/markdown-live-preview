@@ -30,7 +30,9 @@ def main() -> None:
     package = _TOP_LV / "markdown_live_preview"
     js_dist = package / "js"
 
-    rmtree(js_dist)
+    if js_dist.exists():
+        rmtree(js_dist)
+
     check_call((str(_TOP_LV / "lint.sh"),))
     check_call(
         (

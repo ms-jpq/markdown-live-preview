@@ -47,6 +47,7 @@ def reconciliate() -> Callable[[str], str]:
         nonlocal prev
         root = parse(xhtml)
         if not prev:
+            prev = root
             return unparse(root)
         else:
             before, after = tuple(prev), tuple(root)
