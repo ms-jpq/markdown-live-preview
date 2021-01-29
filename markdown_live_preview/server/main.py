@@ -27,7 +27,7 @@ def _parse_args() -> Namespace:
     location.add_argument("-o", "--open", action="store_true")
 
     watcher = parser.add_argument_group()
-    watcher.add_argument("--throttle", type=float, default=0.10)
+    watcher.add_argument("-t", "--throttle", type=float, default=0.10)
 
     behaviour = parser.add_argument_group()
     behaviour.add_argument("--nf", "--no-follow", dest="follow", action="store_false")
