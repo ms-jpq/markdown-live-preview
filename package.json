@@ -24,7 +24,6 @@
     "eslint-config-prettier": "*",
     "eslint-plugin-prettier": "*",
     "prettier": "*",
-    "ts-node": "*",
     "typescript": "*"
   },
   "homepage": "https://github.com/ms-jpq/markdown-preview#readme",
