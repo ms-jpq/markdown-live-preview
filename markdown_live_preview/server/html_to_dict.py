@@ -31,7 +31,7 @@ class TextNode:
         return hash(self.text)
 
     def __str__(self) -> str:
-        return self.text
+        return f'"{self.text}"'
 
 
 @dataclass
