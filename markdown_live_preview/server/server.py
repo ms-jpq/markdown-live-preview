@@ -92,6 +92,7 @@ def build(
             await gather(*tasks)
 
     _routes.static(prefix="/", path=JS_ROOT)
+    # _routes.static(prefix="/", path=root)
     _app.add_routes(_routes)
 
     async def start(post: Callable[[], Awaitable[None]]) -> None:

@@ -19,7 +19,7 @@ The animation is only choppy because it's a compressed gif.
 ## Usage
 
 ```sh
-mlp <name of markdown>
+mlp |name of markdown|
 ```
 
 | Flags                  | Flags                    |

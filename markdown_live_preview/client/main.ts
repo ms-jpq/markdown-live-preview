@@ -1,5 +1,4 @@
 import { sleep, tiktok } from "nda/dist/isomorphic/prelude"
-// import { sort_by } from "nda/dist/isomorphic/iterator"
 import { $, $$, wait_frame } from "nda/dist/browser/dom"
 
 const CYCLE = 500
@@ -10,7 +9,7 @@ const title = $("#title")!
 type API = { title: string; sha: string; follow: boolean }
 
 const api_request = async (): Promise<API> =>
-  await (await fetch("/api/info")).json()
+  await (await fetch(`${location.origin}/api/info`)).json()
 
 const ws_connect = async function* <T>() {
   const remote = `ws://${location.host}/ws`
@@ -34,7 +33,7 @@ const ws_connect = async function* <T>() {
 }
 
 const update = async (follow: boolean) => {
-  const page = await (await fetch("/api/markdown")).text()
+  const page = await (await fetch(`${location.origin}/api/markdown`)).text()
   display.innerHTML = page
 
   await wait_frame()
