@@ -5,6 +5,7 @@ __pycache__/
 /dist/
 /temp/
 /.cache/
+/.parcel-cache/
 package-lock.json
 .DS_Store
 tsconfig.tsbuildinfo

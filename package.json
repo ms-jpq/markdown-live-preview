@@ -11,12 +11,13 @@
     "@types/split2": "^2.1.6",
     "github-markdown-css": "^4.0.0",
     "nda": "git+https://github.com/ms-jpq/nda.git#0bf4b67d6358feabdb26f85741e7b20be2921da9",
-    "parcel": "^1.12.4",
+    "parcel": "^2.0.0-beta.2",
     "sass": "^1.26.8",
     "split2": "^3.1.1"
   },
   "description": "Markdown Live Preview",
   "devDependencies": {
+    "@parcel/transformer-sass": "^2.0.0-beta.2",
     "@types/node": "*",
     "@typescript-eslint/eslint-plugin": "*",
     "@typescript-eslint/parser": "*",
