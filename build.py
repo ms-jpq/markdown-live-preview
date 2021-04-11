@@ -39,7 +39,7 @@ def main() -> None:
             str(node_bin / "parcel"),
             "build",
             "--no-source-maps",
-            "--dist-dir",
+            "--out-dir",
             str(js_dist),
             "--",
             str(package / "client" / "index.html"),
