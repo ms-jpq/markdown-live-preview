@@ -17,7 +17,6 @@
   },
   "description": "Markdown Live Preview",
   "devDependencies": {
-    "@parcel/transformer-sass": "^2.0.0-beta.2",
     "@types/node": "*",
     "@typescript-eslint/eslint-plugin": "*",
     "@typescript-eslint/parser": "*",
