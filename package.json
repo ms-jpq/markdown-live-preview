@@ -1,8 +1,6 @@
 {
   "author": "Fly me to the moon",
-  "browserslist": [
-    "last 5 chrome versions"
-  ],
+  "browserslist": ["last 5 chrome versions"],
   "bugs": {
     "url": "https://github.com/ms-jpq/markdown-preview/issues"
   },
@@ -10,7 +8,7 @@
     "@fortawesome/fontawesome-free": "^5.13.1",
     "@types/split2": "^2.1.6",
     "github-markdown-css": "^4.0.0",
-    "nda": "git+https://github.com/ms-jpq/nda.git#0bf4b67d6358feabdb26f85741e7b20be2921da9",
+    "nda": "https://github.com/ms-jpq/nda/archive/0bf4b67d6358feabdb26f85741e7b20be2921da9.tar.gz",
     "parcel": "^2.0.0-beta.2",
     "sass": "^1.26.8",
     "split2": "^3.1.1"
