@@ -10,5 +10,4 @@ package-lock.json
 .DS_Store
 tsconfig.tsbuildinfo
 build/
-markdown_live_preview/js/
 *.egg-info/
