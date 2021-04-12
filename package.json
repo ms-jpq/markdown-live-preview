@@ -11,7 +11,7 @@
     "@types/split2": "^2.1.6",
     "github-markdown-css": "^4.0.0",
     "nda": "https://github.com/ms-jpq/nda/archive/0bf4b67d6358feabdb26f85741e7b20be2921da9.tar.gz",
-    "parcel": "1.12.3",
+    "parcel": "1.12.4",
     "sass": "^1.26.8",
     "split2": "^3.1.1"
   },
