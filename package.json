@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.1",
-    "@types/split2": "^2.1.6",
+    "@types/split2": "^3.2.0",
     "github-markdown-css": "^4.0.0",
     "nda": "https://github.com/ms-jpq/nda/archive/0bf4b67d6358feabdb26f85741e7b20be2921da9.tar.gz",
     "parcel": "1.12.3",
