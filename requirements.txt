@@ -1,4 +1,4 @@
 watchdog==2.0.2
 Markdown==3.3.4
-Pygments==2.8.1
+Pygments==2.9.0
 aiohttp==3.7.4.post0
