@@ -6,7 +6,17 @@ from setuptools import find_packages, setup
 
 packages = find_packages(exclude=("tests*",))
 package_data = {
-    pkg: ("py.typed", "*.html", "*.css", "*.js", "*.svg", "*.tff", "*.woff", "*.woff2")
+    pkg: (
+        "py.typed",
+        "*.css",
+        "*.eot",
+        "*.html",
+        "*.js",
+        "*.svg",
+        "*.tff",
+        "*.woff",
+        "*.woff2",
+    )
     for pkg in packages
 }
 install_requires = Path("requirements.txt").read_text().splitlines()
@@ -14,7 +24,7 @@ install_requires = Path("requirements.txt").read_text().splitlines()
 setup(
     name="markdown-live-preview",
     python_requires=">=3.8.0",
-    version="0.2.2",
+    version="0.2.3",
     description="live web preview of markdown docs",
     long_description=Path("README.md").read_text(),
     long_description_content_type="text/markdown",
