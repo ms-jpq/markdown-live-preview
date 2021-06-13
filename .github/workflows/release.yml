@@ -25,7 +25,7 @@ jobs:
       - name: Install Pip Packages
         run: |-
           pip install -U -r requirements.txt
-          pip install -U mypy
+          pip install -U mypy types-Markdown
           pip install -U setuptools wheel
 
       - name: Install NPM Packages
