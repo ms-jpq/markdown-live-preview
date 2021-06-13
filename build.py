@@ -3,7 +3,6 @@
 from locale import strxfrm
 from os import linesep
 from pathlib import Path
-from shutil import rmtree
 from subprocess import check_call
 
 from pygments.formatters.html import HtmlFormatter
@@ -30,8 +29,9 @@ def main() -> None:
     package = _TOP_LV / "markdown_live_preview"
     js_dist = package / "js"
 
-    if js_dist.exists():
-        rmtree(js_dist)
+    for path in js_dist.iterdir():
+        if path.name not in {"__init__.py", ".gitignore"}:
+            path.unlink(missing_ok=True)
 
     check_call((str(_TOP_LV / "lint.sh"),))
     check_call(
