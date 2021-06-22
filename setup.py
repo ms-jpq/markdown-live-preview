@@ -33,6 +33,7 @@ setup(
     url="https://github.com/ms-jpq/markdown-live-preview",
     packages=packages,
     package_data=package_data,
+    include_package_data=True,
     install_requires=install_requires,
     scripts=("scripts/mlp",),
 )
