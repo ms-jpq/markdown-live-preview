@@ -1,3 +1,5 @@
+from locale import strxfrm
+from os import linesep
 from typing import Callable, Sequence, no_type_check
 
 from markdown import Markdown
@@ -16,6 +18,8 @@ from markdown.extensions.smarty import makeExtension as smarty
 from markdown.extensions.tables import makeExtension as tables
 from markdown.extensions.toc import makeExtension as toc
 from markdown.extensions.wikilinks import makeExtension as wikilinks
+from pygments.formatters.html import HtmlFormatter
+from pygments.styles import get_all_styles, get_style_by_name
 
 _CODEHL_CLASS = "codehilite"
 
@@ -40,9 +44,22 @@ def _extensions(style: str) -> Sequence[Extension]:
     )
 
 
+def css() -> str:
+    lines = (
+        f".{_CODEHL_CLASS}.{name} {line}"
+        for name in get_all_styles()
+        for line in HtmlFormatter(style=get_style_by_name(name))
+        .get_style_defs()
+        .splitlines()
+    )
+    css = linesep.join(sorted(lines, key=strxfrm))
+    return css
+
+
 def render(style: str) -> Callable[[str], str]:
     def render(md: str) -> str:
         _markdown = Markdown(output_format="xhtml", extensions=_extensions(style))
         return _markdown.convert(md)
 
     return render
+
