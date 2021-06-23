@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from html import escape
 from html.parser import HTMLParser
 from itertools import chain
 from typing import (
@@ -119,7 +120,11 @@ def unparse(node: Node) -> str:
     middle = "".join(
         unparse(child)
         if isinstance(child, Node)
-        else (f'<span diff="{True}">{child.text}</span>' if child.diff else child.text)
+        else (
+            f'<span diff="{True}">{escape(child.text)}</span>'
+            if child.diff
+            else escape(child.text)
+        )
         for child in node.children
     )
     return f"{opening}{middle}{closing}"
