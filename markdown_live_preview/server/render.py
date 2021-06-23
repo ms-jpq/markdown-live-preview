@@ -33,6 +33,7 @@ class _B4HtmlProcessor(InlineProcessor):
     But does not check if `<...>` is valid html
 
     This processor tries to escape invalid html
+    before the builtin ones
     """
 
     PRIORITY = 91
@@ -47,7 +48,7 @@ class _B4HtmlProcessor(InlineProcessor):
         maybe_html = m.group(1)
         chars = {*maybe_html}
 
-        if maybe_html.endswith("/") or chars & {"<"} or chars & {"=", '"'}:
+        if maybe_html.endswith("/") or "<" in chars or chars > {"=", '"'}:
             return None, None, None
         else:
             escaped = escape(data)
@@ -103,5 +104,6 @@ def render(style: str) -> Callable[[str], str]:
         return _markdown.convert(md)
 
     return render
+
 
 
