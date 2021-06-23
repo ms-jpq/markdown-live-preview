@@ -50,15 +50,12 @@ class Node:
         return hash((self.tag, *((key, val) for key, val in self.attrs.items())))
 
     def __iter__(self) -> Iterator[Union[Node, TextNode]]:
-        def gen() -> Iterator[Union[Node, TextNode]]:
-            yield self
-            for child in self.children:
-                if isinstance(child, Node):
-                    yield from iter(child)
-                else:
-                    yield child
-
-        return gen()
+        yield self
+        for child in self.children:
+            if isinstance(child, Node):
+                yield from iter(child)
+            else:
+                yield child
 
     def __str__(self) -> str:
         return f"<{self.tag} />"
@@ -126,3 +123,4 @@ def unparse(node: Node) -> str:
         for child in node.children
     )
     return f"{opening}{middle}{closing}"
+
