@@ -15,6 +15,32 @@ from typing import (
 )
 from weakref import ref
 
+_VOID = {
+    "area",
+    "base",
+    "basefont",
+    "bgsound",
+    "br",
+    "col",
+    "command",
+    "embed",
+    "frame",
+    "hr",
+    "image",
+    "img",
+    "input",
+    "isindex",
+    "keygen",
+    "link",
+    "menuitem",
+    "meta",
+    "nextid",
+    "param",
+    "source",
+    "track",
+    "wbr",
+}
+
 
 class ParseError(Exception):
     pass
@@ -115,9 +141,7 @@ def unparse(node: Node) -> str:
             node.attrs.items(), (("diff", str(True)),) if node.diff else ()
         )
     )
-    opening = f"<{node.tag} {attrs}>"
-    closing = f"</{node.tag}>"
-    middle = "".join(
+    kids = "".join(
         unparse(child)
         if isinstance(child, Node)
         else (
@@ -127,5 +151,8 @@ def unparse(node: Node) -> str:
         )
         for child in node.children
     )
-    return f"{opening}{middle}{closing}"
+    if node.tag in _VOID:
+        return f"<{node.tag} {attrs}/>"
+    else:
+        return f"<{node.tag} {attrs}>{kids}</{node.tag}>"
 
