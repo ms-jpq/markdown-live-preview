@@ -53,7 +53,7 @@ class Node:
         yield self
         for child in self.children:
             if isinstance(child, Node):
-                yield from iter(child)
+                yield from child
             else:
                 yield child
 
