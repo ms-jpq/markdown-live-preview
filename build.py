@@ -21,16 +21,16 @@ def main() -> None:
         if path.name not in {"__init__.py", ".gitignore"}:
             path.unlink(missing_ok=True)
 
-    check_call((str(_TOP_LV / "lint.sh"),))
+    check_call((_TOP_LV / "lint.sh",))
     check_call(
         (
-            str(node_bin / "parcel"),
+            node_bin / "parcel",
             "build",
             "--no-source-maps",
             "--out-dir",
-            str(js_dist),
+            js_dist,
             "--",
-            str(package / "client" / "index.html"),
+            package / "client" / "index.html",
         )
     )
 
