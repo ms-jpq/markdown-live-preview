@@ -10,7 +10,7 @@
     "@fortawesome/fontawesome-free": "^5.13.1",
     "@types/split2": "^3.2.0",
     "github-markdown-css": "^4.0.0",
-    "nda": "https://github.com/ms-jpq/nda/archive/0bf4b67d6358feabdb26f85741e7b20be2921da9.tar.gz",
+    "nda": "https://github.com/ms-jpq/nda/archive/b96c0d986808221ff63b3c15a32d5395db24bf52.tar.gz",
     "parcel": "1.12.3",
     "sass": "^1.26.8",
     "split2": "^3.1.1"

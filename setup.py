@@ -24,7 +24,7 @@ install_requires = Path("requirements.txt").read_text().splitlines()
 setup(
     name="markdown-live-preview",
     python_requires=">=3.8.0",
-    version="0.2.6",
+    version="0.2.12",
     description="live web preview of markdown docs",
     long_description=Path("README.md").read_text(),
     long_description_content_type="text/markdown",

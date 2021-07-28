@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from html import escape
 from html.parser import HTMLParser
 from itertools import chain
 from typing import (
@@ -13,6 +14,32 @@ from typing import (
     Union,
 )
 from weakref import ref
+
+_VOID = {
+    "area",
+    "base",
+    "basefont",
+    "bgsound",
+    "br",
+    "col",
+    "command",
+    "embed",
+    "frame",
+    "hr",
+    "image",
+    "img",
+    "input",
+    "isindex",
+    "keygen",
+    "link",
+    "menuitem",
+    "meta",
+    "nextid",
+    "param",
+    "source",
+    "track",
+    "wbr",
+}
 
 
 class ParseError(Exception):
@@ -50,15 +77,12 @@ class Node:
         return hash((self.tag, *((key, val) for key, val in self.attrs.items())))
 
     def __iter__(self) -> Iterator[Union[Node, TextNode]]:
-        def gen() -> Iterator[Union[Node, TextNode]]:
-            yield self
-            for child in self.children:
-                if isinstance(child, Node):
-                    yield from iter(child)
-                else:
-                    yield child
-
-        return gen()
+        yield self
+        for child in self.children:
+            if isinstance(child, Node):
+                yield from child
+            else:
+                yield child
 
     def __str__(self) -> str:
         return f"<{self.tag} />"
@@ -117,12 +141,18 @@ def unparse(node: Node) -> str:
             node.attrs.items(), (("diff", str(True)),) if node.diff else ()
         )
     )
-    opening = f"<{node.tag} {attrs}>"
-    closing = f"</{node.tag}>"
-    middle = "".join(
+    kids = "".join(
         unparse(child)
         if isinstance(child, Node)
-        else (f'<span diff="{True}">{child.text}</span>' if child.diff else child.text)
+        else (
+            f'<span diff="{True}">{escape(child.text)}</span>'
+            if child.diff
+            else escape(child.text)
+        )
         for child in node.children
     )
-    return f"{opening}{middle}{closing}"
+    if node.tag in _VOID:
+        return f"<{node.tag} {attrs}/>"
+    else:
+        return f"<{node.tag} {attrs}>{kids}</{node.tag}>"
+
