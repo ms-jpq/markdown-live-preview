@@ -33,10 +33,10 @@ async def watch(path: Path) -> AsyncIterable[None]:
     ev.set()
     while True:
         await ev.wait()
-        ev.clear()
-
         try:
             yield None
         except GeneratorExit:
             obs.stop()
             break
+        else:
+            ev.clear()
