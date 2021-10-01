@@ -15,11 +15,6 @@
   "description": "Markdown Live Preview",
   "devDependencies": {
     "@types/node": "*",
-    "@typescript-eslint/eslint-plugin": "*",
-    "@typescript-eslint/parser": "*",
-    "eslint": "*",
-    "eslint-config-prettier": "*",
-    "eslint-plugin-prettier": "*",
     "prettier": "*",
     "typescript": "*"
   },
