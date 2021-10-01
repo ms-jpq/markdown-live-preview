@@ -1,5 +1,6 @@
 from asyncio import gather
 from dataclasses import dataclass
+from pathlib import PurePath
 from typing import AsyncIterator, Awaitable, Callable
 from weakref import WeakSet
 
@@ -13,6 +14,7 @@ from aiohttp.web import (
     json_response,
     middleware,
 )
+from aiohttp.web_fileresponse import FileResponse
 from aiohttp.web_middlewares import _Handler, normalize_path_middleware
 from aiohttp.web_request import BaseRequest, Request
 from aiohttp.web_response import StreamResponse
@@ -29,17 +31,6 @@ class Payload:
 
 
 @middleware
-async def _index_html(request: Request, handler: _Handler) -> StreamResponse:
-    key = "filename"
-    match_info = request.match_info
-    if key in match_info and match_info[key] == "":
-        match_info[key] = "index.html"
-
-    resp = await handler(request)
-    return resp
-
-
-@middleware
 async def _cors(request: Request, handler: _Handler) -> StreamResponse:
     resp = await handler(request)
     resp.headers["Access-Control-Allow-Origin"] = "*"
@@ -48,7 +39,6 @@ async def _cors(request: Request, handler: _Handler) -> StreamResponse:
 
 _middlewares = (
     normalize_path_middleware(),
-    _index_html,
     _cors,
 )
 _routes = RouteTableDef()
@@ -56,8 +46,13 @@ _websockets: WeakSet[WebSocketResponse] = WeakSet()
 _app = Application(middlewares=_middlewares)
 
 
+@_routes.route("*", "/")
+async def _index_resp(request: BaseRequest) -> FileResponse:
+    return FileResponse(JS_ROOT / "index.html")
+
+
 @_routes.get("/ws")
-async def ws_resp(request: BaseRequest) -> WebSocketResponse:
+async def _ws_resp(request: BaseRequest) -> WebSocketResponse:
     ws = WebSocketResponse(heartbeat=HEARTBEAT_TIME)
     await ws.prepare(request)
     _websockets.add(ws)
@@ -67,7 +62,7 @@ async def ws_resp(request: BaseRequest) -> WebSocketResponse:
 
 
 def build(
-    localhost: bool, port: int, gen: AsyncIterator[Payload]
+    localhost: bool, port: int, cwd: PurePath, gen: AsyncIterator[Payload]
 ) -> Callable[[], Awaitable[None]]:
     host = "localhost" if localhost else ""
     payload = Payload(follow=False, title="", sha="", markdown="")
@@ -89,6 +84,7 @@ def build(
             await gather(*tasks)
 
     _routes.static(prefix="/", path=JS_ROOT)
+    _routes.static(prefix="/cwd/", path=cwd)
     _app.add_routes(_routes)
 
     async def start() -> None:

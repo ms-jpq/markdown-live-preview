@@ -57,7 +57,12 @@ async def main() -> int:
                     )
                     yield payload
 
-        serve = build(localhost=not args.open, port=args.port, gen=gen())
+        serve = build(
+            localhost=not args.open,
+            port=args.port,
+            cwd=path.parent,
+            gen=gen(),
+        )
         host = getfqdn() if args.open else "localhost"
         uri = f"http://{host}:{args.port}"
         if args.browser:
