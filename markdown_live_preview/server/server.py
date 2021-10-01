@@ -93,9 +93,9 @@ def build(
 
     async def start() -> None:
         runner = AppRunner(_app)
-        await runner.setup()
-        site = TCPSite(runner, host=host, port=port)
         try:
+            await runner.setup()
+            site = TCPSite(runner, host=host, port=port)
             await site.start()
             await broadcast()
         finally:

@@ -68,7 +68,6 @@ const main = async () => {
   const loop2 = async () => {
     let sha: string | undefined = undefined
     while (true) {
-      await new Promise((resolve) => setTimeout(resolve, CYCLE))
       try {
         const info = await api_request()
         if (info.sha !== sha) {
@@ -78,6 +77,7 @@ const main = async () => {
       } catch (err) {
         console.error(err)
       }
+      await new Promise((resolve) => setTimeout(resolve, CYCLE))
     }
   }
 
