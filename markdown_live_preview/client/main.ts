@@ -1,10 +1,7 @@
-import { sleep, tiktok } from "nda/dist/isomorphic/prelude"
-import { $, $$, wait_frame } from "nda/dist/browser/dom"
-
 const CYCLE = 500
 
-const display = $("#main")!
-const title = $("#title")!
+const display = document.body.querySelector("#main")!
+const title = document.body.querySelector("#title")!
 
 type API = { title: string; sha: string; follow: boolean }
 
@@ -13,13 +10,13 @@ const api_request = async (): Promise<API> =>
 
 const ws_connect = async function* <T>() {
   const remote = `ws://${location.host}/ws`
-  let cb: (_: T) => void = () => { }
+  let cb: (_: T) => void = () => {}
   let ws = new WebSocket(remote)
 
   const provision = () => {
     ws.onmessage = ({ data }) => cb(data)
     ws.onclose = async () => {
-      await sleep(CYCLE)
+      await new Promise((resolve) => setTimeout(resolve, CYCLE))
       ws = new WebSocket(remote)
       provision()
     }
@@ -36,8 +33,8 @@ const update = async (follow: boolean) => {
   const page = await (await fetch(`${location.origin}/api/markdown`)).text()
   display.innerHTML = page
 
-  await wait_frame()
-  const marked = $$(`[diff="True"]`)
+  await new Promise((resolve) => requestAnimationFrame(resolve))
+  const marked = document.body.querySelectorAll(`[diff="True"]`)
   const [focus, ..._] = marked
 
   if (focus) {
@@ -70,7 +67,8 @@ const main = async () => {
 
   const loop2 = async () => {
     let sha: string | undefined = undefined
-    for await (const _ of tiktok(CYCLE)) {
+    while (true) {
+      await new Promise((resolve) => setTimeout(resolve, CYCLE))
       try {
         const info = await api_request()
         if (info.sha !== sha) {
