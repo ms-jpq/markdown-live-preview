@@ -58,9 +58,6 @@ class TextNode:
     def __hash__(self) -> int:
         return hash(self.text)
 
-    def __str__(self) -> str:
-        return f'"{self.text}"'
-
 
 @dataclass
 class Node:
@@ -83,9 +80,6 @@ class Node:
                 yield from child
             else:
                 yield child
-
-    def __str__(self) -> str:
-        return f"<{self.tag} />"
 
 
 class _Parser(HTMLParser):
@@ -142,13 +136,7 @@ def unparse(node: Node) -> str:
         )
     )
     kids = "".join(
-        unparse(child)
-        if isinstance(child, Node)
-        else (
-            f'<span diff="{True}">{escape(child.text)}</span>'
-            if child.diff
-            else escape(child.text)
-        )
+        unparse(child) if isinstance(child, Node) else escape(child.text)
         for child in node.children
     )
     if node.tag in _VOID:

@@ -16,15 +16,20 @@ def reconciliate() -> Callable[[str], str]:
                 if op == "replace":
                     for node in after[i:j]:
                         node.diff = True
+                        if isinstance(node, TextNode):
+                            if parent := node.parent and node.parent():
+                                parent.diff = True
 
                 elif op == "delete":
                     for node in after[i:j]:
                         node.diff = True
+                        if isinstance(node, TextNode):
+                            if parent := node.parent and node.parent():
+                                parent.diff = True
 
                 elif op == "insert":
                     for node in after[i:j]:
-                        parent = node.parent and node.parent()
-                        if parent:
+                        if parent := node.parent and node.parent():
                             parent.diff = True
 
                 elif op == "equal":
