@@ -1,6 +1,5 @@
 from argparse import ArgumentParser, Namespace
-from datetime import datetime
-from hashlib import sha1
+from hashlib import md5
 from pathlib import Path
 from socket import getfqdn
 from typing import AsyncIterator
@@ -52,15 +51,11 @@ async def main() -> int:
                 else:
                     xhtml = render_f(md)
                     markdown = recon_f(xhtml)
-                    sha = sha1(markdown.encode()).hexdigest()
+                    sha = md5(markdown.encode()).hexdigest()
                     payload = Payload(
                         follow=args.follow, title=path.name, sha=sha, markdown=markdown
                     )
                     yield payload
-                    time = datetime.now().strftime("%H:%M:%S")
-                    log.info("%s", f"🦑 -- {time}")
-
-
 
         serve = build(localhost=not args.open, port=args.port, gen=gen())
         host = getfqdn() if args.open else "localhost"

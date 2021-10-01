@@ -12,7 +12,7 @@ def reconciliate() -> Callable[[str], str]:
     def set_diff(nodes: _Nodes) -> None:
         for node in nodes:
             node.diff = True
-            if isinstance(node, TextNode) and node.text:
+            if isinstance(node, TextNode) and not node.text.isspace():
                 if parent := node.parent and node.parent():
                     parent.diff = True
 
