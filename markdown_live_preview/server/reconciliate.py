@@ -31,6 +31,9 @@ def reconciliate() -> Callable[[str], str]:
                     for node in after[i:j]:
                         if parent := node.parent and node.parent():
                             parent.diff = True
+                            if isinstance(parent, TextNode):
+                                if grand_parent := parent.parent and parent.parent():
+                                    grand_parent.diff = True
 
                 elif op == "equal":
                     pass
