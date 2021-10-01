@@ -1,6 +1,5 @@
 from asyncio import gather
 from dataclasses import dataclass
-from pathlib import Path
 from typing import AsyncIterator, Awaitable, Callable
 from weakref import WeakSet
 
@@ -29,9 +28,6 @@ class Payload:
     markdown: str
 
 
-_normalize = normalize_path_middleware()
-
-
 @middleware
 async def _index_html(request: Request, handler: _Handler) -> StreamResponse:
     key = "filename"
@@ -50,16 +46,29 @@ async def _cors(request: Request, handler: _Handler) -> StreamResponse:
     return resp
 
 
-_middlewares = (_normalize, _index_html, _cors)
+_middlewares = (
+    normalize_path_middleware(),
+    _index_html,
+    _cors,
+)
 _routes = RouteTableDef()
 _websockets: WeakSet[WebSocketResponse] = WeakSet()
 _app = Application(middlewares=_middlewares)
 
 
+@_routes.get("/ws")
+async def ws_resp(request: BaseRequest) -> WebSocketResponse:
+    ws = WebSocketResponse(heartbeat=HEARTBEAT_TIME)
+    await ws.prepare(request)
+    _websockets.add(ws)
+    async for _ in ws:
+        pass
+    return ws
+
+
 def build(
     localhost: bool,
     port: int,
-    root: Path,
     payloads: AsyncIterator[Payload],
     updates: AsyncIterator[None],
 ) -> Callable[[Callable[[], Awaitable[None]]], Awaitable[None]]:
@@ -76,23 +85,12 @@ def build(
         payload = await payloads.__anext__()
         return Response(text=payload.markdown, content_type="text/html")
 
-    @_routes.get("/ws")
-    async def ws_resp(request: BaseRequest) -> WebSocketResponse:
-        ws = WebSocketResponse(heartbeat=HEARTBEAT_TIME)
-        await ws.prepare(request)
-        _websockets.add(ws)
-
-        async for msg in ws:
-            pass
-        return ws
-
     async def broadcast() -> None:
         async for _ in updates:
-            tasks = (ws.send_str("NEW -- from server") for ws in _websockets)
+            tasks = (ws.send_str("") for ws in _websockets)
             await gather(*tasks)
 
     _routes.static(prefix="/", path=JS_ROOT)
-    # _routes.static(prefix="/", path=root)
     _app.add_routes(_routes)
 
     async def start(post: Callable[[], Awaitable[None]]) -> None:

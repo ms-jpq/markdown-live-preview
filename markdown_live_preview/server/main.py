@@ -52,21 +52,19 @@ async def main() -> int:
 
         async def gen_update() -> AsyncIterator[None]:
             nonlocal markdown, sha
-            async for md in watch(path, throttle=args.throttle):
-                xhtml = render_f(md)
-                markdown = recon_f(xhtml)
-                sha = sha1(markdown.encode()).hexdigest()
-                yield
-                time = datetime.now().strftime("%H:%M:%S")
-                log.info("%s", f"🦑 -- {time}")
-
-        serve = build(
-            localhost=not args.open,
-            port=args.port,
-            root=path.parent,
-            payloads=gen_payload(),
-            updates=gen_update(),
-        )
+            async for _ in watch(path):
+                try:
+                    md = path.read_text()
+                except OSError as e:
+                    log.critical("%s", e)
+                    break
+                else:
+                    xhtml = render_f(md)
+                    markdown = recon_f(xhtml)
+                    sha = sha1(markdown.encode()).hexdigest()
+                    yield
+                    time = datetime.now().strftime("%H:%M:%S")
+                    log.info("%s", f"🦑 -- {time}")
 
         async def post() -> None:
             host = getfqdn() if args.open else "localhost"
@@ -75,5 +73,11 @@ async def main() -> int:
                 open_w(uri)
             log.info("%s", f"SERVING -- {uri}")
 
+        serve = build(
+            localhost=not args.open,
+            port=args.port,
+            payloads=gen_payload(),
+            updates=gen_update(),
+        )
         await serve(post)
         return 0
