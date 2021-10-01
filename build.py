@@ -37,4 +37,3 @@ def main() -> None:
 
 
 main()
-
