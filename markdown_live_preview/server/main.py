@@ -41,17 +41,8 @@ async def main() -> int:
         return 1
     else:
         render_f, recon_f = render("friendly"), reconciliate()
-        sha, markdown = "", ""
 
-        async def gen_payload() -> AsyncIterator[Payload]:
-            while True:
-                payload = Payload(
-                    follow=args.follow, title=path.name, sha=sha, markdown=markdown
-                )
-                yield payload
-
-        async def gen_update() -> AsyncIterator[None]:
-            nonlocal markdown, sha
+        async def gen() -> AsyncIterator[Payload]:
             async for _ in watch(path):
                 try:
                     md = path.read_text()
@@ -62,7 +53,10 @@ async def main() -> int:
                     xhtml = render_f(md)
                     markdown = recon_f(xhtml)
                     sha = sha1(markdown.encode()).hexdigest()
-                    yield
+                    payload = Payload(
+                        follow=args.follow, title=path.name, sha=sha, markdown=markdown
+                    )
+                    yield payload
                     time = datetime.now().strftime("%H:%M:%S")
                     log.info("%s", f"🦑 -- {time}")
 
@@ -73,11 +67,6 @@ async def main() -> int:
                 open_w(uri)
             log.info("%s", f"SERVING -- {uri}")
 
-        serve = build(
-            localhost=not args.open,
-            port=args.port,
-            payloads=gen_payload(),
-            updates=gen_update(),
-        )
+        serve = build(localhost=not args.open, port=args.port, gen=gen())
         await serve(post)
         return 0

@@ -67,26 +67,24 @@ async def ws_resp(request: BaseRequest) -> WebSocketResponse:
 
 
 def build(
-    localhost: bool,
-    port: int,
-    payloads: AsyncIterator[Payload],
-    updates: AsyncIterator[None],
+    localhost: bool, port: int, gen: AsyncIterator[Payload]
 ) -> Callable[[Callable[[], Awaitable[None]]], Awaitable[None]]:
-    host = "localhost" if localhost else "0.0.0.0"
+    host = "localhost" if localhost else ""
+    payload = Payload(follow=False, title="", sha="", markdown="")
 
     @_routes.get("/api/info")
-    async def title_resp(request: BaseRequest) -> StreamResponse:
-        payload = await payloads.__anext__()
+    async def meta_resp(request: BaseRequest) -> StreamResponse:
         json = {"follow": payload.follow, "title": payload.title, "sha": payload.sha}
         return json_response(json)
 
     @_routes.get("/api/markdown")
     async def markdown_resp(request: BaseRequest) -> StreamResponse:
-        payload = await payloads.__anext__()
         return Response(text=payload.markdown, content_type="text/html")
 
     async def broadcast() -> None:
-        async for _ in updates:
+        nonlocal payload
+        async for p in gen:
+            payload = p
             tasks = (ws.send_str("") for ws in _websockets)
             await gather(*tasks)
 
