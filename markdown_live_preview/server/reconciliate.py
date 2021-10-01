@@ -1,4 +1,5 @@
 from difflib import SequenceMatcher
+from pathlib import PurePath
 from typing import Callable, Optional, Sequence, Union
 
 from .html_to_dict import Node, TextNode, parse, unparse
@@ -6,7 +7,7 @@ from .html_to_dict import Node, TextNode, parse, unparse
 _Nodes = Sequence[Union[Node, TextNode]]
 
 
-def reconciliate() -> Callable[[str], str]:
+def reconciliate(cwd: PurePath) -> Callable[[str], str]:
     prev: Optional[Node] = None
 
     def set_diff(nodes: _Nodes) -> None:
