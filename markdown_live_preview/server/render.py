@@ -3,9 +3,6 @@ from locale import strxfrm
 from os import linesep
 from typing import Callable, Match, Sequence, Tuple, Union, no_type_check
 
-from pygments.formatters.html import HtmlFormatter
-from pygments.styles import get_all_styles, get_style_by_name
-
 from markdown import Markdown
 from markdown.extensions import Extension
 from markdown.extensions.abbr import makeExtension as abbr
@@ -23,6 +20,8 @@ from markdown.extensions.tables import makeExtension as tables
 from markdown.extensions.toc import makeExtension as toc
 from markdown.extensions.wikilinks import makeExtension as wikilinks
 from markdown.inlinepatterns import InlineProcessor
+from pygments.formatters.html import HtmlFormatter
+from pygments.styles import get_all_styles, get_style_by_name
 
 _CODEHL_CLASS = "codehilite"
 
@@ -104,6 +103,3 @@ def render(style: str) -> Callable[[str], str]:
         return _markdown.convert(md)
 
     return render
-
-
-

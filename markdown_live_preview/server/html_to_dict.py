@@ -155,4 +155,3 @@ def unparse(node: Node) -> str:
         return f"<{node.tag} {attrs}/>"
     else:
         return f"<{node.tag} {attrs}>{kids}</{node.tag}>"
-

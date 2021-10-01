@@ -1,13 +1,12 @@
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
 from hashlib import sha1
-from os import R_OK, access
 from pathlib import Path
 from socket import getfqdn
-from sys import stderr
 from typing import AsyncIterator
 from webbrowser import open as open_w
 
+from .log import log
 from .reconciliate import reconciliate
 from .render import render
 from .server import Payload, build
@@ -33,13 +32,13 @@ def _parse_args() -> Namespace:
     return parser.parse_args()
 
 
-async def main() -> None:
+async def main() -> int:
     args = _parse_args()
-    path = Path(args.markdown).resolve()
-
-    if not access(path, R_OK):
-        print(f"cannot read -- {path}", file=stderr)
-        exit(1)
+    try:
+        path = Path(args.markdown).resolve(strict=True)
+    except OSError as e:
+        log.critical("%s", e)
+        return 1
     else:
         render_f, recon_f = render("friendly"), reconciliate()
         sha, markdown = "", ""
@@ -59,7 +58,7 @@ async def main() -> None:
                 sha = sha1(markdown.encode()).hexdigest()
                 yield
                 time = datetime.now().strftime("%H:%M:%S")
-                print(f"🦑 -- {time}")
+                log.info("%s", f"🦑 -- {time}")
 
         serve = build(
             localhost=not args.open,
@@ -74,6 +73,7 @@ async def main() -> None:
             uri = f"http://{host}:{args.port}"
             if args.browser:
                 open_w(uri)
-            print(f"SERVING -- {uri}")
+            log.info("%s", f"SERVING -- {uri}")
 
         await serve(post)
+        return 0

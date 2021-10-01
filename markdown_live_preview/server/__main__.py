@@ -1,4 +1,5 @@
+from sys import stdout
+
 from .render import css
 
-print(css())
-
+stdout.write(css())
