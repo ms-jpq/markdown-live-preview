@@ -9,27 +9,25 @@ _Nodes = Sequence[Union[Node, TextNode]]
 def reconciliate() -> Callable[[str], str]:
     prev: Optional[Node] = None
 
-    def set_diff(node: Union[Node, TextNode]) -> None:
-        node.diff = True
-        if isinstance(node, TextNode):
-            if parent := node.parent and node.parent():
-                parent.diff = True
+    def set_diff(nodes: _Nodes) -> None:
+        for node in nodes:
+            node.diff = True
+            if isinstance(node, TextNode) and node.text:
+                if parent := node.parent and node.parent():
+                    parent.diff = True
 
     def diff_inplace(before: _Nodes, after: _Nodes) -> None:
         matcher = SequenceMatcher(isjunk=None, autojunk=False, a=after, b=before)
         for group in matcher.get_grouped_opcodes():
             for op, i, j, _, _ in group:
                 if op == "replace":
-                    for node in after[i:j]:
-                        set_diff(node)
+                    set_diff(after[i:j])
 
                 elif op == "delete":
-                    for node in after[i:j]:
-                        set_diff(node)
+                    set_diff(after[i:j])
 
                 elif op == "insert":
-                    for node in after[i:j]:
-                        set_diff(node)
+                    set_diff(after[i:j])
 
                 elif op == "equal":
                     pass
