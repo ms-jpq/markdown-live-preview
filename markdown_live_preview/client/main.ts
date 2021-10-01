@@ -37,14 +37,12 @@ const update = async (follow: boolean) => {
   const marked = document.body.querySelectorAll(`[diff="True"]`)
   const [focus, ..._] = marked
 
-  if (focus) {
-    if (follow) {
-      focus.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-        inline: "center",
-      })
-    }
+  if (follow && focus) {
+    focus.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+      inline: "center",
+    })
   }
 }
 
