@@ -15,7 +15,7 @@ from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 
 
-async def watch(path: Path, throttle: float) -> AsyncIterable[str]:
+async def watch(throttle: float, path: Path) -> AsyncIterable[str]:
     loop = get_running_loop()
     chan: Queue[None] = Queue(1)
     ev = Event()
