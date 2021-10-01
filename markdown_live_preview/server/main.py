@@ -39,8 +39,7 @@ async def main() -> int:
         log.critical("%s", e)
         return 1
     else:
-        cwd = path.parent
-        render_f, recon_f = render("friendly"), reconciliate(cwd)
+        render_f, recon_f = render("friendly"), reconciliate()
 
         async def gen() -> AsyncIterator[Payload]:
             async for _ in watch(args.throttle, path=path):
@@ -61,7 +60,7 @@ async def main() -> int:
         serve = build(
             localhost=not args.open,
             port=args.port,
-            cwd=cwd,
+            cwd=path.parent,
             gen=gen(),
         )
         host = getfqdn() if args.open else "localhost"
