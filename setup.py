@@ -23,7 +23,10 @@ package_data = {
     ]
     for pkg in packages
 }
-scripts = [normcase(path) for path in (_TOP_LEVEL / "scripts").iterdir()]
+scripts = [
+    normcase(path.relative_to(_TOP_LEVEL))
+    for path in (_TOP_LEVEL / "scripts").iterdir()
+]
 
 setup(
     name="markdown-live-preview",
