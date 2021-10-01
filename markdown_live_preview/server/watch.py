@@ -1,6 +1,13 @@
-from asyncio import get_running_loop
+from asyncio import Queue, get_running_loop
 from asyncio.locks import Event
-from asyncio.tasks import run_coroutine_threadsafe
+from asyncio.tasks import (
+    FIRST_COMPLETED,
+    create_task,
+    gather,
+    run_coroutine_threadsafe,
+    sleep,
+    wait,
+)
 from pathlib import Path
 from typing import AsyncIterable
 
@@ -8,12 +15,22 @@ from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 
 
-async def watch(path: Path) -> AsyncIterable[None]:
+async def watch(path: Path, throttle: float) -> AsyncIterable[str]:
     loop = get_running_loop()
+    chan: Queue[None] = Queue(1)
     ev = Event()
+    ev.set()
 
     async def notify() -> None:
-        ev.set()
+        done, _ = await wait(
+            (create_task(ev.wait()), sleep(throttle, False)),
+            return_when=FIRST_COMPLETED,
+        )
+        go = done.pop().result()
+        if go and ev.is_set():
+            ev.clear()
+            await gather(chan.put(None), sleep(throttle))
+            ev.set()
 
     def send(event: FileSystemEvent) -> None:
         if Path(event.src_path) == path:
@@ -30,13 +47,10 @@ async def watch(path: Path) -> AsyncIterable[None]:
     obs.schedule(Handler(), path=path.parent)
     obs.start()
 
-    ev.set()
     while True:
-        await ev.wait()
         try:
-            yield None
+            yield path.read_text("UTF-8")
         except GeneratorExit:
             obs.stop()
             break
-        else:
-            ev.clear()
+        await chan.get()
