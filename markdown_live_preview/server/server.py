@@ -37,13 +37,13 @@ def build(
     payload = Payload(follow=False, title="", sha="", markdown="")
 
     @middleware
-    async def _cors(request: Request, handler: _Handler) -> StreamResponse:
+    async def cors(request: Request, handler: _Handler) -> StreamResponse:
         resp = await handler(request)
         resp.headers["Access-Control-Allow-Origin"] = "*"
         return resp
 
     @middleware
-    async def _owo(request: Request, handler: _Handler) -> StreamResponse:
+    async def local_files(request: Request, handler: _Handler) -> StreamResponse:
         try:
             rel = PurePosixPath(request.path).relative_to("/cwd")
             path = Path(cwd / rel).resolve(strict=True)
@@ -57,8 +57,8 @@ def build(
 
     middlewares = (
         normalize_path_middleware(),
-        _owo,
-        _cors,
+        local_files,
+        cors,
     )
     routes = RouteTableDef()
     websockets: WeakSet[WebSocketResponse] = WeakSet()
