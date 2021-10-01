@@ -2,7 +2,7 @@ from argparse import ArgumentParser, Namespace
 from hashlib import md5
 from pathlib import Path
 from socket import getfqdn
-from typing import AsyncIterator
+from typing import AsyncIterable, AsyncIterator, TypeVar
 from webbrowser import open as open_w
 
 from .log import log
@@ -10,6 +10,13 @@ from .reconciliate import reconciliate
 from .render import render
 from .server import Payload, build
 from .watch import watch
+
+_T = TypeVar("_T")
+
+
+async def _throttle(span: float, ait: AsyncIterable[_T]) -> AsyncIterator[_T]:
+    async for item in ait:
+        yield item
 
 
 def _parse_args() -> Namespace:
@@ -42,7 +49,7 @@ async def main() -> int:
         render_f, recon_f = render("friendly"), reconciliate()
 
         async def gen() -> AsyncIterator[Payload]:
-            async for _ in watch(path):
+            async for _ in _throttle(args.throttle, watch(path)):
                 try:
                     md = path.read_text()
                 except OSError as e:
