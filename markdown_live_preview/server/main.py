@@ -60,13 +60,13 @@ async def main() -> int:
                     time = datetime.now().strftime("%H:%M:%S")
                     log.info("%s", f"🦑 -- {time}")
 
-        async def post() -> None:
-            host = getfqdn() if args.open else "localhost"
-            uri = f"http://{host}:{args.port}"
-            if args.browser:
-                open_w(uri)
-            log.info("%s", f"SERVING -- {uri}")
+
 
         serve = build(localhost=not args.open, port=args.port, gen=gen())
-        await serve(post)
+        host = getfqdn() if args.open else "localhost"
+        uri = f"http://{host}:{args.port}"
+        if args.browser:
+            open_w(uri)
+        log.info("%s", f"SERVING -- {uri}")
+        await serve()
         return 0

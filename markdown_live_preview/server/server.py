@@ -68,7 +68,7 @@ async def ws_resp(request: BaseRequest) -> WebSocketResponse:
 
 def build(
     localhost: bool, port: int, gen: AsyncIterator[Payload]
-) -> Callable[[Callable[[], Awaitable[None]]], Awaitable[None]]:
+) -> Callable[[], Awaitable[None]]:
     host = "localhost" if localhost else ""
     payload = Payload(follow=False, title="", sha="", markdown="")
 
@@ -91,13 +91,12 @@ def build(
     _routes.static(prefix="/", path=JS_ROOT)
     _app.add_routes(_routes)
 
-    async def start(post: Callable[[], Awaitable[None]]) -> None:
+    async def start() -> None:
         runner = AppRunner(_app)
         await runner.setup()
         site = TCPSite(runner, host=host, port=port)
         try:
             await site.start()
-            await post()
             await broadcast()
         finally:
             await runner.cleanup()
