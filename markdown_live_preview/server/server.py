@@ -1,6 +1,6 @@
 from asyncio import gather
 from dataclasses import dataclass
-from pathlib import PurePath
+from pathlib import Path, PurePath, PurePosixPath
 from typing import AsyncIterator, Awaitable, Callable
 from weakref import WeakSet
 
@@ -30,49 +30,59 @@ class Payload:
     markdown: str
 
 
-@middleware
-async def _cors(request: Request, handler: _Handler) -> StreamResponse:
-    resp = await handler(request)
-    resp.headers["Access-Control-Allow-Origin"] = "*"
-    return resp
-
-
-_middlewares = (
-    normalize_path_middleware(),
-    _cors,
-)
-_routes = RouteTableDef()
-_websockets: WeakSet[WebSocketResponse] = WeakSet()
-_app = Application(middlewares=_middlewares)
-
-
-@_routes.route("*", "/")
-async def _index_resp(request: BaseRequest) -> FileResponse:
-    return FileResponse(JS_ROOT / "index.html")
-
-
-@_routes.get("/ws")
-async def _ws_resp(request: BaseRequest) -> WebSocketResponse:
-    ws = WebSocketResponse(heartbeat=HEARTBEAT_TIME)
-    await ws.prepare(request)
-    _websockets.add(ws)
-    async for _ in ws:
-        pass
-    return ws
-
-
 def build(
     localhost: bool, port: int, cwd: PurePath, gen: AsyncIterator[Payload]
 ) -> Callable[[], Awaitable[None]]:
     host = "localhost" if localhost else ""
     payload = Payload(follow=False, title="", sha="", markdown="")
 
-    @_routes.get("/api/info")
+    @middleware
+    async def _cors(request: Request, handler: _Handler) -> StreamResponse:
+        resp = await handler(request)
+        resp.headers["Access-Control-Allow-Origin"] = "*"
+        return resp
+
+    @middleware
+    async def _owo(request: Request, handler: _Handler) -> StreamResponse:
+        try:
+            rel = PurePosixPath(request.path).relative_to("/cwd")
+            path = Path(cwd / rel).resolve(strict=True)
+        except (ValueError, OSError):
+            return await handler(request)
+        else:
+            if path.relative_to(cwd):
+                return FileResponse(path)
+            else:
+                return await handler(request)
+
+    middlewares = (
+        normalize_path_middleware(),
+        _owo,
+        _cors,
+    )
+    routes = RouteTableDef()
+    websockets: WeakSet[WebSocketResponse] = WeakSet()
+    app = Application(middlewares=middlewares)
+
+    @routes.route("*", "/")
+    async def index_resp(request: BaseRequest) -> FileResponse:
+        return FileResponse(JS_ROOT / "index.html")
+
+    @routes.get("/ws")
+    async def ws_resp(request: BaseRequest) -> WebSocketResponse:
+        ws = WebSocketResponse(heartbeat=HEARTBEAT_TIME)
+        await ws.prepare(request)
+        websockets.add(ws)
+        async for _ in ws:
+            pass
+        return ws
+
+    @routes.get("/api/info")
     async def meta_resp(request: BaseRequest) -> StreamResponse:
         json = {"follow": payload.follow, "title": payload.title, "sha": payload.sha}
         return json_response(json)
 
-    @_routes.get("/api/markdown")
+    @routes.get("/api/markdown")
     async def markdown_resp(request: BaseRequest) -> StreamResponse:
         return Response(text=payload.markdown, content_type="text/html")
 
@@ -80,15 +90,14 @@ def build(
         nonlocal payload
         async for p in gen:
             payload = p
-            tasks = (ws.send_str("") for ws in _websockets)
+            tasks = (ws.send_str("") for ws in websockets)
             await gather(*tasks)
 
-    _routes.static(prefix="/", path=JS_ROOT)
-    _routes.static(prefix="/cwd/", path=cwd)
-    _app.add_routes(_routes)
+    routes.static(prefix="/", path=JS_ROOT)
+    app.add_routes(routes)
 
     async def start() -> None:
-        runner = AppRunner(_app)
+        runner = AppRunner(app)
         try:
             await runner.setup()
             site = TCPSite(runner, host=host, port=port)
