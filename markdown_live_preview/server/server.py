@@ -61,7 +61,7 @@ def build(
         cors,
     )
     routes = RouteTableDef()
-    websockets: WeakSet[WebSocketResponse] = WeakSet()
+    websockets: WeakSet = WeakSet()
     app = Application(middlewares=middlewares)
 
     @routes.route("*", "/")
