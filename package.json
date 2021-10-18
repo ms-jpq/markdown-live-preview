@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.1",
-    "github-markdown-css": "^4.0.0",
+    "github-markdown-css": "^5.0.0",
     "parcel": "1.12.3",
     "sass": "^1.26.8"
   },
