@@ -15,7 +15,7 @@ from aiohttp.web import (
     middleware,
 )
 from aiohttp.web_fileresponse import FileResponse
-from aiohttp.web_middlewares import _Handler, normalize_path_middleware
+from aiohttp.web_middlewares import Handler, normalize_path_middleware
 from aiohttp.web_request import BaseRequest, Request
 from aiohttp.web_response import StreamResponse
 
@@ -37,13 +37,13 @@ def build(
     payload = Payload(follow=False, title="", sha="", markdown="")
 
     @middleware
-    async def cors(request: Request, handler: _Handler) -> StreamResponse:
+    async def cors(request: Request, handler: Handler) -> StreamResponse:
         resp = await handler(request)
         resp.headers["Access-Control-Allow-Origin"] = "*"
         return resp
 
     @middleware
-    async def local_files(request: Request, handler: _Handler) -> StreamResponse:
+    async def local_files(request: Request, handler: Handler) -> StreamResponse:
         try:
             rel = PurePosixPath(request.path).relative_to("/cwd")
             path = Path(cwd / rel).resolve(strict=True)
