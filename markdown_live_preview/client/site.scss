@@ -1,5 +1,6 @@
-@import "../../node_modules/github-markdown-css/github-markdown.css";
 @import "../../node_modules/@fortawesome/fontawesome-free/css/all.css";
+@import "../../node_modules/bootstrap/dist/css/bootstrap-reboot.css";
+@import "../../node_modules/github-markdown-css/github-markdown.css";
 @import "../../.cache/codehl.css";
 
 :root {
@@ -23,10 +24,10 @@ main {
 }
 
 header {
-  display: flex;
-  flex-direction: row;
-  align-content: space-between;
-  align-items: baseline;
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  align-items: center;
+  column-gap: 0.5em;
 
   > * {
     margin-top: 0;
