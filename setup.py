@@ -31,7 +31,7 @@ scripts = [
 setup(
     name="markdown-live-preview",
     python_requires=">=3.8.0",
-    version="0.2.16",
+    version="0.2.17",
     description="live web preview of markdown docs",
     long_description=(_TOP_LEVEL / "README.md").read_text(),
     long_description_content_type="text/markdown",
