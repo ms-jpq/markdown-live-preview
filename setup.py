@@ -28,7 +28,6 @@ scripts = [
     for path in (_TOP_LEVEL / "scripts").iterdir()
 ]
 
-
 setup(
     name="markdown-live-preview",
     python_requires=">=3.8.0",
