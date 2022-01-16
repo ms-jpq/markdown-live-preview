@@ -130,7 +130,7 @@ def parse(html: str) -> Node:
 
 def unparse(node: Node) -> str:
     attrs = " ".join(
-        f'{k}="{v}"' if v else k
+        f'{escape(k)}="{escape(v)}"' if v else escape(k)
         for k, v in chain(
             node.attrs.items(), (("diff", str(True)),) if node.diff else ()
         )
