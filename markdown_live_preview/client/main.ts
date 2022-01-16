@@ -1,7 +1,7 @@
 const CYCLE = 500
 
-const display = document.body.querySelector("#main")!
 const title = document.body.querySelector("#title")!
+const display = document.body.querySelector("article")!
 
 type API = { title: string; sha: string; follow: boolean }
 
