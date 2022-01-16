@@ -5,9 +5,8 @@
 :root {
   --focus-colour: #fdf5bf;
   --border-colour: rgb(225, 228, 232);
+  --padding-size: 1em;
 }
-
-$padding_size: 1em;
 
 body {
   padding: 1em;
@@ -20,7 +19,7 @@ body {
   margin: auto;
   max-width: 60em;
 
-  padding: $padding_size;
+  padding: var(--padding-size);
 }
 
 header {
@@ -38,7 +37,7 @@ header {
     flex-grow: 1;
   }
 
-  margin-bottom: $padding_size;
+  margin-bottom: var(--padding-size);
 }
 
 [diff="True"] {

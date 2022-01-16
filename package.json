@@ -14,6 +14,7 @@
   },
   "description": "Markdown Live Preview",
   "devDependencies": {
+    "@parcel/transformer-sass": "^2.2.0",
     "@types/node": "*",
     "prettier": "*",
     "typescript": "*"

@@ -1,4 +1,3 @@
-std2@https://github.com/ms-jpq/std2/archive/43b0ec34df67f7387958fa505afa0375871970c6.tar.gz
 watchdog==2.1.6
 Markdown==3.3.6
 Pygments==2.11.2

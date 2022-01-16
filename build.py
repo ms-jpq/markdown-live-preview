@@ -27,7 +27,7 @@ def main() -> None:
             node_bin / "parcel",
             "build",
             "--no-source-maps",
-            "--out-dir",
+            "--dist-dir",
             js_dist,
             "--",
             package / "client" / "index.html",
