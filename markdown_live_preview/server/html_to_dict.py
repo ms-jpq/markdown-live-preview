@@ -15,7 +15,7 @@ from typing import (
 )
 from weakref import ref
 
-_VOID = {
+_SELF_CLOSING = {
     "area",
     "base",
     "basefont",
@@ -121,7 +121,7 @@ class _Parser(HTMLParser):
 
 
 def parse(html: str) -> Node:
-    parser = _Parser(root_el="div")
+    parser = _Parser(root_el="")
     parser.feed(html)
     node = parser.consume()
 
@@ -139,7 +139,10 @@ def unparse(node: Node) -> str:
         unparse(child) if isinstance(child, Node) else escape(child.text)
         for child in node.children
     )
-    if node.tag in _VOID:
+
+    if not node.tag:
+        return kids
+    elif node.tag in _SELF_CLOSING:
         return f"<{node.tag} {attrs}/>"
     else:
         return f"<{node.tag} {attrs}>{kids}</{node.tag}>"
