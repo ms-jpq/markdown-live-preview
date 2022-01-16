@@ -43,7 +43,7 @@ _VOID = {
 
 
 class ParseError(Exception):
-    pass
+    ...
 
 
 @dataclass

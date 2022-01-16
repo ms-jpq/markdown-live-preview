@@ -3,7 +3,8 @@ from pathlib import PurePosixPath
 from typing import Callable, Optional, Sequence, Union
 from urllib.parse import urlsplit, urlunsplit
 
-from .html_to_dict import Node, TextNode, parse, unparse
+from .html_to_dict import Node, ParseError, TextNode, parse, unparse
+from .log import log
 
 _Nodes = Sequence[Union[Node, TextNode]]
 
@@ -63,18 +64,23 @@ def reconciliate() -> Callable[[str], str]:
 
     def recon(xhtml: str) -> str:
         nonlocal prev
-        root = parse(xhtml)
-        _localize(root)
-        if not prev:
-            prev = root
-            return unparse(root)
+        try:
+            root = parse(xhtml)
+        except ParseError:
+            log.error("%s", "Unable to compute diff, invalid HTML")
+            return xhtml
         else:
-            before, after = tuple(prev), tuple(root)
-            if before == after:
-                return unparse(prev)
-            else:
-                diff_inplace(before, after=after)
+            _localize(root)
+            if not prev:
                 prev = root
                 return unparse(root)
+            else:
+                before, after = tuple(prev), tuple(root)
+                if before == after:
+                    return unparse(prev)
+                else:
+                    diff_inplace(before, after=after)
+                    prev = root
+                    return unparse(root)
 
     return recon

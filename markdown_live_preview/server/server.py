@@ -4,6 +4,7 @@ from pathlib import Path, PurePath, PurePosixPath
 from typing import AsyncIterator, Awaitable, Callable
 from weakref import WeakSet
 
+from aiohttp.typedefs import Handler
 from aiohttp.web import (
     Application,
     AppRunner,
@@ -15,7 +16,7 @@ from aiohttp.web import (
     middleware,
 )
 from aiohttp.web_fileresponse import FileResponse
-from aiohttp.web_middlewares import Handler, normalize_path_middleware
+from aiohttp.web_middlewares import normalize_path_middleware
 from aiohttp.web_request import BaseRequest, Request
 from aiohttp.web_response import StreamResponse
 
