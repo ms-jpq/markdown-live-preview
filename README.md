@@ -18,7 +18,7 @@ The animation is only choppy because it's a compressed gif.
 
 ## Usage
 
-```sh
+```bash
 mlp |name of markdown|
 ```
 
@@ -31,6 +31,6 @@ mlp |name of markdown|
 
 ## [Install](https://pypi.org/project/markdown-live-preview)
 
-```sh
+```bash
 pip install -U markdown_live_preview
 ```
