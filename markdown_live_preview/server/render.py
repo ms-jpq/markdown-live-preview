@@ -13,7 +13,6 @@ from markdown.extensions.def_list import makeExtension as def_list
 from markdown.extensions.fenced_code import makeExtension as fenced_code
 from markdown.extensions.footnotes import makeExtension as footnotes
 from markdown.extensions.md_in_html import makeExtension as md_in_html
-from markdown.extensions.nl2br import makeExtension as nl2br
 from markdown.extensions.sane_lists import makeExtension as sane_lists
 from markdown.extensions.smarty import makeExtension as smarty
 from markdown.extensions.tables import makeExtension as tables
@@ -74,7 +73,6 @@ def _extensions(style: str) -> Sequence[Extension]:
         fenced_code(),
         footnotes(),
         md_in_html(),
-        nl2br(),
         sane_lists(),
         smarty(),
         tables(),
