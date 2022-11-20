@@ -67,7 +67,10 @@ def build(
 
     @routes.route("*", "/")
     async def index_resp(request: BaseRequest) -> FileResponse:
+        assert request
         return FileResponse(JS_ROOT / "index.html")
+
+    assert index_resp
 
     @routes.get("/ws")
     async def ws_resp(request: BaseRequest) -> WebSocketResponse:
@@ -78,14 +81,24 @@ def build(
             pass
         return ws
 
+    assert ws_resp
+
     @routes.get("/api/info")
     async def meta_resp(request: BaseRequest) -> StreamResponse:
+        assert request
+
         json = {"follow": payload.follow, "title": payload.title, "sha": payload.sha}
         return json_response(json)
 
+    assert meta_resp
+
     @routes.get("/api/markdown")
     async def markdown_resp(request: BaseRequest) -> StreamResponse:
+        assert request
+
         return Response(text=payload.markdown, content_type="text/html")
+
+    assert markdown_resp
 
     async def broadcast() -> None:
         nonlocal payload
