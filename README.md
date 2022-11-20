@@ -22,7 +22,7 @@ The animation is only choppy because it's a compressed gif.
 mlp |name of markdown|
 ```
 
-| Flags                  | Flags                    |
+| Flags                  | Meaning                  |
 | ---------------------- | ------------------------ |
 | `-p, --port PORT=8080` | Port to use              |
 | `-o, --open`           | No localhost restriction |

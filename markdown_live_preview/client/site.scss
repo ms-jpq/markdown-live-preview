@@ -1,5 +1,4 @@
-@import "../../node_modules/@fortawesome/fontawesome-free/css/all.css";
-@import "../../node_modules/bootstrap/dist/css/bootstrap-reboot.css";
+@import "../../node_modules/modern-normalize/modern-normalize.css";
 @import "../../node_modules/github-markdown-css/github-markdown.css";
 @import "../../.cache/codehl.css";
 
@@ -37,7 +36,7 @@ main {
 header {
   display: grid;
   grid-template-columns: auto auto 1fr auto;
-  align-items: center;
+  align-items: baseline;
   column-gap: 0.5em;
 
   > * {
@@ -50,6 +49,10 @@ header {
   }
 
   margin-bottom: var(--padding-size);
+
+  .menu-icon {
+    font-size: 130%;
+  }
 }
 
 [diff="True"] {
