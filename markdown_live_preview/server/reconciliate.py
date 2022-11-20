@@ -1,5 +1,6 @@
 from difflib import SequenceMatcher
 from pathlib import PurePosixPath
+from posixpath import join, sep
 from typing import Callable, Optional, Sequence, Union
 from urllib.parse import urlsplit, urlunsplit
 
@@ -14,8 +15,8 @@ def _uri_replace(uri: str) -> Optional[str]:
     if not parsed.scheme:
         path = PurePosixPath(parsed.path)
         if not path.is_absolute():
-            new_path = PurePosixPath("/cwd") / path
-            unparsed = parsed._replace(path=str(new_path))
+            new_path = join(sep, "cwd", path)
+            unparsed = parsed._replace(path=new_path)
             new_uri = urlunsplit(unparsed)
             return new_uri
         else:

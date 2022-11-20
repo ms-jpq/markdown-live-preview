@@ -1,6 +1,7 @@
 from asyncio import gather
 from dataclasses import dataclass
 from pathlib import Path, PurePath, PurePosixPath
+from posixpath import join, sep
 from typing import AsyncIterator, Awaitable, Callable
 from weakref import WeakSet
 
@@ -46,12 +47,12 @@ def build(
     @middleware
     async def local_files(request: Request, handler: Handler) -> StreamResponse:
         try:
-            rel = PurePosixPath(request.path).relative_to("/cwd")
+            rel = PurePosixPath(request.path).relative_to(join(sep, "cwd"))
             path = Path(cwd / rel).resolve(strict=True)
         except (ValueError, OSError):
             return await handler(request)
         else:
-            if path.relative_to(cwd):
+            if path.relative_to(cwd) and path.is_file():
                 return FileResponse(path)
             else:
                 return await handler(request)
@@ -65,14 +66,14 @@ def build(
     websockets: WeakSet = WeakSet()
     app = Application(middlewares=middlewares)
 
-    @routes.route("*", "/")
+    @routes.get(sep)
     async def index_resp(request: BaseRequest) -> FileResponse:
         assert request
         return FileResponse(JS_ROOT / "index.html")
 
     assert index_resp
 
-    @routes.get("/ws")
+    @routes.get(join(sep, "ws"))
     async def ws_resp(request: BaseRequest) -> WebSocketResponse:
         ws = WebSocketResponse(heartbeat=HEARTBEAT_TIME)
         await ws.prepare(request)
@@ -83,7 +84,7 @@ def build(
 
     assert ws_resp
 
-    @routes.get("/api/info")
+    @routes.get(join(sep, "api", "info"))
     async def meta_resp(request: BaseRequest) -> StreamResponse:
         assert request
 
@@ -92,7 +93,7 @@ def build(
 
     assert meta_resp
 
-    @routes.get("/api/markdown")
+    @routes.get(join(sep, "api", "markdown"))
     async def markdown_resp(request: BaseRequest) -> StreamResponse:
         assert request
 
@@ -107,7 +108,7 @@ def build(
             tasks = (ws.send_str("") for ws in websockets)
             await gather(*tasks)
 
-    routes.static(prefix="/", path=JS_ROOT)
+    routes.static(prefix=sep, path=JS_ROOT)
     app.add_routes(routes)
 
     async def start() -> None:
