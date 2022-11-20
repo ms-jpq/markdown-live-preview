@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from os.path import curdir
 from pathlib import Path
 from shutil import rmtree
 from subprocess import check_call, check_output
@@ -27,7 +28,16 @@ def main() -> None:
 
     check_call(("mypy", "--", "."), cwd=_TOP_LV)
     check_call(
-        (node_bin / "vite", "build", "--outDir", js_dist, "--assetsDir", "."),
+        (
+            node_bin / "vite",
+            "build",
+            "--outDir",
+            js_dist,
+            "--assetsDir",
+            curdir,
+            "--target",
+            "esnext",
+        ),
         cwd=package / "client",
     )
 

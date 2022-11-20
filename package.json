@@ -1,29 +1,13 @@
 {
-  "author": "Fly me to the moon",
-  "browserslist": [
-    "last 5 chrome versions"
-  ],
-  "bugs": {
-    "url": "https://github.com/ms-jpq/markdown-preview/issues"
-  },
   "dependencies": {
     "github-markdown-css": "^5",
     "modern-normalize": "^1",
     "sass": "^1",
     "vite": "^3"
   },
-  "description": "Markdown Live Preview",
   "devDependencies": {
     "@types/node": "*",
     "typescript": "*"
   },
-  "homepage": "https://github.com/ms-jpq/markdown-preview#readme",
-  "license": "MIT",
-  "name": "markdown-live-preview",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ms-jpq/markdown-preview.git"
-  },
-  "scripts": {},
-  "version": "0.0.1"
+  "type": "module"
 }

@@ -29,14 +29,14 @@ class Payload:
     follow: bool
     title: str
     sha: str
-    markdown: str
+    xhtml: str
 
 
 def build(
     localhost: bool, port: int, cwd: PurePath, gen: AsyncIterator[Payload]
 ) -> Callable[[], Awaitable[None]]:
     host = "localhost" if localhost else ""
-    payload = Payload(follow=False, title="", sha="", markdown="")
+    payload = Payload(follow=False, title="", sha="", xhtml="")
 
     @middleware
     async def cors(request: Request, handler: Handler) -> StreamResponse:
@@ -97,7 +97,7 @@ def build(
     async def markdown_resp(request: BaseRequest) -> StreamResponse:
         assert request
 
-        return Response(text=payload.markdown, content_type="text/html")
+        return Response(text=payload.xhtml, content_type="text/html")
 
     assert markdown_resp
 

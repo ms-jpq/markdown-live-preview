@@ -1,12 +1,10 @@
 from argparse import ArgumentParser, Namespace
-from hashlib import md5
 from pathlib import Path
 from socket import getfqdn
 from typing import AsyncIterator
 from webbrowser import open as open_w
 
 from .log import log
-from .reconciliate import reconciliate
 from .render import render
 from .server import Payload, build
 from .watch import watch
@@ -39,7 +37,7 @@ async def main() -> int:
         log.critical("%s", e)
         return 1
     else:
-        render_f, recon_f = render("friendly"), reconciliate()
+        render_f = render("friendly")
 
         async def gen() -> AsyncIterator[Payload]:
             async for _ in watch(args.throttle, path=path):
@@ -50,10 +48,9 @@ async def main() -> int:
                     break
                 else:
                     xhtml = render_f(md)
-                    markdown = recon_f(xhtml)
-                    sha = md5(markdown.encode()).hexdigest()
+                    sha = str(hash(xhtml))
                     payload = Payload(
-                        follow=args.follow, title=path.name, sha=sha, markdown=markdown
+                        follow=args.follow, title=path.name, sha=sha, xhtml=xhtml
                     )
                     yield payload
 
