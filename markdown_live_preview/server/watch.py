@@ -23,13 +23,13 @@ async def watch(throttle: float, path: Path) -> AsyncIterable[str]:
 
     async def notify() -> None:
         done, _ = await wait(
-            (create_task(ev.wait()), sleep(throttle, False)),
+            (create_task(ev.wait()), create_task(sleep(throttle, False))),
             return_when=FIRST_COMPLETED,
         )
         go = done.pop().result()
         if go and ev.is_set():
             ev.clear()
-            await gather(chan.put(None), sleep(throttle))
+            await gather(chan.put(None), create_task(sleep(throttle)))
             ev.set()
 
     def send(event: FileSystemEvent) -> None:
