@@ -31,7 +31,9 @@ const ws_connect = async function* <T>() {
 
 const update = async (follow: boolean) => {
   const page = await (await fetch(`${location.origin}/api/markdown`)).text()
-  display.innerHTML = page
+  const template = document.createElement("template")
+  template.innerHTML = page
+  display.replaceChildren(template.content.cloneNode())
 
   await new Promise((resolve) => requestAnimationFrame(resolve))
   const marked = document.body.querySelectorAll(`[diff="True"]`)
