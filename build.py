@@ -37,6 +37,8 @@ def main() -> None:
             curdir,
             "--target",
             "esnext",
+            "--minify",
+            "false",
         ),
         cwd=package / "client",
     )
