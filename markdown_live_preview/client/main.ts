@@ -116,6 +116,7 @@ const update = ((sha) => async (follow: boolean, new_sha: string) => {
 
   const page = await (await fetch(`${location.origin}/api/markdown`)).text()
   template.innerHTML = page
+  template.normalize()
   reconciliate(article, template.content)
 
   await new Promise((resolve) => requestAnimationFrame(resolve))
