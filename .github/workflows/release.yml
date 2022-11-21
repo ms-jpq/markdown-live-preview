@@ -6,7 +6,7 @@ on:
     branches:
       - md
     paths:
-      - "setup.py"
+      - "pyproject.toml"
 
 jobs:
   release:
@@ -14,18 +14,40 @@ jobs:
 
     steps:
       - name: Install Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
 
       - name: Install Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+
+      - name: Install Toml Lib
+        run: |-
+          pip install -- toml
 
       - name: Install Pip Packages
+        shell: python
         run: |-
-          pip install -U -r requirements.txt -- mypy types-Markdown
-          pip install -U setuptools wheel
+          from itertools import chain
+          from subprocess import check_call
+          from sys import executable
+          from toml import load
+
+          toml = load("pyproject.toml")
+          project = toml["project"]
+          check_call(
+              (
+                  executable,
+                  "-m",
+                  "pip",
+                  "install",
+                  "--upgrade",
+                  "--",
+                  *project["dependencies"],
+                  *chain.from_iterable(project["optional-dependencies"].values()),
+              )
+          )
 
       - name: Install NPM Packages
         run: npm install
@@ -34,10 +56,14 @@ jobs:
         run: ./build.py
 
       - name: Release
-        run: ./setup.py sdist bdist_wheel
+        shell: python
+        run: |-
+          from setuptools import setup
+          from sys import argv
+          argv.extend(("sdist", "bdist_wheel"))
+          setup()
 
       - name: Publish PyPI
-        uses: pypa/gh-action-pypi-publish@master
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          user: __token__
           password: ${{ secrets.PYPI_TOKEN }}
