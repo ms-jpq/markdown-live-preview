@@ -137,31 +137,16 @@ const main = async () => {
   document.title = info.title
   title.textContent = info.title
 
-  const loop1 = async () => {
-    while (true) {
-      try {
-        for await (const _ of ws_connect<string>()) {
-          await update(info.follow, info.sha)
-        }
-      } catch (err) {
-        console.error(err)
-      }
-    }
-  }
-
-  const loop2 = async () => {
-    while (true) {
-      try {
-        const info = await api_request()
+  while (true) {
+    try {
+      for await (const _ of ws_connect<string>()) {
         await update(info.follow, info.sha)
-      } catch (err) {
-        console.error(err)
       }
-      await new Promise((resolve) => setTimeout(resolve, CYCLE))
+    } catch (err) {
+      console.error(err)
     }
   }
-
-  await Promise.all([loop1(), loop2()])
 }
 
+await update(false, "<>")
 await main()

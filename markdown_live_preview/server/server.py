@@ -80,6 +80,7 @@ def build(
         websockets.add(ws)
         async for _ in ws:
             pass
+        await ws.send_str("")
         return ws
 
     assert ws_resp
