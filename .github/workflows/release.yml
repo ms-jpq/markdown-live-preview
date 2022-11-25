@@ -22,29 +22,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install Toml
-        run: pip install -- toml
-
       - name: Install Pip Packages
         shell: python
         run: |-
           from itertools import chain
           from os import execl
           from sys import executable
-          from toml import load
 
-          toml = load("pyproject.toml")
+          from tomllib import load
+
+          with open("pyproject.toml", "rb") as fd:
+              toml = load(fd)
           project = toml["project"]
           execl(
-            executable,
-            executable,
-            "-m",
-            "pip",
-            "install",
-            "--upgrade",
-            "--",
-            *project["dependencies"],
-            *chain.from_iterable(project["optional-dependencies"].values()),
+              executable,
+              executable,
+              "-m",
+              "pip",
+              "install",
+              "--upgrade",
+              "--",
+              *project["dependencies"],
+              *chain.from_iterable(project["optional-dependencies"].values()),
           )
 
       - name: Install NPM Packages
