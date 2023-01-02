@@ -9,7 +9,7 @@ version         = "0.2.34"
 dependencies = [
   "watchdog==2.1.9",
   "Markdown==3.4.1",
-  "Pygments==2.13.0",
+  "Pygments==2.14.0",
   "aiohttp==3.8.3",
 ]
 [project.optional-dependencies]
