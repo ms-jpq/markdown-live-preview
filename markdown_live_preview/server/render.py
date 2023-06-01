@@ -8,6 +8,7 @@ from markdown.extensions import Extension
 from markdown.extensions.abbr import makeExtension as abbr
 from markdown.extensions.admonition import makeExtension as admonition
 from markdown.extensions.attr_list import makeExtension as attr_list
+from markdown.extensions.codehilite import CodeHilite
 from markdown.extensions.codehilite import makeExtension as codehilite
 from markdown.extensions.def_list import makeExtension as def_list
 from markdown.extensions.fenced_code import makeExtension as fenced_code
@@ -62,6 +63,19 @@ class _UserExts(Extension):
         )
 
 
+_hilite = CodeHilite.hilite
+
+
+def hilite(self: CodeHilite, shebang: bool = True) -> str:
+    if self.lang == "mermaid":
+        return f'<pre class="mermaid">{self.src}</pre>'
+    else:
+        return _hilite(self, shebang=shebang)
+
+
+CodeHilite.hilite = hilite
+
+
 @no_type_check
 def _extensions(style: str) -> Sequence[Extension]:
     return (
@@ -95,9 +109,9 @@ def css() -> str:
 
 
 def render(style: str) -> Callable[[str], str]:
-    _markdown = Markdown(extensions=_extensions(style))
+    parser = Markdown(extensions=_extensions(style))
 
     def render(md: str) -> str:
-        return _markdown.convert(md)
+        return parser.convert(md)
 
     return render

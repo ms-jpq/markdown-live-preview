@@ -51,26 +51,32 @@ const ws_connect = async function* <T>() {
 const update = (
   (sha) =>
   async (follow: boolean, new_sha: string, post: () => Promise<void>) => {
-    if (new_sha === sha) {
-      return
-    } else {
-      sha = new_sha
-    }
+    try {
+      if (new_sha === sha) {
+        console.debug("no change")
+        return
+      } else {
+        sha = new_sha
+      }
 
-    const page = await (await fetch(`${location.origin}/api/markdown`)).text()
-    template.innerHTML = page
-    template.normalize()
-    reconciliate({ root, diff_key, lhs: root, rhs: template.content })
+      const page = await (await fetch(`${location.origin}/api/markdown`)).text()
+      template.innerHTML = page
+      template.normalize()
+      reconciliate({ root, diff_key, lhs: root, rhs: template.content })
+      await post()
 
-    const marked = root.querySelectorAll(`[${diff_key}="${true}"]`)
-    const [focus, ..._] = marked
+      const marked = root.querySelectorAll(`[${diff_key}="${true}"]`)
+      const [focus, ..._] = marked
 
-    if (follow && focus) {
-      focus.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-        inline: "center",
-      })
+      if (follow && focus) {
+        focus.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+          inline: "center",
+        })
+      }
+    } finally {
+      console.debug("rendered")
     }
   }
 )("")
@@ -103,9 +109,9 @@ const main = async () => {
   const loop2 = async () => {
     for await (const _ of scheduler) {
       try {
+        console.debug("poll")
         const info = await api_request()
         await update(info.follow, info.sha, render)
-        console.debug("poll")
       } catch (err) {
         console.error(err)
       }
