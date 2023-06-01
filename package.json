@@ -3,7 +3,7 @@
     "github-markdown-css": "^5",
     "modern-normalize": "^1",
     "sass": "^1",
-    "vite": "^3"
+    "vite": "^4"
   },
   "devDependencies": {
     "@types/node": "*",

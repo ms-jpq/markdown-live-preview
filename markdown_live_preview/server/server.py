@@ -1,4 +1,5 @@
 from asyncio import gather
+from contextlib import suppress
 from dataclasses import dataclass
 from pathlib import Path, PurePath, PurePosixPath
 from posixpath import join, sep
@@ -46,16 +47,13 @@ def build(
 
     @middleware
     async def local_files(request: Request, handler: Handler) -> StreamResponse:
-        try:
+        with suppress(ValueError, OSError):
             rel = PurePosixPath(request.path).relative_to(join(sep, "cwd"))
             path = Path(cwd / rel).resolve(strict=True)
-        except (ValueError, OSError):
-            return await handler(request)
-        else:
             if path.relative_to(cwd) and path.is_file():
                 return FileResponse(path)
-            else:
-                return await handler(request)
+
+        return await handler(request)
 
     middlewares = (
         normalize_path_middleware(),
