@@ -1,6 +1,6 @@
-@import "../../node_modules/modern-normalize/modern-normalize.css";
-@import "../../node_modules/github-markdown-css/github-markdown.css";
-@import "../../.cache/codehl.css";
+@use "../../node_modules/modern-normalize/modern-normalize.css";
+@use "../../node_modules/github-markdown-css/github-markdown.css";
+@use "../../.cache/codehl.css";
 
 :root {
   --focus-colour: #fdf5bf;
@@ -53,6 +53,11 @@ header {
   .menu-icon {
     font-size: 130%;
   }
+}
+
+.mermaid {
+  display: flex;
+  justify-content: center;
 }
 
 [diff="true"] {

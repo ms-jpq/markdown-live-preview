@@ -68,7 +68,8 @@ _hilite = CodeHilite.hilite
 
 def hilite(self: CodeHilite, shebang: bool = True) -> str:
     if self.lang == "mermaid":
-        return f'<pre class="mermaid">{self.src}</pre>'
+        hashed, escaped = hash(self.src), escape(self.src)
+        return f'<code class="mermaid" data-mermaid="{hashed}">{escaped}</code>'
     else:
         return _hilite(self, shebang=shebang)
 

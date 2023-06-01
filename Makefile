@@ -4,15 +4,17 @@ MAKEFLAGS += --warn-undefined-variables
 SHELL := bash
 .DELETE_ON_ERROR:
 .ONESHELL:
-.SHELLFLAGS := -Eeuo pipefail -O dotglob -O nullglob -O failglob -O globstar -c
+.SHELLFLAGS := -Eeuo pipefail -O dotglob -O nullglob -O extglob -O failglob -O globstar -c
 
 .DEFAULT_GOAL := dev
 
 .PHONY: clean clobber
 
+DIST := markdown_live_preview/js
+
 clean:
 	shopt -u failglob
-	rm -rf -- .mypy_cache/ build/ dist/ markdown_live_preview.egg-info/ markdown_live_preview/js/*.{css,js,html}
+	rm -rf -- .cache/ .mypy_cache/ build/ dist/ markdown_live_preview.egg-info/ '$(DIST)' tsconfig.tsbuildinfo
 
 clobber: clean
 	shopt -u failglob
@@ -47,33 +49,47 @@ clobber: clean
 
 .PHONY: tsc
 
+.FORCE:
+
 tsc:
 	node_modules/.bin/tsc
 
 .PHONY: mypy
 
 mypy: .venv/bin/mypy
-	'$<' -- .
+	'$<' --disable-error-code=method-assign -- .
 
 .PHONY: lint
 
 lint: mypy tsc
 
-node_modules/.bin/vite:
+node_modules/.bin/esbuild:
 	npm install
 
-init: .venv/bin/mypy node_modules/.bin/vite
+init: .venv/bin/mypy node_modules/.bin/esbuild
 
 .PHONY: build
 
-markdown_live_preview/js:
+$(DIST):
 	mkdir -p -- '$@'
 
-markdown_live_preview/__init__.py: markdown_live_preview/js
+markdown_live_preview/__init__.py: $(DIST)
 	touch -- '$@'
 
-build: markdown_live_preview/__init__.py .venv/bin/mypy node_modules/.bin/vite
-	.venv/bin/python3 ./build.py
+.cache/codehl.css:: .venv/bin/mypy
+	mkdir -p -- .cache
+	.venv/bin/python3 -m markdown_live_preview.server > '$@'
+
+$(DIST)/site.css: markdown_live_preview/client/site.scss .cache/codehl.css $(DIST)
+	node_modules/.bin/sass --style compressed -- '$<' '$@'
+
+$(DIST)/index.html: markdown_live_preview/client/index.html $(DIST)
+	cp --recursive --force --reflink=auto -- '$<' '$@'
+
+$(DIST)/main.js: node_modules/.bin/esbuild .FORCE
+	node_modules/.bin/esbuild --bundle --format=esm --outfile='$@' ./markdown_live_preview/client/main.ts
+
+build: markdown_live_preview/__init__.py $(DIST)/index.html $(DIST)/main.js $(DIST)/site.css
 
 .PHONY: release
 
@@ -102,10 +118,19 @@ fmt: black prettier
 
 .PHONY: run
 
-run: build
+run:
 	.venv/bin/python3 -m markdown_live_preview --open -- ./README.md
+
+.PHONY: watch-js
+
+watch-js:
+	watchexec --shell none --restart --exts html,scss,ts -- make build
+
+.PHONY: watch-py
+
+watch-py:
+	watchexec --shell none --restart --exts py -- make run
 
 .PHONY: dev
 
-dev:
-	watchexec --shell none --restart --exts html,scss,ts,py -- make run
+dev: watch-js watch-py

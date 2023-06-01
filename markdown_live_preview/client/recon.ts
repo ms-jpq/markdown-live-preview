@@ -20,11 +20,13 @@ const long_zip = function* <
 export const reconciliate = ({
   root,
   diff_key,
+  mermaid_class,
   lhs,
   rhs,
 }: {
   root: Node
   diff_key: string
+  mermaid_class: string
   lhs: Node
   rhs: Node
 }) => {
@@ -37,9 +39,15 @@ export const reconciliate = ({
     } else if (!l && r) {
       diff = true
       lhs.appendChild(r)
-    } else if (l instanceof Element && r instanceof Element) {
+    } else if (l instanceof HTMLElement && r instanceof HTMLElement) {
       if (l.tagName !== r.tagName) {
         l.replaceWith(r)
+      } else if (
+        l.classList.contains(mermaid_class) &&
+        r.classList.contains(mermaid_class) &&
+        l.dataset.mermaid === r.dataset.mermaid
+      ) {
+        l.setAttribute(diff_key, String(false))
       } else {
         const attrs = new Map(
           (function* () {
@@ -65,7 +73,7 @@ export const reconciliate = ({
           }
         }
 
-        reconciliate({ diff_key, root, lhs: l, rhs: r })
+        reconciliate({ diff_key, mermaid_class, root, lhs: l, rhs: r })
       }
     } else {
       if (l!.nodeType !== r!.nodeType) {

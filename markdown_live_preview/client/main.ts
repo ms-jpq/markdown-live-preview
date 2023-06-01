@@ -10,6 +10,7 @@ const root = document.body.querySelector("article")!
 const template = document.createElement("template")
 
 const diff_key = "diff"
+const mermaid_class = "mermaid"
 
 type API = { title: string; sha: string; follow: boolean }
 
@@ -51,35 +52,42 @@ const ws_connect = async function* <T>() {
 const update = (
   (sha) =>
   async (follow: boolean, new_sha: string, post: () => Promise<void>) => {
-    try {
-      if (new_sha === sha) {
-        console.debug("no change")
-        return
-      } else {
-        sha = new_sha
-      }
+    if (new_sha === sha) {
+      console.debug("no change")
+      return
+    } else {
+      sha = new_sha
+    }
 
-      const page = await (await fetch(`${location.origin}/api/markdown`)).text()
-      template.innerHTML = page
-      template.normalize()
-      reconciliate({ root, diff_key, lhs: root, rhs: template.content })
-      await post()
+    const page = await (await fetch(`${location.origin}/api/markdown`)).text()
+    template.innerHTML = page
+    template.normalize()
+    reconciliate({
+      root,
+      diff_key,
+      mermaid_class,
+      lhs: root,
+      rhs: template.content,
+    })
+    await post()
 
-      const marked = root.querySelectorAll(`[${diff_key}="${true}"]`)
-      const [focus, ..._] = marked
+    const marked = root.querySelectorAll(`[${diff_key}="${true}"]`)
+    const [focus, ..._] = marked
 
-      if (follow && focus) {
-        focus.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-          inline: "center",
-        })
-      }
-    } finally {
-      console.debug("rendered")
+    if (follow && focus) {
+      focus.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "center",
+      })
     }
   }
 )("")
+
+const id = (
+  (id) => () =>
+    id++
+)(0)
 
 const main = async () => {
   mermaid.initialize({ startOnLoad: false })
@@ -89,8 +97,21 @@ const main = async () => {
   title.textContent = info.title
 
   const scheduler = sched(CYCLE)
-  const render = async () =>
-    await mermaid.run({ nodes: root.querySelectorAll(".mermaid") })
+  const render = async () => {
+    const nodes = [...root.querySelectorAll<HTMLElement>(".mermaid")]
+    await mermaid.run({ nodes })
+  }
+
+  const loop0 = (async function* () {
+    while (true) {
+      const [follow, sha]: [boolean, string] = yield
+      try {
+        await update(follow, sha, render)
+      } finally {
+        console.debug("rendered")
+      }
+    }
+  })()
 
   const loop1 = async () => {
     while (true) {
@@ -98,7 +119,7 @@ const main = async () => {
         for await (const _ of ws_connect<string>()) {
           scheduler.reset()
           console.debug("ws")
-          await update(info.follow, info.sha, render)
+          await loop0.next([info.follow, info.sha])
         }
       } catch (err) {
         console.error(err)
@@ -111,7 +132,7 @@ const main = async () => {
       try {
         console.debug("poll")
         const info = await api_request()
-        await update(info.follow, info.sha, render)
+        await loop0.next([info.follow, info.sha])
       } catch (err) {
         console.error(err)
       }
