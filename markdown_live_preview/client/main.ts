@@ -1,4 +1,7 @@
+import mermaid from "mermaid"
 import { reconciliate } from "./recon.js"
+
+import { sched } from "./sched.js"
 
 const CYCLE = 500
 
@@ -45,41 +48,51 @@ const ws_connect = async function* <T>() {
   }
 }
 
-const update = ((sha) => async (follow: boolean, new_sha: string) => {
-  if (new_sha === sha) {
-    return
-  } else {
-    sha = new_sha
+const update = (
+  (sha) =>
+  async (follow: boolean, new_sha: string, post: () => Promise<void>) => {
+    if (new_sha === sha) {
+      return
+    } else {
+      sha = new_sha
+    }
+
+    const page = await (await fetch(`${location.origin}/api/markdown`)).text()
+    template.innerHTML = page
+    template.normalize()
+    reconciliate({ root, diff_key, lhs: root, rhs: template.content })
+
+    const marked = root.querySelectorAll(`[${diff_key}="${true}"]`)
+    const [focus, ..._] = marked
+
+    if (follow && focus) {
+      focus.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "center",
+      })
+    }
   }
-
-  const page = await (await fetch(`${location.origin}/api/markdown`)).text()
-  template.innerHTML = page
-  template.normalize()
-  reconciliate({ root, diff_key, lhs: root, rhs: template.content })
-
-  await new Promise((resolve) => requestAnimationFrame(resolve))
-  const marked = document.body.querySelectorAll(`[${diff_key}="${true}"]`)
-  const [focus, ..._] = marked
-
-  if (follow && focus) {
-    focus.scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-      inline: "center",
-    })
-  }
-})("")
+)("")
 
 const main = async () => {
+  mermaid.initialize({ startOnLoad: false })
+
   const info = await api_request()
   document.title = info.title
   title.textContent = info.title
+
+  const scheduler = sched(CYCLE)
+  const render = async () =>
+    await mermaid.run({ nodes: root.querySelectorAll(".mermaid") })
 
   const loop1 = async () => {
     while (true) {
       try {
         for await (const _ of ws_connect<string>()) {
-          await update(info.follow, info.sha)
+          scheduler.reset()
+          console.debug("ws")
+          await update(info.follow, info.sha, render)
         }
       } catch (err) {
         console.error(err)
@@ -88,14 +101,14 @@ const main = async () => {
   }
 
   const loop2 = async () => {
-    while (true) {
+    for await (const _ of scheduler) {
       try {
         const info = await api_request()
-        await update(info.follow, info.sha)
+        await update(info.follow, info.sha, render)
+        console.debug("poll")
       } catch (err) {
         console.error(err)
       }
-      await new Promise((resolve) => setTimeout(resolve, CYCLE))
     }
   }
 

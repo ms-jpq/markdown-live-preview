@@ -45,19 +45,34 @@ clobber: clean
 	)
 	EOF
 
-lint: .venv/bin/mypy
+.PHONY: tsc
+
+tsc:
+	node_modules/.bin/tsc
+
+.PHONY: mypy
+
+mypy: .venv/bin/mypy
 	'$<' -- .
+
+.PHONY: lint
+
+lint: mypy tsc
 
 node_modules/.bin/vite:
 	npm install
-
-.PHONY: lint
 
 init: .venv/bin/mypy node_modules/.bin/vite
 
 .PHONY: build
 
-build: .venv/bin/mypy node_modules/.bin/vite
+markdown_live_preview/js:
+	mkdir -p -- '$@'
+
+markdown_live_preview/__init__.py: markdown_live_preview/js
+	touch -- '$@'
+
+build: markdown_live_preview/__init__.py .venv/bin/mypy node_modules/.bin/vite
 	.venv/bin/python3 ./build.py
 
 .PHONY: release
@@ -70,9 +85,20 @@ release: build
 	setup()
 	EOF
 
-fmt: .venv/bin/mypy
+.PHONY: black
+
+.PHONY: prettier
+
+.PHONY: fmt
+
+black: .venv/bin/mypy
 	.venv/bin/isort --profile=black --gitignore -- .
 	.venv/bin/black --extend-exclude pack -- .
+
+prettier:
+	npx --yes -- prettier --write -- .
+
+fmt: black prettier
 
 .PHONY: run
 

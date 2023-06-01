@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "github-markdown-css": "^5",
+    "mermaid": "^10",
     "modern-normalize": "^1",
     "sass": "^1",
     "vite": "^4"
