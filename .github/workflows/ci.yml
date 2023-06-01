@@ -31,9 +31,5 @@ jobs:
           make build
 
       - name: Release
-        shell: python
         run: |-
-          from setuptools import setup
-          from sys import argv
-          argv.extend(("sdist", "bdist_wheel"))
-          setup()
+          make release

@@ -11,11 +11,12 @@ SHELL := bash
 .PHONY: clean clobber
 
 clean:
-	rm -rf --
+	shopt -u failglob
+	rm -rf -- .mypy_cache/ build/ dist/ markdown_live_preview.egg-info/ markdown_live_preview/js/*.{css,js,html}
 
 clobber: clean
+	shopt -u failglob
 	rm -rf -- node_modules/ .venv/
-
 
 .PHONY: init
 

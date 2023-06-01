@@ -27,7 +27,6 @@ jobs:
           make build
 
       - name: Release
-        shell: python
         run: |-
           make release
 
