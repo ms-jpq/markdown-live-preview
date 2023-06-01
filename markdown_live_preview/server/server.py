@@ -74,11 +74,14 @@ def build(
     @routes.get(join(sep, "ws"))
     async def ws_resp(request: BaseRequest) -> WebSocketResponse:
         ws = WebSocketResponse(heartbeat=HEARTBEAT_TIME)
-        await ws.prepare(request)
         websockets.add(ws)
+
+        await ws.prepare(request)
         async for _ in ws:
             pass
-        await ws.send_str("")
+
+        with suppress(ConnectionError):
+            await ws.send_str("")
         return ws
 
     assert ws_resp

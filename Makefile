@@ -6,7 +6,7 @@ SHELL := bash
 .ONESHELL:
 .SHELLFLAGS := -Eeuo pipefail -O dotglob -O nullglob -O failglob -O globstar -c
 
-.DEFAULT_GOAL := help
+.DEFAULT_GOAL := dev
 
 .PHONY: clean clobber
 
@@ -48,16 +48,16 @@ clobber: clean
 lint: .venv/bin/mypy
 	'$<' -- .
 
-node_modules/.bin/esbuild:
+node_modules/.bin/vite:
 	npm install
 
 .PHONY: lint
 
-init: .venv/bin/mypy node_modules/.bin/esbuild
+init: .venv/bin/mypy node_modules/.bin/vite
 
 .PHONY: build
 
-build: .venv/bin/mypy node_modules/.bin/esbuild
+build: .venv/bin/mypy node_modules/.bin/vite
 	.venv/bin/python3 ./build.py
 
 .PHONY: release
@@ -73,3 +73,13 @@ release: build
 fmt: .venv/bin/mypy
 	.venv/bin/isort --profile=black --gitignore -- .
 	.venv/bin/black --extend-exclude pack -- .
+
+.PHONY: run
+
+run: build
+	.venv/bin/python3 -m markdown_live_preview --open -- ./README.md
+
+.PHONY: dev
+
+dev:
+	watchexec --shell none --restart --exts html,scss,ts,py -- make run
