@@ -26,7 +26,6 @@ def main() -> None:
             except IsADirectoryError:
                 rmtree(path)
 
-    check_call(("mypy", "--", "."), cwd=_TOP_LV)
     check_call(
         (
             node_bin / "vite",

@@ -10,15 +10,14 @@ dependencies = [
   "Markdown==3.4.1",
   "Pygments==2.14.0",
   "aiohttp==3.8.4",
-  "watchdog==2.1.9",
+  "watchdog==2.3.1",
 ]
 [project.optional-dependencies]
-dev  = ["mypy", "types-Markdown"]
+dev  = ["mypy", "types-Markdown", "black", "isort"]
 dist = ["wheel"]
 
 [project.urls]
 homepage = "https://github.com/ms-jpq/markdown-live-preview"
-
 
 [project.scripts]
 "mlp" = "markdown_live_preview.__main__:main"

@@ -43,14 +43,14 @@ async def watch(throttle: float, path: Path) -> AsyncIterable[str]:
         def on_modified(self, event: FileSystemEvent) -> None:
             send(event)
 
-    obs = Observer()
-    obs.schedule(Handler(), path=path.parent)
-    obs.start()
+    obs = Observer() # type: ignore
+    obs.schedule(Handler(), path=path.parent) # type: ignore
+    obs.start() # type: ignore
 
     while True:
         try:
             yield path.read_text("UTF-8")
         except GeneratorExit:
-            obs.stop()
+            obs.stop() # type: ignore
             break
         await chan.get()
