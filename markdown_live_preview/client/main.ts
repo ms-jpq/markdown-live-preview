@@ -88,12 +88,25 @@ const main = async () => {
   const gen = ws_connect<string>()
   const render = async () => {
     const nodes = [...root.querySelectorAll<HTMLElement>(".mermaid")]
-    for (const node of nodes) {
-      if (!node.firstElementChild) {
-        node.removeAttribute("data-processed")
-      }
-    }
-    await mermaid.run({ nodes })
+    await Promise.all(
+      (function* () {
+        for (const node of nodes) {
+          if (!node.firstElementChild) {
+            node.removeAttribute("data-processed")
+          }
+          yield (async () => {
+            try {
+              await mermaid.run({ nodes: [node] })
+            } catch (e) {
+              const { message } = e as Error
+              const el = document.createElement("pre")
+              el.append(new Text(message))
+              node.nextElementSibling?.append(el)
+            }
+          })()
+        }
+      })(),
+    )
   }
 
   do {

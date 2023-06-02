@@ -68,8 +68,11 @@ _hilite = CodeHilite.hilite
 
 def hilite(self: CodeHilite, shebang: bool = True) -> str:
     if self.lang == "mermaid":
-        hashed, escaped = hash(self.src), escape(self.src)
-        return f'<code class="mermaid" data-mermaid="{hashed}">{escaped}</code>'
+        src = "\n".join(line.rstrip() for line in self.src.splitlines())
+        hashed, escaped = hash(src), escape(src)
+        slot = f'<slot class="mermaid" data-mermaid="{hashed}">{escaped}</slot>'
+        wrap = f"<figure>{slot}<figcaption></figcaption></figure>"
+        return wrap
     else:
         return _hilite(self, shebang=shebang)
 
