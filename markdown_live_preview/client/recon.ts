@@ -49,16 +49,8 @@ export const reconciliate = ({
       ) {
         l.setAttribute(diff_key, String(false))
       } else {
-        const attrs = new Map(
-          (function* () {
-            for (const { name, value } of r.attributes) {
-              yield [name, value]
-            }
-          })(),
-        )
-
-        for (const { name } of l.attributes) {
-          if (!attrs.has(name)) {
+        for (const { name, value } of l.attributes) {
+          if (r.getAttribute(name) !== value) {
             if (name !== diff_key) {
               diff = true
             }
@@ -66,7 +58,7 @@ export const reconciliate = ({
           }
         }
 
-        for (const [name, value] of attrs) {
+        for (const { name, value } of r.attributes) {
           if (l.getAttribute(name) !== value) {
             diff = true
             l.setAttribute(name, value)

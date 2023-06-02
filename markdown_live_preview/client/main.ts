@@ -88,14 +88,19 @@ const main = async () => {
   const gen = ws_connect<string>()
   const render = async () => {
     const nodes = [...root.querySelectorAll<HTMLElement>(".mermaid")]
+    for (const node of nodes) {
+      if (!node.firstElementChild) {
+        node.removeAttribute("data-processed")
+      }
+    }
     await mermaid.run({ nodes })
   }
 
   do {
     try {
       const { title, follow, sha } = await api_request()
-      document.title = title
-      head.textContent = title
+      document.title ||= title
+      head.textContent ||= title
       await update(follow, sha, render)
       await Promise.race([
         gen.next(),
