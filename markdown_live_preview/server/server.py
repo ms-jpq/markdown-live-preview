@@ -108,7 +108,8 @@ def build(
         async for p in gen:
             payload = p
             tasks = (ws.send_str("") for ws in websockets)
-            await gather(*tasks)
+            with suppress(ConnectionError):
+                await gather(*tasks)
 
     routes.static(prefix=sep, path=JS_ROOT)
     app.add_routes(routes)

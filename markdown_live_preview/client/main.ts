@@ -1,11 +1,9 @@
 import mermaid from "mermaid"
 import { reconciliate } from "./recon.js"
 
-import { sched } from "./sched.js"
-
 const CYCLE = 500
 
-const title = document.body.querySelector("#title")!
+const head = document.body.querySelector("#title")!
 const root = document.body.querySelector("article")!
 const template = document.createElement("template")
 
@@ -84,62 +82,29 @@ const update = (
   }
 )("")
 
-const id = (
-  (id) => () =>
-    id++
-)(0)
-
 const main = async () => {
   mermaid.initialize({ startOnLoad: false })
 
-  const info = await api_request()
-  document.title = info.title
-  title.textContent = info.title
-
-  const scheduler = sched(CYCLE)
+  const gen = ws_connect<string>()
   const render = async () => {
     const nodes = [...root.querySelectorAll<HTMLElement>(".mermaid")]
     await mermaid.run({ nodes })
   }
 
-  const loop0 = (async function* () {
-    while (true) {
-      const [follow, sha]: [boolean, string] = yield
-      try {
-        await update(follow, sha, render)
-      } finally {
-        console.debug("rendered")
-      }
+  do {
+    try {
+      const { title, follow, sha } = await api_request()
+      document.title = title
+      head.textContent = title
+      await update(follow, sha, render)
+      await Promise.race([
+        gen.next(),
+        new Promise((resolve) => setTimeout(resolve, CYCLE)),
+      ])
+    } catch (e) {
+      console.error(e)
     }
-  })()
-
-  const loop1 = async () => {
-    while (true) {
-      try {
-        for await (const _ of ws_connect<string>()) {
-          scheduler.reset()
-          console.debug("ws")
-          await loop0.next([info.follow, info.sha])
-        }
-      } catch (err) {
-        console.error(err)
-      }
-    }
-  }
-
-  const loop2 = async () => {
-    for await (const _ of scheduler) {
-      try {
-        console.debug("poll")
-        const info = await api_request()
-        await loop0.next([info.follow, info.sha])
-      } catch (err) {
-        console.error(err)
-      }
-    }
-  }
-
-  await Promise.all([loop1(), loop2()])
+  } while (true)
 }
 
 await main()
