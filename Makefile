@@ -73,7 +73,7 @@ init: .venv/bin/mypy node_modules/.bin/esbuild
 $(DIST):
 	mkdir -p -- '$@'
 
-markdown_live_preview/__init__.py: $(DIST)
+$(DIST)/__init__.py: $(DIST)
 	touch -- '$@'
 
 .cache/codehl.css:: .venv/bin/mypy
@@ -89,7 +89,7 @@ $(DIST)/index.html: markdown_live_preview/client/index.html $(DIST)
 $(DIST)/main.js: node_modules/.bin/esbuild .FORCE
 	node_modules/.bin/esbuild --bundle --format=esm --outfile='$@' ./markdown_live_preview/client/main.ts
 
-build: markdown_live_preview/__init__.py $(DIST)/index.html $(DIST)/main.js $(DIST)/site.css
+build: $(DIST)/__init__.py $(DIST)/index.html $(DIST)/main.js $(DIST)/site.css
 
 .PHONY: release
 
