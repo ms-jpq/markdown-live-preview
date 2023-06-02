@@ -43,7 +43,7 @@ async def watch(throttle: float, path: Path) -> AsyncIterable[str]:
         def on_modified(self, event: FileSystemEvent) -> None:
             send(event)
 
-    obs = Observer()  # type: ignore
+    obs = Observer()
     obs.schedule(Handler(), path=path.parent)  # type: ignore
     obs.start()  # type: ignore
 

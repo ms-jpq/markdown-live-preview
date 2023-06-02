@@ -51,7 +51,7 @@ clobber: clean
 
 .FORCE:
 
-tsc:
+tsc: node_modules/.bin/esbuild
 	node_modules/.bin/tsc
 
 .PHONY: mypy
