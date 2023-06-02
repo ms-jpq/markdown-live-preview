@@ -21,13 +21,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install NPM Packages
+      - name: Lint
         run: |-
-          make init
-
-      - name: Build
-        run: |-
-          make build
+          make lint
 
       - name: Release
         run: |-
