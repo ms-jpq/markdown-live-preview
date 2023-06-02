@@ -108,6 +108,7 @@ const main = async () => {
       ])
     } catch (e) {
       console.error(e)
+      await new Promise((resolve) => setTimeout(resolve, CYCLE))
     }
   } while (true)
 }
