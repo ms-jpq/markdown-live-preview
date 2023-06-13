@@ -34,16 +34,20 @@ const ws_connect = async function* <T>() {
   }
   provision()
 
-  while (true) {
-    await new Promise<void>((resolve) => {
-      cb = resolve
-      if (acc.length) {
-        resolve()
-      }
-    })
-    const a = acc
-    acc = []
-    yield* a
+  try {
+    while (true) {
+      await new Promise<void>((resolve) => {
+        cb = resolve
+        if (acc.length) {
+          resolve()
+        }
+      })
+      const a = acc
+      acc = []
+      yield* a
+    }
+  } finally {
+    ws.close()
   }
 }
 
