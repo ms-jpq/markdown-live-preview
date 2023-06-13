@@ -3,8 +3,7 @@
   "compileOnSave": true,
   "compilerOptions": {
     "checkJs": true,
-    "declaration": true,
-    "incremental": true,
+    "composite": true,
     "module": "nodenext",
     "noEmit": true,
     "noErrorTruncation": true,
@@ -12,7 +11,6 @@
     "noImplicitOverride": true,
     "noImplicitReturns": true,
     "noUncheckedIndexedAccess": true,
-    "removeComments": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": true,
