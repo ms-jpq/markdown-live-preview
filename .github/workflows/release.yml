@@ -22,12 +22,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Lint
-        run: |-
+      - run: |-
           make lint
 
-      - name: Release
-        run: |-
+      - run: |-
           make release
 
       - name: Publish PyPI

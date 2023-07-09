@@ -7,8 +7,13 @@ SHELL := bash
 .SHELLFLAGS := -Eeuo pipefail -O dotglob -O nullglob -O extglob -O failglob -O globstar -c
 
 .DEFAULT_GOAL := dev
+.FORCE:
 
-.PHONY: clean clobber
+.PHONY: clean clobber init run
+.PHONY: lint mypy tsc
+.PHONY: fmt black prettier
+.PHONY: release build
+.PHONY: dev watch-py watch-js
 
 DIST := markdown_live_preview/js
 
@@ -20,55 +25,50 @@ clobber: clean
 	shopt -u failglob
 	rm -rf -- node_modules/ .venv/
 
-.PHONY: init
-
-.venv/bin/pip:
+.venv/bin/python3:
 	python3 -m venv -- .venv
 
-.venv/bin/mypy: .venv/bin/pip
-	.venv/bin/python3 <<EOF
-	from itertools import chain
-	from os import execl
-	from sys import executable
-	from tomllib import load
+define PYDEPS
+from itertools import chain
+from os import execl
+from sys import executable
 
-	toml = load(open("pyproject.toml", "rb"))
-	project = toml["project"]
-	execl(
-			executable,
-			executable,
-			"-m",
-			"pip",
-			"install",
-			"--upgrade",
-			"--",
-			*project.get("dependencies", ()),
-			*chain.from_iterable(project["optional-dependencies"].values()),
-	)
-	EOF
+from tomli import load
 
-.PHONY: tsc
+with open("pyproject.toml", "rb") as fd:
+    toml = load(fd)
 
-.FORCE:
+project = toml["project"]
+execl(
+    executable,
+    executable,
+    "-m",
+    "pip",
+    "install",
+    "--upgrade",
+    "--",
+    *project.get("dependencies", ()),
+    *chain.from_iterable(project["optional-dependencies"].values()),
+)
+endef
+export -- PYDEPS
+
+.venv/bin/mypy: .venv/bin/python3
+	'$<' -m pip install -- tomli
+	'$<' <<< "$$PYDEPS"
 
 tsc: node_modules/.bin/esbuild
 	node_modules/.bin/tsc
 
-.PHONY: mypy
-
 mypy: .venv/bin/mypy
 	'$<' --disable-error-code=method-assign -- .
-
-.PHONY: lint
-
-lint: mypy tsc
 
 node_modules/.bin/esbuild:
 	npm install
 
 init: .venv/bin/mypy node_modules/.bin/esbuild
 
-.PHONY: build
+lint: mypy tsc
 
 $(DIST):
 	mkdir -p -- '$@'
@@ -91,8 +91,6 @@ $(DIST)/main.js: node_modules/.bin/esbuild .FORCE
 
 build: $(DIST)/__init__.py $(DIST)/index.html $(DIST)/main.js $(DIST)/site.css
 
-.PHONY: release
-
 release: build
 	.venv/bin/python3 <<EOF
 	from setuptools import setup
@@ -100,12 +98,6 @@ release: build
 	argv.extend(("sdist", "bdist_wheel"))
 	setup()
 	EOF
-
-.PHONY: black
-
-.PHONY: prettier
-
-.PHONY: fmt
 
 black: .venv/bin/mypy
 	.venv/bin/isort --profile=black --gitignore -- .
@@ -116,21 +108,13 @@ prettier:
 
 fmt: black prettier
 
-.PHONY: run
-
 run:
 	.venv/bin/python3 -m markdown_live_preview --open -- ./README.md
-
-.PHONY: watch-js
 
 watch-js:
 	watchexec --shell none --restart --exts html,scss,ts -- make build
 
-.PHONY: watch-py
-
 watch-py:
 	watchexec --shell none --restart --exts py -- make run
-
-.PHONY: dev
 
 dev: watch-js watch-py
