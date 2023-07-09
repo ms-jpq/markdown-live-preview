@@ -108,7 +108,7 @@ prettier:
 
 fmt: black prettier
 
-run:
+run: .venv/bin/mypy build
 	.venv/bin/python3 -m markdown_live_preview --open -- ./README.md
 
 watch-js:
