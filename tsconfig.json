@@ -19,7 +19,7 @@
     "target": "esnext",
     "verbatimModuleSyntax": true
   },
-  "exclude": ["node_modules", "tmp"],
+  "exclude": ["node_modules", "tmp", "markdown_live_preview/js"],
   "include": ["."],
   "references": []
 }
