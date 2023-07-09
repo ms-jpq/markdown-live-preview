@@ -118,7 +118,12 @@ def build(
         runner = AppRunner(app, handle_signals=True)
         try:
             await runner.setup()
-            site = TCPSite(runner, host=host, port=port, reuse_port=True)
+            site = TCPSite(
+                runner,
+                host=host,
+                port=port,
+                reuse_address=True,
+            )
             await site.start()
             await broadcast()
         finally:

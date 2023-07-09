@@ -4,7 +4,7 @@ description     = "live web preview of markdown docs"
 name            = "markdown-live-preview"
 readme          = "README.md"
 requires-python = ">=3.8.0"
-version         = "0.2.43"
+version         = "0.2.44"
 
 dependencies = [
   "Markdown==3.4.3",
