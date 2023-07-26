@@ -7,7 +7,7 @@ requires-python = ">=3.8.0"
 version         = "0.2.44"
 
 dependencies = [
-  "Markdown==3.4.3",
+  "Markdown==3.4.4",
   "Pygments==2.15.1",
   "aiohttp==3.8.4",
   "watchdog==3.0.0",
