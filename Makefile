@@ -19,11 +19,11 @@ DIST := markdown_live_preview/js
 
 clean:
 	shopt -u failglob
-	rm -rf -- .cache/ .mypy_cache/ build/ dist/ markdown_live_preview.egg-info/ '$(DIST)' tsconfig.tsbuildinfo
+	rm -v -rf -- .cache/ .mypy_cache/ build/ dist/ markdown_live_preview.egg-info/ '$(DIST)' tsconfig.tsbuildinfo
 
 clobber: clean
 	shopt -u failglob
-	rm -rf -- node_modules/ .venv/
+	rm -v -rf -- node_modules/ .venv/
 
 .venv/bin/python3:
 	python3 -m venv -- .venv
