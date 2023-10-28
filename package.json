@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "dependencies": {
-    "esbuild": "^0.18",
+    "esbuild": "^0.19",
     "github-markdown-css": "^5",
     "mermaid": "^10",
     "modern-normalize": "^2",
