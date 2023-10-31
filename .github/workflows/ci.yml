@@ -12,14 +12,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install Python
-        uses: actions/setup-python@v3
+      - uses: actions/checkout@v3
 
-      - name: Install Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/setup-python@v3
+        # TODO: remove when python updates to 3.12.1
+        with:
+          python-version: "3.11"
 
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
 
       - run: |-
           make lint
