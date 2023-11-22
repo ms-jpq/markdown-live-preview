@@ -8,7 +8,7 @@ version         = "0.2.45"
 
 dependencies = [
   "Markdown==3.5",
-  "Pygments==2.16.1",
+  "Pygments==2.17.2",
   "aiohttp==3.8.6",
   "watchdog==3.0.0",
 ]
