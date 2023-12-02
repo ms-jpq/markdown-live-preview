@@ -112,6 +112,7 @@ def build(
                 await gather(*tasks)
 
     routes.static(prefix=sep, path=JS_ROOT)
+    routes.static(prefix=sep, path=cwd)
     app.add_routes(routes)
 
     async def start() -> None:
