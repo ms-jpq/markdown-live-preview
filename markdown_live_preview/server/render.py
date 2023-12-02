@@ -7,8 +7,12 @@ from markdown import Markdown
 from markdown.extensions import Extension
 from markdown.extensions.codehilite import CodeHilite
 from markdown.extensions.codehilite import makeExtension as codehilite
-from markdown.extensions.fenced_code import makeExtension as fenced_code
 from markdown.extensions.sane_lists import makeExtension as sane_lists
+from markdown.extensions.footnotes import makeExtension as footnotes
+from markdown.extensions.attr_list import makeExtension as attr_list
+from markdown.extensions.tables import makeExtension as tables
+from markdown.extensions.abbr import makeExtension as abbr
+from markdown.extensions.md_in_html import makeExtension as md_in_html
 from markdown.extensions.smarty import makeExtension as smarty
 from markdown.extensions.toc import makeExtension as toc
 from markdown.extensions.wikilinks import makeExtension as wikilinks
@@ -95,8 +99,10 @@ CodeHilite.hilite = hilite
 @no_type_check
 def _extensions(style: str) -> Sequence[Extension]:
     return (
+        abbr(),
         admonition(),
         arithmatex(),
+        attr_list(),
         b64(),
         betterem(),
         caret(),
@@ -104,10 +110,11 @@ def _extensions(style: str) -> Sequence[Extension]:
         critic(),
         definition(),
         details(),
-        fenced_code(),
+        footnotes(),
         html(),
         keys(),
         mark(),
+        md_in_html(),
         progressbar(),
         sane_lists(),
         saneheaders(),
@@ -116,6 +123,7 @@ def _extensions(style: str) -> Sequence[Extension]:
         snippets(),
         superfences(),
         tab(),
+        tables(),
         tasklist(),
         tilde(),
         toc(),
