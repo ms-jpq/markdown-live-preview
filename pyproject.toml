@@ -15,7 +15,7 @@ dependencies = [
 ]
 [project.optional-dependencies]
 dev  = ["mypy", "types-Markdown", "black", "isort"]
-dist = ["wheel"]
+dist = ["setuptools", "wheel"]
 
 [project.urls]
 homepage = "https://github.com/ms-jpq/markdown-live-preview"
