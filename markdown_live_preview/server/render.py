@@ -5,15 +5,15 @@ from typing import Callable, Match, Sequence, Tuple, Union, no_type_check
 
 from markdown import Markdown
 from markdown.extensions import Extension
+from markdown.extensions.abbr import makeExtension as abbr
+from markdown.extensions.attr_list import makeExtension as attr_list
 from markdown.extensions.codehilite import CodeHilite
 from markdown.extensions.codehilite import makeExtension as codehilite
-from markdown.extensions.sane_lists import makeExtension as sane_lists
 from markdown.extensions.footnotes import makeExtension as footnotes
-from markdown.extensions.attr_list import makeExtension as attr_list
-from markdown.extensions.tables import makeExtension as tables
-from markdown.extensions.abbr import makeExtension as abbr
 from markdown.extensions.md_in_html import makeExtension as md_in_html
+from markdown.extensions.sane_lists import makeExtension as sane_lists
 from markdown.extensions.smarty import makeExtension as smarty
+from markdown.extensions.tables import makeExtension as tables
 from markdown.extensions.toc import makeExtension as toc
 from markdown.extensions.wikilinks import makeExtension as wikilinks
 from markdown.inlinepatterns import InlineProcessor
@@ -145,7 +145,7 @@ def css() -> str:
 
 
 def render(style: str) -> Callable[[str], str]:
-    parser = Markdown(extensions=_extensions(style))
+    parser = Markdown(extensions=_extensions(style), tab_length=2)
 
     def render(md: str) -> str:
         return parser.convert(md)
