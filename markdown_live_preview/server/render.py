@@ -5,23 +5,35 @@ from typing import Callable, Match, Sequence, Tuple, Union, no_type_check
 
 from markdown import Markdown
 from markdown.extensions import Extension
-from markdown.extensions.abbr import makeExtension as abbr
-from markdown.extensions.admonition import makeExtension as admonition
-from markdown.extensions.attr_list import makeExtension as attr_list
 from markdown.extensions.codehilite import CodeHilite
 from markdown.extensions.codehilite import makeExtension as codehilite
-from markdown.extensions.def_list import makeExtension as def_list
 from markdown.extensions.fenced_code import makeExtension as fenced_code
-from markdown.extensions.footnotes import makeExtension as footnotes
-from markdown.extensions.md_in_html import makeExtension as md_in_html
 from markdown.extensions.sane_lists import makeExtension as sane_lists
 from markdown.extensions.smarty import makeExtension as smarty
-from markdown.extensions.tables import makeExtension as tables
 from markdown.extensions.toc import makeExtension as toc
 from markdown.extensions.wikilinks import makeExtension as wikilinks
 from markdown.inlinepatterns import InlineProcessor
 from pygments.formatters.html import HtmlFormatter
 from pygments.styles import get_all_styles, get_style_by_name
+from pymdownx.arithmatex import makeExtension as arithmatex
+from pymdownx.b64 import makeExtension as b64
+from pymdownx.betterem import makeExtension as betterem
+from pymdownx.blocks.admonition import makeExtension as admonition
+from pymdownx.blocks.definition import makeExtension as definition
+from pymdownx.blocks.details import makeExtension as details
+from pymdownx.blocks.html import makeExtension as html
+from pymdownx.blocks.tab import makeExtension as tab
+from pymdownx.caret import makeExtension as caret
+from pymdownx.critic import makeExtension as critic
+from pymdownx.keys import makeExtension as keys
+from pymdownx.mark import makeExtension as mark
+from pymdownx.progressbar import makeExtension as progressbar
+from pymdownx.saneheaders import makeExtension as saneheaders
+from pymdownx.smartsymbols import makeExtension as smartsymbols
+from pymdownx.snippets import makeExtension as snippets
+from pymdownx.superfences import makeExtension as superfences
+from pymdownx.tasklist import makeExtension as tasklist
+from pymdownx.tilde import makeExtension as tilde
 
 _CODEHL_CLASS = "codehilite"
 
@@ -83,17 +95,29 @@ CodeHilite.hilite = hilite
 @no_type_check
 def _extensions(style: str) -> Sequence[Extension]:
     return (
-        abbr(),
         admonition(),
-        attr_list(),
+        arithmatex(),
+        b64(),
+        betterem(),
+        caret(),
         codehilite(css_class=f"{_CODEHL_CLASS} {style}"),
-        def_list(),
+        critic(),
+        definition(),
+        details(),
         fenced_code(),
-        footnotes(),
-        md_in_html(),
+        html(),
+        keys(),
+        mark(),
+        progressbar(),
         sane_lists(),
+        saneheaders(),
+        smartsymbols(),
         smarty(),
-        tables(),
+        snippets(),
+        superfences(),
+        tab(),
+        tasklist(),
+        tilde(),
         toc(),
         wikilinks(),
         _UserExts(),
