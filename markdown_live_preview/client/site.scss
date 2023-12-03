@@ -33,33 +33,3 @@ main {
   padding: var(--padding-size);
 }
 
-header {
-  display: grid;
-  grid-template-columns: auto auto 1fr auto;
-  align-items: baseline;
-  column-gap: 0.5em;
-
-  > * {
-    margin-top: 0;
-    margin-bottom: 0;
-  }
-
-  > .spacer {
-    flex-grow: 1;
-  }
-
-  margin-bottom: var(--padding-size);
-
-  .menu-icon {
-    font-size: 130%;
-  }
-}
-
-.mermaid {
-  display: flex;
-  justify-content: center;
-}
-
-[diff="true"] {
-  background-color: var(--focus-colour) !important;
-}

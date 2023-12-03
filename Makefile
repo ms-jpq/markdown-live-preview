@@ -66,6 +66,8 @@ mypy: .venv/bin/mypy
 node_modules/.bin/esbuild:
 	npm install
 
+node_modules/.bin/sass: | node_modules/.bin/esbuild
+
 init: .venv/bin/mypy node_modules/.bin/esbuild
 
 lint: mypy tsc
@@ -76,12 +78,12 @@ $(DIST):
 $(DIST)/__init__.py: $(DIST)
 	touch -- '$@'
 
-.cache/codehl.css:: .venv/bin/mypy
+.cache/codehl.css: | .venv/bin/mypy
 	mkdir -p -- .cache
 	.venv/bin/python3 -m markdown_live_preview.server > '$@'
 
-$(DIST)/site.css: markdown_live_preview/client/site.scss .cache/codehl.css $(DIST)
-	node_modules/.bin/sass --style compressed -- '$<' '$@'
+$(DIST)/site.css: node_modules/.bin/sass markdown_live_preview/client/site.scss .cache/codehl.css $(DIST)
+	'$<' --style compressed -- markdown_live_preview/client/site.scss '$@'
 
 $(DIST)/index.html: markdown_live_preview/client/index.html $(DIST)
 	cp --recursive --force --reflink=auto -- '$<' '$@'
