@@ -63,7 +63,6 @@ def _extensions(style: str) -> Sequence[Extension]:
         footnotes(),
         highlight(
             css_class=f"{_CODEHL_CLASS} {style}",
-            guess_lang=True,
             pygments_lang_class=True,
         ),
         html(),
