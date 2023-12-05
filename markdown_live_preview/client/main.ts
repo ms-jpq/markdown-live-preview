@@ -8,7 +8,7 @@ const root = document.body.querySelector("article")!
 const template = document.createElement("template")
 
 const diff_key = "diff"
-const mermaid_class = "mermaid"
+const mermaid_class = "language-mermaid"
 
 type API = { title: string; sha: string; follow: boolean }
 
@@ -88,7 +88,9 @@ const main = async () => {
 
   const gen = ws_connect<string>()
   const render = async () => {
-    const nodes = [...root.querySelectorAll<HTMLElement>(".mermaid")]
+    const nodes = [
+      ...root.querySelectorAll<HTMLElement>(`.${mermaid_class} code`),
+    ]
     await Promise.all(
       (function* () {
         for (const node of nodes) {

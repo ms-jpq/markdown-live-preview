@@ -6,10 +6,13 @@ from sys import exit, stderr
 from typing import AsyncIterator, NoReturn
 from webbrowser import open as open_w
 
+from .server.lexers import _
 from .server.log import log
 from .server.render import render
 from .server.server import Payload, build
 from .server.watch import watch
+
+assert _
 
 
 def _parse_args() -> Namespace:

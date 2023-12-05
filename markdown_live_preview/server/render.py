@@ -39,14 +39,6 @@ from pymdownx.tilde import makeExtension as tilde
 _CODEHL_CLASS = "codehilite"
 
 
-# if self.lang == "mermaid":
-#     src = "\n".join(line.rstrip() for line in self.src.splitlines())
-#     hashed, escaped = hash(src), escape(src)
-#     slot = f'<slot class="mermaid" data-mermaid="{hashed}">{escaped}</slot>'
-#     wrap = f"<figure>{slot}<figcaption></figcaption></figure>"
-#     return wrap
-
-
 @no_type_check
 def _extensions(style: str) -> Sequence[Extension]:
     return (
