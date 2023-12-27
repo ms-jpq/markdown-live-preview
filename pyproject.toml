@@ -10,7 +10,7 @@ dependencies = [
   "Markdown==3.5.1",
   "Pygments==2.17.2",
   "aiohttp==3.9.1",
-  "pymdown-extensions==10.5",
+  "pymdown-extensions==10.6",
   "watchdog==3.0.0",
 ]
 [project.optional-dependencies]
