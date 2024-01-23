@@ -61,6 +61,11 @@ const update = (
     const page = await (await fetch(`${location.origin}/api/markdown`)).text()
     template.innerHTML = page
     template.normalize()
+    for (const el of template.content.querySelectorAll<HTMLElement>(
+      `.${mermaid_class}`,
+    )) {
+      el.dataset.mermaid = el.textContent ?? ""
+    }
     reconciliate({
       root,
       diff_key,
