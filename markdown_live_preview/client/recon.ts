@@ -80,7 +80,8 @@ export const reconciliate = ({
 
   if (lhs instanceof Element) {
     if (diff && lhs !== root) {
-      lhs.setAttribute(diff_key, String(true))
+      const el = lhs.closest("[data-mermaid]") ?? lhs
+      el.setAttribute(diff_key, String(true))
     } else {
       lhs.removeAttribute(diff_key)
     }
