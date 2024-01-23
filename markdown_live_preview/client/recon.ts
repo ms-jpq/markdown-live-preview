@@ -78,7 +78,11 @@ export const reconciliate = ({
     }
   }
 
-  if (diff && lhs instanceof Element && lhs !== root) {
-    lhs.setAttribute(diff_key, String(true))
+  if (lhs instanceof Element) {
+    if (diff && lhs !== root) {
+      lhs.setAttribute(diff_key, String(true))
+    } else {
+      lhs.removeAttribute(diff_key)
+    }
   }
 }
