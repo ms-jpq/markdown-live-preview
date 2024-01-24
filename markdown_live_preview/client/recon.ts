@@ -31,7 +31,6 @@ export const reconciliate = ({
   rhs: Node
 }) => {
   let diff = false
-
   for (const [l, r] of long_zip([...lhs.childNodes], [...rhs.childNodes])) {
     if (l && !r) {
       diff = true
@@ -41,7 +40,7 @@ export const reconciliate = ({
       lhs.appendChild(r)
     } else if (l instanceof HTMLElement && r instanceof HTMLElement) {
       if (l.tagName !== r.tagName) {
-        l.replaceWith(r)
+        l.replaceWith(r.parentNode?.removeChild(r) ?? r)
       } else if (
         l.classList.contains(mermaid_class) &&
         r.classList.contains(mermaid_class) &&
@@ -70,7 +69,7 @@ export const reconciliate = ({
     } else {
       if (l!.nodeType !== r!.nodeType) {
         diff = true
-        lhs.replaceChild(r!, l!)
+        lhs.replaceChild(r?.parentNode?.removeChild(r) ?? r!, l!)
       } else if (l!.nodeValue !== r!.nodeValue) {
         diff = true
         l!.nodeValue = r!.nodeValue
