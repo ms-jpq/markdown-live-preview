@@ -1,13 +1,11 @@
 import mermaid from "mermaid"
-import { mermaid_class, reconciliate } from "./recon.js"
+import { diff_key, mermaid_class, reconciliate } from "./recon.js"
 
 const CYCLE = 500
 
 const head = document.body.querySelector("#title")!
 const root = document.body.querySelector("article")!
 const template = document.createElement("template")
-
-const diff_key = "diff"
 
 type API = { title: string; sha: string; follow: boolean }
 
@@ -51,7 +49,7 @@ const render = async (root: DocumentFragment) => {
   const nodes = root.querySelectorAll<HTMLElement>(`.${mermaid_class} code`)
   await Promise.all(
     (function* () {
-      let i = 1
+      let i = 0
       for (const node of nodes) {
         const text = node.textContent
         if (text) {
@@ -92,7 +90,6 @@ const update = ((sha) => async (follow: boolean, new_sha: string) => {
 
   reconciliate({
     root,
-    diff_key,
     lhs: root,
     rhs: template.content,
   })

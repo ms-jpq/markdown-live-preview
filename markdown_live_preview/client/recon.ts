@@ -1,3 +1,4 @@
+export const diff_key = "diff"
 export const mermaid_class = "language-mermaid"
 
 const long_zip = function* <
@@ -21,12 +22,10 @@ const long_zip = function* <
 
 export const reconciliate = ({
   root,
-  diff_key,
   lhs,
   rhs,
 }: {
   root: Node
-  diff_key: string
   lhs: Node
   rhs: Node
 }) => {
@@ -40,7 +39,7 @@ export const reconciliate = ({
       lhs.appendChild(r)
     } else if (l instanceof HTMLElement && r instanceof HTMLElement) {
       if (l.tagName !== r.tagName) {
-        l.replaceWith(r.parentNode?.removeChild(r) ?? r)
+        l.replaceWith(r)
       } else {
         for (const { name, value } of l.attributes) {
           if (r.getAttribute(name) !== value) {
@@ -58,24 +57,21 @@ export const reconciliate = ({
           }
         }
 
-        reconciliate({ diff_key, root, lhs: l, rhs: r })
+        reconciliate({ root, lhs: l, rhs: r })
       }
-    } else {
-      if (l!.nodeType !== r!.nodeType) {
-        diff = true
-        lhs.replaceChild(r?.parentNode?.removeChild(r) ?? r!, l!)
-      } else if (l!.nodeValue !== r!.nodeValue) {
-        diff = true
-        l!.nodeValue = r!.nodeValue
-      }
+    } else if (l!.nodeType !== r!.nodeType) {
+      diff = true
+      lhs.replaceChild(r!, l!)
+    } else if (l!.nodeValue !== r!.nodeValue) {
+      diff = true
+      l!.nodeValue = r!.nodeValue
     }
   }
 
-  if (lhs instanceof Element) {
-    if (diff && lhs !== root) {
-      lhs.setAttribute(diff_key, String(true))
-    } else {
-      lhs.removeAttribute(diff_key)
-    }
+  if (diff && lhs !== root) {
+    const el = lhs instanceof Element ? lhs : lhs.parentElement
+    el?.setAttribute(diff_key, String(true))
+  } else if (lhs instanceof Element) {
+    lhs.removeAttribute(diff_key)
   }
 }
