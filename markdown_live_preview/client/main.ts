@@ -54,15 +54,9 @@ const render = async (root: DocumentFragment) => {
         const text = node.textContent
         if (text) {
           const id = `${mermaid_class}-svg-${i++}`
-          const parent =
-            document.querySelector(`#${id}`)?.parentElement ?? undefined
           yield (async () => {
             try {
-              const { svg, bindFunctions } = await mermaid.render(
-                id,
-                text,
-                parent,
-              )
+              const { svg, bindFunctions } = await mermaid.render(id, text)
               const figure = document.createElement("figure")
               figure.classList.add(mermaid_class)
               figure.dataset.mermaid = text
@@ -90,11 +84,17 @@ const update = ((sha) => async (follow: boolean, new_sha: string) => {
   }
 
   const page = await (await fetch(`${location.origin}/api/markdown`)).text()
-  const [sx, sy] = [globalThis.scrollX, globalThis.scrollY]
 
   template.innerHTML = page
+  const figs = document.querySelectorAll<HTMLElement>(`figure.${mermaid_class}`)
+  for (const fig of figs) {
+    fig.firstElementChild?.removeAttribute("id")
+  }
   await render(template.content)
   template.normalize()
+  for (const fig of figs) {
+    fig.firstElementChild?.remove()
+  }
 
   reconciliate({
     root,
@@ -104,24 +104,19 @@ const update = ((sha) => async (follow: boolean, new_sha: string) => {
 
   const marked = root.querySelectorAll(`[${diff_key}="${true}"]`)
   const [touched, ..._] = marked
-  const touched_mermaid =
-    touched?.parentElement?.classList.contains(mermaid_class)
-  const focus = touched_mermaid ? touched?.parentElement : touched
 
-  if (follow && focus) {
+  if (follow && touched) {
     new IntersectionObserver((entries, obs) => {
       obs.disconnect()
       const visible = entries.some(({ isIntersecting }) => isIntersecting)
       if (!visible) {
-        focus.scrollIntoView({
+        touched.scrollIntoView({
           behavior: "smooth",
           block: "center",
           inline: "center",
         })
-      } else if (touched_mermaid) {
-        globalThis.scrollTo(sx, sy)
       }
-    }).observe(focus)
+    }).observe(touched)
   }
 })("")
 
