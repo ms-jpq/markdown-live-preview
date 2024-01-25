@@ -100,11 +100,17 @@ const update = ((sha) => async (follow: boolean, new_sha: string) => {
   const [focus, ..._] = marked
 
   if (follow && focus) {
-    focus.scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-      inline: "center",
-    })
+    new IntersectionObserver((entries, obs) => {
+      obs.disconnect()
+      const visible = entries.some(({ isIntersecting }) => isIntersecting)
+      if (!visible) {
+        focus.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+          inline: "center",
+        })
+      }
+    }).observe(focus)
   }
 })("")
 
