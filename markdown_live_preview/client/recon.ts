@@ -1,3 +1,5 @@
+export const mermaid_class = "language-mermaid"
+
 const long_zip = function* <
   T extends Iterable<unknown>[],
   R extends {
@@ -20,13 +22,11 @@ const long_zip = function* <
 export const reconciliate = ({
   root,
   diff_key,
-  mermaid_class,
   lhs,
   rhs,
 }: {
   root: Node
   diff_key: string
-  mermaid_class: string
   lhs: Node
   rhs: Node
 }) => {
@@ -41,12 +41,6 @@ export const reconciliate = ({
     } else if (l instanceof HTMLElement && r instanceof HTMLElement) {
       if (l.tagName !== r.tagName) {
         l.replaceWith(r.parentNode?.removeChild(r) ?? r)
-      } else if (
-        l.classList.contains(mermaid_class) &&
-        r.classList.contains(mermaid_class) &&
-        l.dataset.mermaid === r.dataset.mermaid
-      ) {
-        l.setAttribute(diff_key, String(false))
       } else {
         for (const { name, value } of l.attributes) {
           if (r.getAttribute(name) !== value) {
@@ -64,7 +58,7 @@ export const reconciliate = ({
           }
         }
 
-        reconciliate({ diff_key, mermaid_class, root, lhs: l, rhs: r })
+        reconciliate({ diff_key, root, lhs: l, rhs: r })
       }
     } else {
       if (l!.nodeType !== r!.nodeType) {
@@ -79,8 +73,7 @@ export const reconciliate = ({
 
   if (lhs instanceof Element) {
     if (diff && lhs !== root) {
-      const el = lhs.closest("[data-mermaid]") ?? lhs
-      el.setAttribute(diff_key, String(true))
+      lhs.setAttribute(diff_key, String(true))
     } else {
       lhs.removeAttribute(diff_key)
     }

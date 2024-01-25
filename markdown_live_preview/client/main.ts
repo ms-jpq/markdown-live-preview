@@ -1,5 +1,5 @@
 import mermaid from "mermaid"
-import { reconciliate } from "./recon.js"
+import { mermaid_class, reconciliate } from "./recon.js"
 
 const CYCLE = 500
 
@@ -8,7 +8,6 @@ const root = document.body.querySelector("article")!
 const template = document.createElement("template")
 
 const diff_key = "diff"
-const mermaid_class = "language-mermaid"
 
 type API = { title: string; sha: string; follow: boolean }
 
@@ -48,24 +47,32 @@ const ws_connect = async function* <T>() {
   }
 }
 
-const render = async (el: HTMLElement) => {
-  const nodes = el.querySelectorAll<HTMLElement>(`.${mermaid_class} code`)
+const render = async (root: DocumentFragment) => {
+  const nodes = root.querySelectorAll<HTMLElement>(`.${mermaid_class} code`)
   await Promise.all(
     (function* () {
+      let i = 1
       for (const node of nodes) {
-        if (!node.firstElementChild) {
-          node.removeAttribute("data-processed")
+        const text = node.textContent
+        if (text) {
+          yield (async () => {
+            try {
+              const { svg, bindFunctions } = await mermaid.render(
+                `${mermaid_class}-svg-${i++}`,
+                text,
+              )
+              const figure = document.createElement("figure")
+              figure.innerHTML = svg
+              bindFunctions?.(figure)
+              node.replaceWith(figure)
+            } catch (e) {
+              const { message } = e as Error
+              const el = document.createElement("pre")
+              el.append(new Text(message))
+              node.parentElement?.insertBefore(el, node)
+            }
+          })()
         }
-        yield (async () => {
-          try {
-            await mermaid.run({ nodes: [node] })
-          } catch (e) {
-            const { message } = e as Error
-            const el = document.createElement("pre")
-            el.append(new Text(message))
-            node.nextElementSibling?.append(el)
-          }
-        })()
       }
     })(),
   )
@@ -80,21 +87,15 @@ const update = ((sha) => async (follow: boolean, new_sha: string) => {
 
   const page = await (await fetch(`${location.origin}/api/markdown`)).text()
   template.innerHTML = page
-  for (const el of template.content.querySelectorAll<HTMLElement>(
-    `.${mermaid_class}`,
-  )) {
-    el.dataset.mermaid = el.textContent ?? ""
-  }
+  await render(template.content)
   template.normalize()
 
   reconciliate({
     root,
     diff_key,
-    mermaid_class,
     lhs: root,
     rhs: template.content,
   })
-  await render(root)
 
   const marked = root.querySelectorAll(`[${diff_key}="${true}"]`)
   const [focus, ..._] = marked
