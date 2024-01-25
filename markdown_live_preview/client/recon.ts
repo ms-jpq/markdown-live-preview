@@ -35,7 +35,17 @@ export const reconciliate = ({
       diff = true
       l.remove()
     } else if (!l && r) {
-      diff = true
+      if (
+        !(
+          lhs instanceof HTMLElement &&
+          rhs instanceof HTMLElement &&
+          lhs.classList.contains(mermaid_class) &&
+          rhs.classList.contains(mermaid_class) &&
+          lhs.dataset.mermaid === rhs.dataset.mermaid
+        )
+      ) {
+        diff = true
+      }
       lhs.appendChild(r)
     } else if (l instanceof HTMLElement && r instanceof HTMLElement) {
       if (l.tagName !== r.tagName) {

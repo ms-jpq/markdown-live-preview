@@ -53,13 +53,19 @@ const render = async (root: DocumentFragment) => {
       for (const node of nodes) {
         const text = node.textContent
         if (text) {
+          const id = `${mermaid_class}-svg-${i++}`
+          const parent =
+            document.querySelector(`#${id}`)?.parentElement ?? undefined
           yield (async () => {
             try {
               const { svg, bindFunctions } = await mermaid.render(
-                `${mermaid_class}-svg-${i++}`,
+                id,
                 text,
+                parent,
               )
               const figure = document.createElement("figure")
+              figure.classList.add(mermaid_class)
+              figure.dataset.mermaid = text
               figure.innerHTML = svg
               bindFunctions?.(figure)
               node.replaceWith(figure)
@@ -84,6 +90,8 @@ const update = ((sha) => async (follow: boolean, new_sha: string) => {
   }
 
   const page = await (await fetch(`${location.origin}/api/markdown`)).text()
+  const [sx, sy] = [globalThis.scrollX, globalThis.scrollY]
+
   template.innerHTML = page
   await render(template.content)
   template.normalize()
@@ -95,7 +103,10 @@ const update = ((sha) => async (follow: boolean, new_sha: string) => {
   })
 
   const marked = root.querySelectorAll(`[${diff_key}="${true}"]`)
-  const [focus, ..._] = marked
+  const [touched, ..._] = marked
+  const touched_mermaid =
+    touched?.parentElement?.classList.contains(mermaid_class)
+  const focus = touched_mermaid ? touched?.parentElement : touched
 
   if (follow && focus) {
     new IntersectionObserver((entries, obs) => {
@@ -107,6 +118,8 @@ const update = ((sha) => async (follow: boolean, new_sha: string) => {
           block: "center",
           inline: "center",
         })
+      } else if (touched_mermaid) {
+        globalThis.scrollTo(sx, sy)
       }
     }).observe(focus)
   }
