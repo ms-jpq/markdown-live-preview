@@ -3,18 +3,19 @@
 @use "../../.cache/codehl.css";
 
 :root {
-  --focus-colour: #fdf5bf;
+  --focus-colour: #fdf5bf70;
   --border-colour: rgb(225, 228, 232);
   --padding-size: 1em;
 }
 
 body {
   padding: 1em;
+  background-color: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --focus-colour: #83782e;
+    --focus-colour: #83782e70;
   }
 
   body {
