@@ -12,15 +12,15 @@ type API = { title: string; sha: string; follow: boolean }
 const api_request = async (): Promise<API> =>
   await (await fetch(`${location.origin}/api/info`)).json()
 
-const ws_connect = async function* <T>() {
+const ws_connect = async function* () {
   const remote = new URL(`ws://${location.host}/ws`)
-  let acc = Array<T>()
+  let flag = false
   let cb = (): void => undefined
   let ws = new WebSocket(remote)
 
   const provision = () => {
-    ws.onmessage = ({ data }) => {
-      acc.push(data)
+    ws.onmessage = () => {
+      flag = true
       cb()
     }
     ws.onclose = async () => {
@@ -31,17 +31,16 @@ const ws_connect = async function* <T>() {
   }
   provision()
 
-  try {
-    while (true) {
-      if (!acc.length) {
+  while (true) {
+    try {
+      if (!flag) {
         await new Promise<void>((resolve) => (cb = resolve))
       }
-      const a = acc
-      acc = []
-      yield* a
+      yield
+    } catch (e) {
+      console.error(e)
+      ws.close()
     }
-  } finally {
-    ws.close()
   }
 }
 
@@ -123,23 +122,18 @@ const update = ((sha) => async (follow: boolean, new_sha: string) => {
 const main = async () => {
   mermaid.initialize({ startOnLoad: false })
 
-  const gen = ws_connect<string>()
-
-  do {
+  const gen = ws_connect()
+  for await (const _ of gen) {
     try {
       const { title, follow, sha } = await api_request()
       document.title ||= title
       head.textContent ||= title
       await update(follow, sha)
-      await Promise.race([
-        gen.next(),
-        new Promise((resolve) => setTimeout(resolve, CYCLE)),
-      ])
     } catch (e) {
       console.error(e)
       await new Promise((resolve) => setTimeout(resolve, CYCLE))
     }
-  } while (true)
+  }
 }
 
 await main()

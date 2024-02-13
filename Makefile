@@ -111,7 +111,7 @@ prettier:
 fmt: black prettier
 
 run: .venv/bin/mypy build
-	.venv/bin/python3 -m markdown_live_preview --open -- ./README.md
+	.venv/bin/python3 -m markdown_live_preview --open --port 8080 -- ./README.md
 
 watch-js:
 	watchexec --shell none --restart --exts html,scss,ts -- make build

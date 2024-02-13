@@ -6,7 +6,16 @@ from ipaddress import IPv6Address, ip_address
 from locale import strxfrm
 from pathlib import Path
 from shlex import quote
-from socket import IPPROTO_IPV6, IPV6_V6ONLY, AddressFamily, getfqdn, has_ipv6, socket
+from socket import (
+    IPPROTO_IPV6,
+    IPV6_V6ONLY,
+    SO_REUSEADDR,
+    SOL_SOCKET,
+    AddressFamily,
+    getfqdn,
+    has_ipv6,
+    socket,
+)
 from sys import exit
 from typing import NoReturn
 from webbrowser import open as open_w
@@ -46,6 +55,7 @@ def _socks(open: bool, port: int) -> Iterator[socket]:
 
     if fam == AddressFamily.AF_INET6:
         sock.setsockopt(IPPROTO_IPV6, IPV6_V6ONLY, 0)
+    sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
     sock.bind((host, port))
     yield sock
 
@@ -53,6 +63,7 @@ def _socks(open: bool, port: int) -> Iterator[socket]:
     ip = ip_address(addr)
     if isinstance(ip, IPv6Address) and ip.is_loopback:
         sock = socket(AddressFamily.AF_INET)
+        sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
         sock.bind((host, port))
         yield sock
 
