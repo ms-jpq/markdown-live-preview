@@ -128,6 +128,7 @@ def build(
             await site.start()
             await broadcast()
         finally:
+            await runner.shutdown()
             await runner.cleanup()
 
     return start

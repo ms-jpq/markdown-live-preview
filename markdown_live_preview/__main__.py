@@ -55,7 +55,6 @@ def _title() -> Iterator[None]:
         cont("")
 
 
-@_title()
 async def _main() -> int:
     args = _parse_args()
     try:
@@ -92,7 +91,8 @@ async def _main() -> int:
         if args.browser:
             open_w(uri)
         log.info("%s", f"SERVING -- {uri}")
-        await serve()
+        with _title():
+            await serve()
         return 0
 
 
