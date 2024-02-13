@@ -1,6 +1,7 @@
+from collections.abc import Callable, Sequence
 from locale import strxfrm
 from os import linesep
-from typing import Callable, Sequence, no_type_check
+from typing import no_type_check
 
 from markdown import Markdown
 from markdown.extensions import Extension

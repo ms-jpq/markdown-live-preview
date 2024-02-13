@@ -1,11 +1,22 @@
 from argparse import ArgumentParser, Namespace
 from asyncio import run
+from collections.abc import AsyncIterator, Iterator
 from contextlib import contextmanager
+from functools import lru_cache
+from ipaddress import IPv4Address, IPv6Address, ip_address
 from os import environ
 from pathlib import Path
-from socket import getfqdn
+from socket import (
+    IPPROTO_IPV6,
+    IPV6_V6ONLY,
+    AddressFamily,
+    SocketKind,
+    getfqdn,
+    has_ipv6,
+    socket,
+)
 from sys import exit, stderr
-from typing import AsyncIterator, Iterator, NoReturn
+from typing import NoReturn
 from webbrowser import open as open_w
 
 from .server.lexers import _
@@ -25,7 +36,7 @@ def _parse_args() -> Namespace:
     parser.add_argument("markdown")
 
     location = parser.add_argument_group()
-    location.add_argument("-p", "--port", type=int, default=8080)
+    location.add_argument("-p", "--port", type=int, default=0)
     location.add_argument("-o", "--open", action="store_true")
 
     watcher = parser.add_argument_group()
@@ -55,6 +66,35 @@ def _title() -> Iterator[None]:
         cont("")
 
 
+def _sock(open: bool, port: int) -> socket:
+    fam = AddressFamily.AF_INET6 if has_ipv6 else AddressFamily.AF_INET
+    sock = socket(family=fam, type=SocketKind.SOCK_STREAM)
+    host = "" if open else "localhost"
+    if fam == AddressFamily.AF_INET6:
+        sock.setsockopt(IPPROTO_IPV6, IPV6_V6ONLY, 0)
+    sock.bind((host, port))
+    return sock
+
+
+@lru_cache(maxsize=None)
+def _fqdn() -> str:
+    return getfqdn()
+
+
+def _addr(sock: socket) -> str:
+    addr, bind, *_ = sock.getsockname()
+    ip = ip_address(addr)
+    map = {
+        IPv4Address(0): _fqdn(),
+        IPv6Address(0): _fqdn(),
+        IPv4Address(1): "localhost",
+        IPv6Address(1): "localhost",
+    }
+    mapped = map.get(ip, ip)
+    host = f"[{mapped}]" if isinstance(mapped, IPv6Address) else str(mapped)
+    return f"{host}:{bind}"
+
+
 async def _main() -> int:
     args = _parse_args()
     try:
@@ -66,7 +106,8 @@ async def _main() -> int:
         render_f = render("friendly")
 
         async def gen() -> AsyncIterator[Payload]:
-            async for _ in watch(args.throttle, path=path):
+            async for __ in watch(args.throttle, path=path):
+                assert __ or True
                 try:
                     md = path.read_text()
                 except OSError as e:
@@ -80,19 +121,18 @@ async def _main() -> int:
                     )
                     yield payload
 
-        serve = build(
-            localhost=not args.open,
-            port=args.port,
-            cwd=path.parent,
-            gen=gen(),
-        )
-        host = getfqdn() if args.open else "localhost"
-        uri = f"http://{host}:{args.port}"
-        if args.browser:
-            open_w(uri)
-        log.info("%s", f"SERVING -- {uri}")
+        sock = _sock(args.open, port=args.port)
+
+        serve = build(sock, cwd=path.parent, gen=gen())
         with _title():
-            await serve()
+            async for __ in serve():
+                assert not __
+                bind = _addr(sock)
+                uri = f"http://{bind}"
+                log.info("%s", f"SERVING -- {uri}")
+                if args.browser:
+                    open_w(uri)
+
         return 0
 
 

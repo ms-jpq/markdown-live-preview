@@ -1,9 +1,10 @@
 from asyncio import gather
+from collections.abc import AsyncIterator, Callable
 from contextlib import suppress
 from dataclasses import dataclass
 from pathlib import Path, PurePath, PurePosixPath
 from posixpath import join, sep
-from typing import AsyncIterator, Awaitable, Callable
+from socket import socket
 from weakref import WeakSet
 
 from aiohttp.typedefs import Handler
@@ -12,7 +13,7 @@ from aiohttp.web import (
     AppRunner,
     Response,
     RouteTableDef,
-    TCPSite,
+    SockSite,
     WebSocketResponse,
     json_response,
     middleware,
@@ -34,9 +35,8 @@ class Payload:
 
 
 def build(
-    localhost: bool, port: int, cwd: PurePath, gen: AsyncIterator[Payload]
-) -> Callable[[], Awaitable[None]]:
-    host = "localhost" if localhost else ""
+    sock: socket, cwd: PurePath, gen: AsyncIterator[Payload]
+) -> Callable[[], AsyncIterator[None]]:
     payload = Payload(follow=False, title="", sha="", xhtml="")
 
     @middleware
@@ -115,17 +115,13 @@ def build(
     routes.static(prefix=sep, path=cwd)
     app.add_routes(routes)
 
-    async def start() -> None:
+    async def start() -> AsyncIterator[None]:
         runner = AppRunner(app)
         try:
             await runner.setup()
-            site = TCPSite(
-                runner,
-                host=host,
-                port=port,
-                reuse_address=True,
-            )
+            site = SockSite(runner, sock=sock)
             await site.start()
+            yield None
             await broadcast()
         finally:
             await runner.shutdown()

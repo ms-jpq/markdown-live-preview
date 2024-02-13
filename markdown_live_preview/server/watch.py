@@ -8,8 +8,8 @@ from asyncio.tasks import (
     sleep,
     wait,
 )
+from collections.abc import AsyncIterable
 from pathlib import Path
-from typing import AsyncIterable
 
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
