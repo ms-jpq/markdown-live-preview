@@ -106,7 +106,7 @@ black: .venv/bin/mypy
 	.venv/bin/black --extend-exclude pack -- .
 
 prettier:
-	npx --yes -- prettier --write -- .
+	npm exec --yes -- prettier --write -- .
 
 fmt: black prettier
 

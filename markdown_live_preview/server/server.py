@@ -116,7 +116,7 @@ def build(
     app.add_routes(routes)
 
     async def start() -> None:
-        runner = AppRunner(app, handle_signals=True)
+        runner = AppRunner(app)
         try:
             await runner.setup()
             site = TCPSite(

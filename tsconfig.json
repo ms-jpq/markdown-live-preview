@@ -17,9 +17,9 @@
     "sourceMap": true,
     "strict": true,
     "target": "esnext",
-    "verbatimModuleSyntax": true,
+    "verbatimModuleSyntax": true
   },
   "exclude": ["node_modules", "tmp", "markdown_live_preview/js"],
   "include": ["."],
-  "references": [],
+  "references": []
 }

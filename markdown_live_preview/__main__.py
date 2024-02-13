@@ -100,7 +100,6 @@ def main() -> NoReturn:
     try:
         code = run(_main())
     except KeyboardInterrupt:
-        stderr.close()
         exit(130)
     else:
         exit(code)
