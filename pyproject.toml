@@ -9,7 +9,7 @@ version         = "0.2.61"
 dependencies = [
   "Markdown==3.5.2",
   "Pygments==2.17.2",
-  "aiohttp==3.9.1",
+  "aiohttp==3.9.3",
   "pymdown-extensions==10.7",
   "watchdog==3.0.0",
 ]
