@@ -1,5 +1,5 @@
 from asyncio import gather
-from collections.abc import AsyncIterator, Callable
+from collections.abc import AsyncIterator, Callable, Iterable
 from contextlib import suppress
 from dataclasses import dataclass
 from pathlib import Path, PurePath, PurePosixPath
@@ -35,7 +35,7 @@ class Payload:
 
 
 def build(
-    sock: socket, cwd: PurePath, gen: AsyncIterator[Payload]
+    socks: Iterable[socket], cwd: PurePath, gen: AsyncIterator[Payload]
 ) -> Callable[[], AsyncIterator[None]]:
     payload = Payload(follow=False, title="", sha="", xhtml="")
 
@@ -119,8 +119,8 @@ def build(
         runner = AppRunner(app)
         try:
             await runner.setup()
-            site = SockSite(runner, sock=sock)
-            await site.start()
+            sites = {SockSite(runner, sock=sock).start() for sock in socks}
+            await gather(*sites)
             yield None
             await broadcast()
         finally:

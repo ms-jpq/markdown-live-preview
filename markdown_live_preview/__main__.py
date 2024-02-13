@@ -4,18 +4,11 @@ from collections.abc import AsyncIterator, Iterator
 from contextlib import contextmanager
 from functools import lru_cache
 from ipaddress import IPv6Address, ip_address
+from locale import strxfrm
 from os import environ
 from pathlib import Path
 from shlex import quote
-from socket import (
-    IPPROTO_IPV6,
-    IPV6_V6ONLY,
-    AddressFamily,
-    SocketKind,
-    getfqdn,
-    has_ipv6,
-    socket,
-)
+from socket import IPPROTO_IPV6, IPV6_V6ONLY, AddressFamily, getfqdn, has_ipv6, socket
 from sys import exit, stderr
 from typing import NoReturn
 from webbrowser import open as open_w
@@ -67,14 +60,22 @@ def _title() -> Iterator[None]:
         cont("")
 
 
-def _sock(open: bool, port: int) -> socket:
+def _socks(open: bool, port: int) -> Iterator[socket]:
     fam = AddressFamily.AF_INET6 if has_ipv6 else AddressFamily.AF_INET
-    sock = socket(family=fam, type=SocketKind.SOCK_STREAM)
+    sock = socket(fam)
     host = "" if open else "localhost"
+
     if fam == AddressFamily.AF_INET6:
         sock.setsockopt(IPPROTO_IPV6, IPV6_V6ONLY, 0)
     sock.bind((host, port))
-    return sock
+    yield sock
+
+    addr, port, *_ = sock.getsockname()
+    ip = ip_address(addr)
+    if isinstance(ip, IPv6Address) and ip.is_loopback:
+        sock = socket(AddressFamily.AF_INET)
+        sock.bind((host, port))
+        yield sock
 
 
 @lru_cache(maxsize=None)
@@ -85,10 +86,10 @@ def _fqdn() -> str:
 def _addr(sock: socket) -> str:
     addr, bind, *_ = sock.getsockname()
     ip = ip_address(addr)
-    if ip.is_loopback:
-        host = "localhost"
-    elif ip.is_unspecified:
+    if ip.is_unspecified:
         host = _fqdn()
+    elif ip.is_loopback:
+        host = "localhost"
     elif isinstance(ip, IPv6Address):
         host = f"[{ip}]"
     else:
@@ -122,17 +123,18 @@ async def _main() -> int:
                     )
                     yield payload
 
-        sock = _sock(args.open, port=args.port)
+        socks = tuple(_socks(args.open, port=args.port))
 
-        serve = build(sock, cwd=path.parent, gen=gen())
+        serve = build(socks, cwd=path.parent, gen=gen())
         with _title():
             async for __ in serve():
                 assert not __
-                bind = _addr(sock)
-                uri = f"http://{bind}"
-                log.info("%s", f"SERVING -- {quote(uri)}")
-                if args.browser:
-                    open_w(uri)
+                binds = sorted({*map(_addr, socks)}, key=strxfrm)
+                for idx, bind in enumerate(binds):
+                    uri = f"http://{bind}"
+                    log.info("%s", f"SERVING -- {quote(uri)}")
+                    if not idx and args.browser:
+                        open_w(uri)
 
         return 0
 
