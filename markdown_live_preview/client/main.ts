@@ -37,6 +37,7 @@ const ws_connect = async function* () {
         await new Promise<void>((resolve) => (cb = resolve))
       }
       yield
+      flag = false
     } catch (e) {
       console.error(e)
       ws.close()
@@ -124,6 +125,7 @@ const main = async () => {
 
   const gen = ws_connect()
   for await (const _ of gen) {
+    console.debug("-> ws")
     try {
       const { title, follow, sha } = await api_request()
       document.title ||= title
