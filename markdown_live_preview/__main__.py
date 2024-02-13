@@ -1,9 +1,11 @@
 from argparse import ArgumentParser, Namespace
 from asyncio import run
+from contextlib import contextmanager
+from os import environ
 from pathlib import Path
 from socket import getfqdn
 from sys import exit, stderr
-from typing import AsyncIterator, NoReturn
+from typing import AsyncIterator, Iterator, NoReturn
 from webbrowser import open as open_w
 
 from .server.lexers import _
@@ -13,6 +15,8 @@ from .server.server import Payload, build
 from .server.watch import watch
 
 assert _
+
+_TITLE = Path(__file__).resolve(strict=True).parent.name
 
 
 def _parse_args() -> Namespace:
@@ -34,6 +38,24 @@ def _parse_args() -> Namespace:
     return parser.parse_args()
 
 
+@contextmanager
+def _title() -> Iterator[None]:
+    def cont(title: str) -> None:
+        if "TMUX" in environ:
+            stderr.write(f"\x1Bk{title}\x1B\\")
+        else:
+            stderr.write(f"\x1B]0;{title}\x1B\\")
+
+        stderr.flush()
+
+    cont(_TITLE)
+    try:
+        yield None
+    finally:
+        cont("")
+
+
+@_title()
 async def _main() -> int:
     args = _parse_args()
     try:
