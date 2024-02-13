@@ -1,15 +1,13 @@
 from argparse import ArgumentParser, Namespace
 from asyncio import run
 from collections.abc import AsyncIterator, Iterator
-from contextlib import contextmanager
 from functools import lru_cache
 from ipaddress import IPv6Address, ip_address
 from locale import strxfrm
-from os import environ
 from pathlib import Path
 from shlex import quote
 from socket import IPPROTO_IPV6, IPV6_V6ONLY, AddressFamily, getfqdn, has_ipv6, socket
-from sys import exit, stderr
+from sys import exit
 from typing import NoReturn
 from webbrowser import open as open_w
 
@@ -20,8 +18,6 @@ from .server.server import Payload, build
 from .server.watch import watch
 
 assert _
-
-_TITLE = Path(__file__).resolve(strict=True).parent.name
 
 
 def _parse_args() -> Namespace:
@@ -41,23 +37,6 @@ def _parse_args() -> Namespace:
     behaviour.add_argument("--nb", "--no-browser", dest="browser", action="store_false")
 
     return parser.parse_args()
-
-
-@contextmanager
-def _title() -> Iterator[None]:
-    def cont(title: str) -> None:
-        if "TMUX" in environ:
-            stderr.write(f"\x1Bk{title}\x1B\\")
-        else:
-            stderr.write(f"\x1B]0;{title}\x1B\\")
-
-        stderr.flush()
-
-    cont(_TITLE)
-    try:
-        yield None
-    finally:
-        cont("")
 
 
 def _socks(open: bool, port: int) -> Iterator[socket]:
@@ -126,15 +105,14 @@ async def _main() -> int:
         socks = tuple(_socks(args.open, port=args.port))
 
         serve = build(socks, cwd=path.parent, gen=gen())
-        with _title():
-            async for __ in serve():
-                assert not __
-                binds = sorted({*map(_addr, socks)}, key=strxfrm)
-                for idx, bind in enumerate(binds):
-                    uri = f"http://{bind}"
-                    log.info("%s", f"SERVING -- {quote(uri)}")
-                    if not idx and args.browser:
-                        open_w(uri)
+        async for __ in serve():
+            assert not __
+            binds = sorted({*map(_addr, socks)}, key=strxfrm)
+            for idx, bind in enumerate(binds):
+                uri = f"http://{bind}"
+                log.info("%s", f"SERVING -- {quote(uri)}")
+                if not idx and args.browser:
+                    open_w(uri)
 
         return 0
 
