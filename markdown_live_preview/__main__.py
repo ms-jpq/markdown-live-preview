@@ -3,9 +3,10 @@ from asyncio import run
 from collections.abc import AsyncIterator, Iterator
 from contextlib import contextmanager
 from functools import lru_cache
-from ipaddress import IPv4Address, IPv6Address, ip_address
+from ipaddress import IPv6Address, ip_address
 from os import environ
 from pathlib import Path
+from shlex import quote
 from socket import (
     IPPROTO_IPV6,
     IPV6_V6ONLY,
@@ -84,14 +85,14 @@ def _fqdn() -> str:
 def _addr(sock: socket) -> str:
     addr, bind, *_ = sock.getsockname()
     ip = ip_address(addr)
-    map = {
-        IPv4Address(0): _fqdn(),
-        IPv6Address(0): _fqdn(),
-        IPv4Address(1): "localhost",
-        IPv6Address(1): "localhost",
-    }
-    mapped = map.get(ip, ip)
-    host = f"[{mapped}]" if isinstance(mapped, IPv6Address) else str(mapped)
+    if ip.is_loopback:
+        host = "localhost"
+    elif ip.is_unspecified:
+        host = _fqdn()
+    elif isinstance(ip, IPv6Address):
+        host = f"[{ip}]"
+    else:
+        host = str(ip)
     return f"{host}:{bind}"
 
 
@@ -129,7 +130,7 @@ async def _main() -> int:
                 assert not __
                 bind = _addr(sock)
                 uri = f"http://{bind}"
-                log.info("%s", f"SERVING -- {uri}")
+                log.info("%s", f"SERVING -- {quote(uri)}")
                 if args.browser:
                     open_w(uri)
 
