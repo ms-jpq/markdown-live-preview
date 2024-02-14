@@ -7,7 +7,6 @@ SHELL := bash
 .SHELLFLAGS := --norc --noprofile -Eeuo pipefail -O dotglob -O nullglob -O extglob -O failglob -O globstar -c
 
 .DEFAULT_GOAL := dev
-.FORCE:
 
 .PHONY: clean clobber init run
 .PHONY: lint mypy tsc
@@ -82,16 +81,16 @@ $(DIST)/__init__.py: $(DIST)
 	mkdir -p -- .cache
 	.venv/bin/python3 -m markdown_live_preview.server > '$@'
 
-$(DIST)/site.css: node_modules/.bin/sass markdown_live_preview/client/site.scss .cache/codehl.css $(DIST)
+$(DIST)/site.css: node_modules/.bin/sass .cache/codehl.css $(shell shopt -u failglob && printf -- '%s ' ./markdown_live_preview/client/*.*css) | $(DIST)
 	'$<' --style compressed -- markdown_live_preview/client/site.scss '$@'
 
-$(DIST)/index.html: markdown_live_preview/client/index.html $(DIST)
+$(DIST)/index.html: markdown_live_preview/client/index.html | $(DIST)
 	cp --recursive --force --reflink=auto -- '$<' '$@'
 
-$(DIST)/main.js: node_modules/.bin/esbuild .FORCE
-	node_modules/.bin/esbuild --bundle --format=esm --outfile='$@' ./markdown_live_preview/client/main.ts
+$(DIST)/main.js $(DIST)/mermaid.js: node_modules/.bin/esbuild $(shell shopt -u failglob && printf -- '%s ' ./markdown_live_preview/client/*.ts) | $(DIST)
+	node_modules/.bin/esbuild --bundle --format=esm --outfile='$@' ./markdown_live_preview/client/$(basename $(@F)).ts
 
-build: $(DIST)/__init__.py $(DIST)/index.html $(DIST)/main.js $(DIST)/site.css
+build: $(DIST)/__init__.py $(DIST)/index.html $(DIST)/main.js $(DIST)/mermaid.js $(DIST)/site.css
 
 release: build
 	.venv/bin/python3 <<EOF
