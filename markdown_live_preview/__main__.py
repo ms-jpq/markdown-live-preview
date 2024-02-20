@@ -13,6 +13,7 @@ from socket import (
     SOL_SOCKET,
     AddressFamily,
     getfqdn,
+    has_dualstack_ipv6,
     has_ipv6,
     socket,
 )
@@ -53,7 +54,7 @@ def _socks(open: bool, port: int) -> Iterator[socket]:
     sock = socket(fam)
     host = "" if open else "localhost"
 
-    if fam == AddressFamily.AF_INET6:
+    if has_dualstack_ipv6() and fam == AddressFamily.AF_INET6:
         sock.setsockopt(IPPROTO_IPV6, IPV6_V6ONLY, 0)
     sock.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
     sock.bind((host, port))
