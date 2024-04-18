@@ -4,13 +4,13 @@ description     = "live web preview of markdown docs"
 name            = "markdown-live-preview"
 readme          = "README.md"
 requires-python = ">=3.8.0"
-version         = "0.2.65"
+version         = "0.2.66"
 
 dependencies = [
   "Markdown==3.6",
   "Pygments==2.17.2",
   "aiohttp==3.9.5",
-  "pymdown-extensions==10.7",
+  "pymdown-extensions==10.7.1",
   "watchdog==4.0.0",
 ]
 [project.optional-dependencies]

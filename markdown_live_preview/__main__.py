@@ -1,5 +1,5 @@
 from argparse import ArgumentParser, Namespace
-from asyncio import run
+from asyncio import run, sleep
 from collections.abc import AsyncIterator, Iterator
 from functools import lru_cache
 from ipaddress import IPv6Address, ip_address
@@ -17,7 +17,7 @@ from socket import (
     has_ipv6,
     socket,
 )
-from sys import exit
+from sys import exit, getdefaultencoding
 from typing import NoReturn
 from webbrowser import open as open_w
 
@@ -38,6 +38,7 @@ def _parse_args() -> Namespace:
     location = parser.add_argument_group()
     location.add_argument("-p", "--port", type=int, default=0)
     location.add_argument("-o", "--open", action="store_true")
+    location.add_argument("-e", "--encoding", default=getdefaultencoding())
 
     watcher = parser.add_argument_group()
     watcher.add_argument("-t", "--throttle", type=float, default=0.10)
@@ -102,10 +103,10 @@ async def _main() -> int:
             async for __ in watch(args.throttle, path=path):
                 assert __ or True
                 try:
-                    md = path.read_text()
-                except OSError as e:
-                    log.critical("%s", e)
-                    break
+                    md = path.read_text(args.encoding)
+                except (OSError, UnicodeDecodeError) as e:
+                    log.warn("%s", e)
+                    await sleep(args.throttle)
                 else:
                     xhtml = render_f(md)
                     sha = str(hash(xhtml))
