@@ -11,7 +11,7 @@ dependencies = [
   "Pygments==2.18.0",
   "aiohttp==3.9.5",
   "pymdown-extensions==10.8.1",
-  "watchdog==4.0.1",
+  "watchdog==5.0.1",
 ]
 [project.optional-dependencies]
 dev  = ["mypy", "types-Markdown", "black", "isort"]
