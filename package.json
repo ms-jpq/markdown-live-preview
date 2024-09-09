@@ -4,7 +4,7 @@
     "esbuild": "^0.23",
     "github-markdown-css": "^5",
     "mermaid": "^11",
-    "modern-normalize": "^2",
+    "modern-normalize": "^3",
     "sass": "^1"
   },
   "devDependencies": {
