@@ -3,8 +3,8 @@ authors         = [{ name = "ms-jpq", email = "github@bigly.dog" }]
 description     = "live web preview of markdown docs"
 name            = "markdown-live-preview"
 readme          = "README.md"
-requires-python = ">=3.8.0"
-version         = "0.2.68"
+requires-python = ">=3.9.0"
+version         = "0.2.69"
 
 dependencies = [
   "Markdown==3.7",

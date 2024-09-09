@@ -8,7 +8,8 @@ from asyncio.tasks import (
     sleep,
     wait,
 )
-from collections.abc import AsyncIterable
+from collections.abc import AsyncIterable, ByteString
+from os.path import normcase
 from pathlib import Path
 
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
@@ -33,7 +34,12 @@ async def watch(throttle: float, path: Path) -> AsyncIterable[str]:
             ev.set()
 
     def send(event: FileSystemEvent) -> None:
-        if Path(event.src_path) == path:
+        src = (
+            bytes(event.src_path).decode()
+            if isinstance(event.src_path, ByteString)
+            else event.src_path
+        )
+        if Path(src) == path:
             run_coroutine_threadsafe(notify(), loop=loop)
 
     class Handler(FileSystemEventHandler):
@@ -44,13 +50,13 @@ async def watch(throttle: float, path: Path) -> AsyncIterable[str]:
             send(event)
 
     obs = Observer()
-    obs.schedule(Handler(), path=path.parent)  # type: ignore
-    obs.start()  # type: ignore
+    obs.schedule(Handler(), path=normcase(path.parent))
+    obs.start()
 
     while True:
         try:
             yield path.read_text("UTF-8")
         except GeneratorExit:
-            obs.stop()  # type: ignore
+            obs.stop()
             break
         await chan.get()
